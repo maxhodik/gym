@@ -1,0 +1,22 @@
+[
+  {
+    "userId": 1,
+    "firstName": "Vasya",
+    "lastName": "Lis",
+    "userName": "Vasya.Lis",
+    "password": "1234567890",
+    "active": "true",
+    "dayOfBirth": "22-10-1998",
+    "address": "skajgl"
+  },
+  {
+    "userId": 2,
+    "firstName": "Masha",
+    "lastName": "Semenova",
+    "userName": "Masha.Semenova",
+    "password": "1234567890",
+    "active": "true",
+    "dayOfBirth": "22-10-1998",
+    "address": "skajgl"
+  }
+]
