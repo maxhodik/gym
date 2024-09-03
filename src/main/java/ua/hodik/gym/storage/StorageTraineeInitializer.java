@@ -41,5 +41,6 @@ public class StorageTraineeInitializer {
             throw new RuntimeException(e);
         }
         traineeBD = trainees.stream().collect(Collectors.toMap(Trainee::getUserId, Function.identity()));
+        System.out.println(traineeBD);
     }
 }

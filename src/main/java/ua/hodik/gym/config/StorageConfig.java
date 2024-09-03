@@ -1,4 +1,4 @@
-package ua.hodik.gym.comfig;
+package ua.hodik.gym.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

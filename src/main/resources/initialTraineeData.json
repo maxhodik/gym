@@ -6,7 +6,6 @@
     "userName": "Vasya.Lis",
     "password": "1234567890",
     "active": "true",
-    "dayOfBirth": "22-10-1998",
     "address": "skajgl"
   },
   {
@@ -16,7 +15,6 @@
     "userName": "Masha.Semenova",
     "password": "1234567890",
     "active": "true",
-    "dayOfBirth": "22-10-1998",
     "address": "skajgl"
   }
 ]
