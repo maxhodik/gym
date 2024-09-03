@@ -1,26 +1,28 @@
 package ua.hodik.gym.storage;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
+import ua.hodik.gym.dto.StorageData;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 @Component
 public class Storage {
-    @Value("file.traineeData")
+    @Value("${file.path.initialData}")
     private String filePath;
-    @Value("file.trainerData")
-    private String fileTrainerDataPat;
-    @Value("file.trainingData")
-    private String fileTrainingDataPath;
+
     @Autowired
     private Map<Integer, Trainee> traineeDB;
     @Autowired
@@ -31,22 +33,27 @@ public class Storage {
 
     @PostConstruct
     public void initialize() {
+        ObjectMapper om = new ObjectMapper();
+
+
         try {
-            // Example of loading JSON data from a file
-            String data = new String(Files.readAllBytes(Paths.get(filePath)));
-            // Parse data and populate the inMemoryStorage
-            // Example assumes JSON with simple structure. Adjust parsing accordingly.
-            // Here, you'll parse the JSON and populate the traineeStorage, trainerStorage, etc.
-            Map<Integer, Object> initialData = parseJson(data);
-            inMemoryStorage.getTraineeStorage().putAll(initialData);
+            File file = ResourceUtils.getFile("classpath:" + filePath);
+//            Path path = Path.of(ResourceUtils.toURI(filePath));
+
+            String data = new String(Files.readAllBytes(file.toPath()));
+            StorageData storageData = om.readValue(data, StorageData.class);
+            List<Trainee> traineeList = storageData.getTraineeList();
+            List<Trainer> trainerList = storageData.getTrainerList();
+            List<Training> trainingList = storageData.getTrainingList();
+            trainingList.forEach(t -> trainingDB.put(t.getTrainingId(), t));
+            traineeList.forEach(t -> traineeDB.put(t.getUserId(), t));
+            trainerList.forEach(t -> trainerDB.put(t.getUserId(), t));
+
         } catch (IOException e) {
             e.printStackTrace(); // Consider proper logging here
+
         }
     }
 
-    private Map<Integer, Object> parseJson(String data) {
-        // Implement JSON parsing logic here
-        // This is just a placeholder method
-        return Map.of(); // Replace with actual implementation
-    }
+
 }

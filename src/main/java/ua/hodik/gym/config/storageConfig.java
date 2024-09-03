@@ -12,20 +12,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ComponentScan("ua.hodik.gym")
+@ComponentScan(basePackages = "ua.hodik.gym")
 @PropertySource("classpath:application.properties")
-public class storageConfig {
+public class StorageConfig {
+    @Bean
+    public Map<Integer, Trainer> trainerDB() {
+        return new HashMap<>();
+    }
 
     @Bean
-    public Map<Integer, Trainee> traineeDB (){
+    public Map<Integer, Trainee> traineeDB() {
         return new HashMap<>();
     }
+
     @Bean
-    public Map<Integer, Trainer> trainerDB (){
-        return new HashMap<>();
-    }
-    @Bean
-    public Map<Integer, Training> trainingDB (){
+    public Map<Integer, Training> trainingDB() {
         return new HashMap<>();
     }
 

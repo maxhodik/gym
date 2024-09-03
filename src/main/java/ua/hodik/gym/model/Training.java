@@ -1,7 +1,10 @@
 package ua.hodik.gym.model;
 
+import lombok.Data;
+
 import java.time.LocalDate;
 
+@Data
 public class Training {
     private int trainingId;
     private int traineeId;
