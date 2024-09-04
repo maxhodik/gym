@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class User {
-    private int userId;
+//    private int userId;
     private String firstName;
     private String lastName;
     private String userName;

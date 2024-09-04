@@ -29,19 +29,15 @@ public class Storage {
     private Map<Integer, Trainer> trainerDB;
     @Autowired
     private Map<Integer, Training> trainingDB;
-
+    @Autowired
+    ObjectMapper objectMapper;
 
     @PostConstruct
     public void initialize() {
-        ObjectMapper om = new ObjectMapper();
-
-
         try {
             File file = ResourceUtils.getFile("classpath:" + filePath);
-//            Path path = Path.of(ResourceUtils.toURI(filePath));
-
             String data = new String(Files.readAllBytes(file.toPath()));
-            StorageData storageData = om.readValue(data, StorageData.class);
+            StorageData storageData = objectMapper.readValue(data, StorageData.class);
             List<Trainee> traineeList = storageData.getTraineeList();
             List<Trainer> trainerList = storageData.getTrainerList();
             List<Training> trainingList = storageData.getTrainingList();
@@ -51,9 +47,6 @@ public class Storage {
 
         } catch (IOException e) {
             e.printStackTrace(); // Consider proper logging here
-
         }
     }
-
-
 }

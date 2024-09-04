@@ -12,5 +12,6 @@ public class App {
         ApplicationContext context = new AnnotationConfigApplicationContext(StorageConfig.class);
         Map<Integer, Trainee> traineeDB = context.getBean("traineeDB", Map.class);
         System.out.println(traineeDB);
+
     }
 }
