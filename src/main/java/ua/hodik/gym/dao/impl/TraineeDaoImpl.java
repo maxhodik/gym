@@ -13,46 +13,46 @@ import java.util.stream.Collectors;
 @Component
 public class TraineeDaoImpl implements TraineeDao {
     @Autowired
-    private Map<Integer, Trainee> traineeDb;
+    private Map<Integer, Trainee> traineeDB;
 
 
     @Override
     public Optional<Trainee> add(Trainee trainee) {
-        return Optional.ofNullable(traineeDb.put(trainee.getUserId(), trainee));
+        return Optional.ofNullable(traineeDB.put(trainee.getUserId(), trainee));
 
     }
 
     @Override
     public Optional<Trainee> update(Trainee trainee, int id) {
-        return Optional.ofNullable(traineeDb.put(id, trainee));
+        return Optional.ofNullable(traineeDB.put(id, trainee));
     }
 
     @Override
     public boolean delete(int id) {
-        return traineeDb.remove(id) != null;
+        return traineeDB.remove(id) != null;
     }
 
     @Override
     public Optional<Trainee> getById(int id) {
 
-        return Optional.of(traineeDb.get(id));
+        return Optional.of(traineeDB.get(id));
     }
 
     @Override
     public List<Trainee> getAllTrainees() {
-        return traineeDb.values().stream().toList();
+        return traineeDB.values().stream().toList();
     }
 
     @Override
     public List<Trainee> getAllTraineesByUserName(String userName) {
 
-        return traineeDb.values().stream()
+        return traineeDB.values().stream()
                 .filter(t -> t.getUserName().equals(userName))
                 .collect(Collectors.toList());
     }
 
     @Override
     public int getMaxId() {
-        return traineeDb.size() - 1;
+        return traineeDB.size() - 1;
     }
 }
