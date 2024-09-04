@@ -2,6 +2,7 @@ package ua.hodik.gym.service;
 
 import ua.hodik.gym.model.Trainee;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TraineeService {
@@ -12,4 +13,6 @@ public interface TraineeService {
     boolean delete(int id);
 
     Optional<Trainee> findById(int id);
+
+    List<Trainee> getAllTrainees();
 }
