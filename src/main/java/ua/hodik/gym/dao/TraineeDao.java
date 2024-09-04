@@ -16,7 +16,7 @@ public interface TraineeDao {
 
     List<Trainee> getAllTrainees();
 
-    List<Trainee> getAllTraineesByUserName();
+    List<Trainee> getAllTraineesByUserName(String userName);
 
     int getMaxId();
 }
