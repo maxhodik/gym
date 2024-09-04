@@ -1,12 +1,10 @@
 package ua.hodik.gym.model;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
 
-@Setter
-@Getter
+@Data
 @ToString
 public class User {
 //    private int userId;
