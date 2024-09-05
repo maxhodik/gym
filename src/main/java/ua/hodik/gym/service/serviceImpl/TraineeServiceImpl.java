@@ -34,9 +34,6 @@ public class TraineeServiceImpl implements TraineeService {
         return traineeDao.add(trainee);
     }
 
-//    private int findNextId() {
-//        return traineeDB.keySet().size();
-//    }
 
     @Override
     public Trainee update(Trainee trainee, int id) {
