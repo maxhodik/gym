@@ -3,7 +3,6 @@ package ua.hodik.gym.service.serviceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.hodik.gym.dao.TrainingDao;
-import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Training;
 import ua.hodik.gym.service.TrainingService;
 
