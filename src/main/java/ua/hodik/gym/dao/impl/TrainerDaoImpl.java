@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ua.hodik.gym.dao.TrainerDao;
 import ua.hodik.gym.model.Trainer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,8 +39,7 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public List<Trainer> getAllTrainers() {
-
-        return trainerDB.values().stream().toList();
+        return new ArrayList<>(trainerDB.values());
     }
 
     @Override
