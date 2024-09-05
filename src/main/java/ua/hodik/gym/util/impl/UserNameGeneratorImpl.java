@@ -1,4 +1,4 @@
-package ua.hodik.gym.util.UtilImpl;
+package ua.hodik.gym.util.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

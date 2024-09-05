@@ -1,4 +1,4 @@
-package ua.hodik.gym.service.serviceImpl;
+package ua.hodik.gym.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Trainee create(Trainee trainee) {
-        Objects.requireNonNull(trainee);
+        Objects.requireNonNull(trainee, "Trainee can't be null");
         int userId = traineeDao.getMaxId() + 1;
         trainee.setUserId(userId);
         String firstName = trainee.getFirstName();
@@ -37,7 +37,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Trainee update(Trainee trainee, int id) {
-        Objects.requireNonNull(trainee);
+        Objects.requireNonNull(trainee, "Trainee can't be null");
         return traineeDao.update(trainee, id);
     }
 

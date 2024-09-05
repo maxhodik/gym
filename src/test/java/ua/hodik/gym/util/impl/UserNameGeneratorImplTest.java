@@ -1,12 +1,13 @@
-package ua.hodik.gym.util.UtilImpl;
+package ua.hodik.gym.util.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.service.TraineeService;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class UserNameGeneratorImplTest {
     private final String FIRST_NAME = "Sam";
     private final String LAST_NAME = "Jonson";
@@ -26,10 +28,10 @@ class UserNameGeneratorImplTest {
     private final String EXPECTED_USER_NAME_1 = "Sam.Jonson1";
     private final String EXPECTED_USER_NAME_2 = "Sam.Jonson2";
 
-    private final String TRAINEE_PATH_DIFFERENT_USER_NAME = "src/main/resources/test/trainee.json";
-    private final String TRAINEE_PATH_SAME_USER_NAME = "src/main/resources/test/traineeSameUserName.json";
-    private final String TRAINER_PATH_DIFFERENT_USER_NAME = "src/main/resources/test/trainer.json";
-    private final String TRAINER_PATH_SAME_USER_NAME = "src/main/resources/test/trainerSameUserName.json";
+    private final String TRAINEE_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainee.json";
+    private final String TRAINEE_PATH_SAME_USER_NAME = "src/test/resources/traineeSameUserName.json";
+    private final String TRAINER_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainer.json";
+    private final String TRAINER_PATH_SAME_USER_NAME = "src/test/resources/trainerSameUserName.json";
 
 
     @Mock
@@ -42,7 +44,6 @@ class UserNameGeneratorImplTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         objectMapper.registerModule(new JavaTimeModule());
     }
 

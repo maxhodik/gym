@@ -1,4 +1,4 @@
-package ua.hodik.gym.service.serviceImpl;
+package ua.hodik.gym.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public Training create(Training training) {
-        Objects.requireNonNull(training);
+        Objects.requireNonNull(training, "Training can't be null");
 
         return trainingDao.add(training);
     }

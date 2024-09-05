@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import ua.hodik.gym.dto.StorageData;
+import ua.hodik.gym.exception.StorageInitializeException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -30,7 +31,7 @@ public class Storage {
     @Autowired
     private Map<Integer, Training> trainingDB;
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @PostConstruct
     public void initialize() {
@@ -46,7 +47,7 @@ public class Storage {
             trainerList.forEach(t -> trainerDB.put(t.getUserId(), t));
 
         } catch (IOException e) {
-            e.printStackTrace(); // Consider proper logging here
+            throw new StorageInitializeException(String.format("Can't read file %s", filePath));
         }
     }
 }
