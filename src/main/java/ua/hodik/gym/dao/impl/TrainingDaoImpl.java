@@ -1,6 +1,7 @@
 package ua.hodik.gym.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ua.hodik.gym.dao.TrainingDao;
 import ua.hodik.gym.model.Training;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+@Component
 public class TrainingDaoImpl implements TrainingDao {
     @Autowired
     private Map<Integer, Training> trainingDB;

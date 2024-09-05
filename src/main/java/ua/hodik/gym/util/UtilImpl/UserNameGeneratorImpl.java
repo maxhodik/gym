@@ -28,7 +28,7 @@ public class UserNameGeneratorImpl implements UserNameGenerator {
                 .map(User::getUserName)
                 .filter(u -> u.contains(baseUsername))
                 .count();
-        if (count > 1) {
+        if (count >= 1) {
             return baseUsername + count;
         }
         return baseUsername;

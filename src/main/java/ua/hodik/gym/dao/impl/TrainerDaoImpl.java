@@ -50,6 +50,6 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public int getMaxId() {
-        return trainerDB.size() - 1;
+        return trainerDB.keySet().size();
     }
 }
