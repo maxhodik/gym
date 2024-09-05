@@ -10,7 +10,6 @@ import ua.hodik.gym.util.UserNameGenerator;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class TraineeServiceImpl implements TraineeService {
@@ -22,10 +21,9 @@ public class TraineeServiceImpl implements TraineeService {
     private PasswordGenerator passwordGenerator;
 
     @Override
-    public Optional<Trainee> create(Trainee trainee) {
+    public Trainee create(Trainee trainee) {
         Objects.requireNonNull(trainee);
-
-        int userId = traineeDao.getMaxId()+1;
+        int userId = traineeDao.getMaxId() + 1;
         trainee.setUserId(userId);
         String firstName = trainee.getFirstName();
         String lastName = trainee.getLastName();
@@ -41,7 +39,7 @@ public class TraineeServiceImpl implements TraineeService {
 //    }
 
     @Override
-    public Optional<Trainee> update(Trainee trainee, int id) {
+    public Trainee update(Trainee trainee, int id) {
         Objects.requireNonNull(trainee);
         return traineeDao.update(trainee, id);
     }
@@ -52,7 +50,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Optional<Trainee> findById(int id) {
+    public Trainee findById(int id) {
         return traineeDao.getById(id);
     }
 
