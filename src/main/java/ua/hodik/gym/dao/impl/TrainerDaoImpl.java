@@ -33,7 +33,6 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public Optional<Trainer> getById(int id) {
-
         return Optional.of(trainerDB.get(id));
     }
 
@@ -51,6 +50,6 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public int getMaxId() {
-        return trainerDB.size() - 1;
+        return trainerDB.keySet().size();
     }
 }

@@ -25,8 +25,8 @@ public class TraineeServiceImpl implements TraineeService {
     public Optional<Trainee> create(Trainee trainee) {
         Objects.requireNonNull(trainee);
 
-        int lastId = traineeDao.getMaxId();
-        trainee.setUserId(lastId);
+        int userId = traineeDao.getMaxId()+1;
+        trainee.setUserId(userId);
         String firstName = trainee.getFirstName();
         String lastName = trainee.getLastName();
         String userName = userNameGenerator.generateUserName(firstName, lastName);

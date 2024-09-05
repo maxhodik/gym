@@ -25,8 +25,8 @@ public class TrainerServiceImpl implements TrainerService {
     public Optional<Trainer> create(Trainer trainer) {
         Objects.requireNonNull(trainer);
 
-        int lastId = trainerDao.getMaxId();
-        trainer.setUserId(lastId);
+        int userId = trainerDao.getMaxId()+1;
+        trainer.setUserId(userId);
         String firstName = trainer.getFirstName();
         String lastName = trainer.getLastName();
         String userName = userNameGenerator.generateUserName(firstName, lastName);

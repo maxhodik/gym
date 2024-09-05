@@ -54,6 +54,6 @@ public class TraineeDaoImpl implements TraineeDao {
 
     @Override
     public int getMaxId() {
-        return traineeDB.size() - 1;
+        return traineeDB.keySet().size();
     }
 }
