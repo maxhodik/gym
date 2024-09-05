@@ -7,8 +7,9 @@ import ua.hodik.gym.util.PasswordGenerator;
 
 @Component("passwordGenerator")
 public class PasswordGeneratorImpl implements PasswordGenerator {
+
     @Value("${password.length}")
-    private int passwordLength;
+    int passwordLength;
 
     @Override
     public String generatePassword() {
