@@ -8,7 +8,6 @@ import ua.hodik.gym.model.Trainer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -17,13 +16,13 @@ public class TrainerDaoImpl implements TrainerDao {
     private Map<Integer, Trainer> trainerDB;
 
     @Override
-    public Optional<Trainer> add(Trainer trainer) {
-        return Optional.ofNullable(trainerDB.put(trainer.getUserId(), trainer));
+    public Trainer add(Trainer trainer) {
+        return trainerDB.put(trainer.getUserId(), trainer);
     }
 
     @Override
-    public Optional<Trainer> update(Trainer trainer, int id) {
-        return Optional.ofNullable(trainerDB.put(id, trainer));
+    public Trainer update(Trainer trainer, int id) {
+        return trainerDB.put(id, trainer);
     }
 
     @Override
@@ -32,8 +31,8 @@ public class TrainerDaoImpl implements TrainerDao {
     }
 
     @Override
-    public Optional<Trainer> getById(int id) {
-        return Optional.of(trainerDB.get(id));
+    public Trainer getById(int id) {
+        return trainerDB.get(id);
     }
 
     @Override
@@ -50,6 +49,9 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public int getMaxId() {
-        return trainerDB.keySet().size();
+        return trainerDB.keySet().stream()
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
     }
 }

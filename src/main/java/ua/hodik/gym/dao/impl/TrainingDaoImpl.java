@@ -8,20 +8,21 @@ import ua.hodik.gym.model.Training;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 @Component
 public class TrainingDaoImpl implements TrainingDao {
     @Autowired
     private Map<Integer, Training> trainingDB;
+
     @Override
-    public Optional<Training> add(Training training) {
-        training.setTrainingId(getMaxId()+1);
-        return Optional.ofNullable(trainingDB.put(training.getTrainingId(), training));
+    public Training add(Training training) {
+        training.setTrainingId(getMaxId() + 1);
+        return trainingDB.put(training.getTrainingId(), training);
     }
 
     @Override
-    public Optional<Training> getById(int trainingId) {
-        return Optional.ofNullable(trainingDB.get(trainingId));
+    public Training getById(int trainingId) {
+        return trainingDB.get(trainingId);
     }
 
     @Override
@@ -31,6 +32,9 @@ public class TrainingDaoImpl implements TrainingDao {
 
     @Override
     public int getMaxId() {
-     return    trainingDB.size();
+        return trainingDB.keySet().stream()
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
     }
 }
