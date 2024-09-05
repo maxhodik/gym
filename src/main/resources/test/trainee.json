@@ -1,0 +1,10 @@
+{
+  "userId": 1,
+  "firstName": "Vasya",
+  "lastName": "Lis",
+  "userName": "Vasya.Lis",
+  "password": "1234567890",
+  "active": "true",
+  "dayOfBirth": "10-02-1995",
+  "address": "Lviv"
+}

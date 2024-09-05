@@ -1,0 +1,9 @@
+{
+  "userId": 1,
+  "firstName": "Sam",
+  "lastName": "Jonson",
+  "userName": "Sam.Jonson",
+  "password": "1234567890",
+  "active": "true",
+  "specialization": "zuma"
+}
