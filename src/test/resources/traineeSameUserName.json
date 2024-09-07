@@ -1,9 +1,8 @@
 {
-  "userId": 1,
   "firstName": "Sam",
   "lastName": "Jonson",
   "userName": "Sam.Jonson",
-  "password": "1234567890",
+  "password": "ABCDEFJxyz",
   "active": "true",
   "dayOfBirth": "10-02-1995",
   "address": "Chicago"

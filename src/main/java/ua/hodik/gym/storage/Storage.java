@@ -24,12 +24,30 @@ public class Storage {
     @Value("${file.path.initialData}")
     private String filePath;
 
-    @Autowired
     private Map<Integer, Trainee> traineeDB;
-    @Autowired
     private Map<Integer, Trainer> trainerDB;
-    @Autowired
     private Map<Integer, Training> trainingDB;
+
+    @Autowired
+    public void setTraineeDB(Map<Integer, Trainee> traineeDB) {
+        this.traineeDB = traineeDB;
+    }
+
+    @Autowired
+    public void setTrainerDB(Map<Integer, Trainer> trainerDB) {
+        this.trainerDB = trainerDB;
+    }
+
+    @Autowired
+    public void setTrainingDB(Map<Integer, Training> trainingDB) {
+        this.trainingDB = trainingDB;
+    }
+
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Autowired
     private ObjectMapper objectMapper;
 

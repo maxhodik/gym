@@ -1,8 +1,5 @@
 package ua.hodik.gym.util.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,9 +9,8 @@ import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.tets.util.TestUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,26 +29,20 @@ class UserNameGeneratorImplTest {
     private final String TRAINER_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainer.json";
     private final String TRAINER_PATH_SAME_USER_NAME = "src/test/resources/trainerSameUserName.json";
 
-
+    private final TestUtils testUtils = new TestUtils();
     @Mock
     private TraineeService traineeService;
     @Mock
     private TrainerService trainerService;
     @InjectMocks
     private UserNameGeneratorImpl userNameGenerator;
-    ObjectMapper objectMapper = new ObjectMapper();
-
-    @BeforeEach
-    public void setUp() {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
 
 
     @Test
     void generateUserNameTwoEqualName() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(getTrainee(TRAINEE_PATH_SAME_USER_NAME)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(getTrainer(TRAINER_PATH_SAME_USER_NAME)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.getUser(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.getUser(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
@@ -62,8 +52,8 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameOneEqualNameTrainer() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(getTrainee(TRAINEE_PATH_DIFFERENT_USER_NAME)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(getTrainer(TRAINER_PATH_SAME_USER_NAME)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.getUser(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.getUser(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
@@ -73,8 +63,8 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameOneEqualNameTrainee() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(getTrainee(TRAINEE_PATH_SAME_USER_NAME)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(getTrainer(TRAINER_PATH_DIFFERENT_USER_NAME)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.getUser(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.getUser(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
@@ -84,30 +74,11 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameShouldReturnBAseName() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(getTrainee(TRAINEE_PATH_DIFFERENT_USER_NAME)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(getTrainer(TRAINER_PATH_DIFFERENT_USER_NAME)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.getUser(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.getUser(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
         assertEquals(EXPECTED_BASE_NAME, userName);
-    }
-
-
-    private Trainee getTrainee(String filePath) {
-        File file = new File(filePath);
-        try {
-            return objectMapper.readValue(file, Trainee.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Trainer getTrainer(String filePath) {
-        File file = new File(filePath);
-        try {
-            return objectMapper.readValue(file, Trainer.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
