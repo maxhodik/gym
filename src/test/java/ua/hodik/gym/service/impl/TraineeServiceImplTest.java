@@ -23,16 +23,16 @@ import static org.mockito.Mockito.when;
 class TraineeServiceImplTest {
     private static final int ID = 1;
     private final TestUtils testUtils = new TestUtils();
-    private final String TRAINEE_PATH = "src/test/resources/trainee.without.user.name.json";
-    private final String EXPECTED_TRAINEE_PATH = "src/test/resources/trainee.same.user.name.json";
-    private final Trainee TRAINEE = testUtils.getUser(TRAINEE_PATH, Trainee.class);
-    private final Trainee EXPECTED_TRAINEE = testUtils.getUser(EXPECTED_TRAINEE_PATH, Trainee.class);
-    public final List<Trainee> EXPECTED_TRAINEE_LIST = List.of(EXPECTED_TRAINEE);
+    private final String traineePath = "src/test/resources/trainee.without.user.name.json";
+    private final String expectedTraineePath = "src/test/resources/trainee.same.user.name.json";
+    private final Trainee trainee = testUtils.getUser(traineePath, Trainee.class);
+    private final Trainee expectedTrainee = testUtils.getUser(expectedTraineePath, Trainee.class);
+    public final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
 
 
     public static final String PASSWORD = "ABCDEFJxyz";
-    private final String FIRST_NAME = "Sam";
-    private final String LAST_NAME = "Jonson";
+    private static final String FIRST_NAME = "Sam";
+    private static final String LAST_NAME = "Jonson";
     @Mock
     private PasswordGenerator passwordGenerator;
     @Mock
@@ -62,11 +62,11 @@ class TraineeServiceImplTest {
         when(userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME)).thenReturn(FIRST_NAME + "." + LAST_NAME);
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
         //when
-        traineeService.create(TRAINEE);
+        traineeService.create(trainee);
         //then
         verify(userNameGenerator).generateUserName(FIRST_NAME, LAST_NAME);
         verify(passwordGenerator).generatePassword();
-        verify(traineeDao).add(EXPECTED_TRAINEE);
+        verify(traineeDao).add(expectedTrainee);
     }
 
     @Test
@@ -80,35 +80,35 @@ class TraineeServiceImplTest {
 
     @Test
     void updateShouldUpdate() {
-        traineeService.update(EXPECTED_TRAINEE, EXPECTED_TRAINEE.getUserId());
-        verify(traineeDao).update(EXPECTED_TRAINEE, EXPECTED_TRAINEE.getUserId());
+        traineeService.update(expectedTrainee, expectedTrainee.getUserId());
+        verify(traineeDao).update(expectedTrainee, expectedTrainee.getUserId());
     }
 
     @Test
     void shouldDeleteTrainee() {
-        traineeService.delete(EXPECTED_TRAINEE.getUserId());
-        verify(traineeDao).delete(EXPECTED_TRAINEE.getUserId());
+        traineeService.delete(expectedTrainee.getUserId());
+        verify(traineeDao).delete(expectedTrainee.getUserId());
     }
 
     @Test
     void findByIdShouldReturnTrainee() {
         //give
-        when(traineeDao.getById(ID)).thenReturn(EXPECTED_TRAINEE);
+        when(traineeDao.getById(ID)).thenReturn(expectedTrainee);
         //when
         Trainee traineeById = traineeService.findById(ID);
         //then
         verify(traineeDao).getById(ID);
-        assertEquals(EXPECTED_TRAINEE, traineeById);
+        assertEquals(expectedTrainee, traineeById);
     }
 
     @Test
     void getAllTrainees() {
         //given
-        when(traineeDao.getAllTrainees()).thenReturn(List.of(EXPECTED_TRAINEE));
+        when(traineeDao.getAllTrainees()).thenReturn(List.of(expectedTrainee));
         //when
         List<Trainee> traineeList = traineeService.getAllTrainees();
         //then
         verify(traineeDao).getAllTrainees();
-        assertEquals(EXPECTED_TRAINEE_LIST, traineeList);
+        assertEquals(expectedTraineeList, traineeList);
     }
 }

@@ -25,11 +25,11 @@ class TrainerServiceImplTest {
     private static final String FIRST_NAME = "Sam";
     private static final String LAST_NAME = "Jonson";
     private final TestUtils testUtils = new TestUtils();
-    private final String TRAINER_PATH = "src/test/resources/trainer.without.user.name.json";
-    private final String EXPECTED_TRAINER_PATH = "src/test/resources/trainer.same.user.name.json";
-    private final Trainer TRAINER = testUtils.getUser(TRAINER_PATH, Trainer.class);
-    private final Trainer EXPECTED_TRAINER = testUtils.getUser(EXPECTED_TRAINER_PATH, Trainer.class);
-    public final List<Trainer> EXPECTED_TRAINER_LIST = List.of(EXPECTED_TRAINER);
+    private final String trainerPath = "src/test/resources/trainer.without.user.name.json";
+    private final String expectedTrainerPath = "src/test/resources/trainer.same.user.name.json";
+    private final Trainer trainer = testUtils.getUser(trainerPath, Trainer.class);
+    private final Trainer expectedTrainer = testUtils.getUser(expectedTrainerPath, Trainer.class);
+    public final List<Trainer> expectedTrainerList = List.of(expectedTrainer);
     @Mock
     private PasswordGenerator passwordGenerator;
     @Mock
@@ -55,11 +55,11 @@ class TrainerServiceImplTest {
         when(userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME)).thenReturn(FIRST_NAME + "." + LAST_NAME);
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
         //when
-        trainerService.create(TRAINER);
+        trainerService.create(trainer);
         //then
         verify(userNameGenerator).generateUserName(FIRST_NAME, LAST_NAME);
         verify(passwordGenerator).generatePassword();
-        verify(trainerDao).add(EXPECTED_TRAINER);
+        verify(trainerDao).add(expectedTrainer);
 
     }
 
@@ -74,35 +74,35 @@ class TrainerServiceImplTest {
 
     @Test
     void update() {
-        trainerService.update(EXPECTED_TRAINER, EXPECTED_TRAINER.getUserId());
-        verify(trainerDao).update(EXPECTED_TRAINER, EXPECTED_TRAINER.getUserId());
+        trainerService.update(expectedTrainer, expectedTrainer.getUserId());
+        verify(trainerDao).update(expectedTrainer, expectedTrainer.getUserId());
     }
 
     @Test
     void delete() {
-        trainerService.delete(EXPECTED_TRAINER.getUserId());
-        verify(trainerDao).delete(EXPECTED_TRAINER.getUserId());
+        trainerService.delete(expectedTrainer.getUserId());
+        verify(trainerDao).delete(expectedTrainer.getUserId());
     }
 
     @Test
     void findById() {
         //give
-        when(trainerDao.getById(ID)).thenReturn(EXPECTED_TRAINER);
+        when(trainerDao.getById(ID)).thenReturn(expectedTrainer);
         //when
         Trainer trainerById = trainerService.findById(ID);
         //then
         verify(trainerDao).getById(ID);
-        assertEquals(EXPECTED_TRAINER, trainerById);
+        assertEquals(expectedTrainer, trainerById);
     }
 
     @Test
     void getAllTrainers() {
         //given
-        when(trainerDao.getAllTrainers()).thenReturn(List.of(EXPECTED_TRAINER));
+        when(trainerDao.getAllTrainers()).thenReturn(List.of(expectedTrainer));
         //when
         List<Trainer> trainerList = trainerService.getAllTrainers();
         //then
         verify(trainerDao).getAllTrainers();
-        assertEquals(EXPECTED_TRAINER_LIST, trainerList);
+        assertEquals(expectedTrainerList, trainerList);
     }
 }
