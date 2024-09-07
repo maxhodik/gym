@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(of = "userId", callSuper = false)
+@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
 public class Trainer extends User {
     private String specialization;

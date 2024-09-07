@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Setter
 @Getter
-@EqualsAndHashCode(of = "userId", callSuper = false)
+@EqualsAndHashCode(callSuper = false)
 @ToString(callSuper = true)
 public class Trainee extends User {
     private int userId;
