@@ -13,12 +13,24 @@ import java.util.Objects;
 
 @Service
 public class TraineeServiceImpl implements TraineeService {
-    @Autowired
+
     private TraineeDao traineeDao;
-    @Autowired
     private UserNameGenerator userNameGenerator;
-    @Autowired
     private PasswordGenerator passwordGenerator;
+
+    public void setTraineeDao(TraineeDao traineeDao) {
+        this.traineeDao = traineeDao;
+    }
+
+    @Autowired
+    public void setUserNameGenerator(UserNameGenerator userNameGenerator) {
+        this.userNameGenerator = userNameGenerator;
+    }
+
+    @Autowired
+    public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
+        this.passwordGenerator = passwordGenerator;
+    }
 
     @Override
     public Trainee create(Trainee trainee) {
@@ -38,6 +50,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Trainee update(Trainee trainee, int id) {
         Objects.requireNonNull(trainee, "Trainee can't be null");
+        trainee.setUserId(id);
         return traineeDao.update(trainee, id);
     }
 

@@ -25,9 +25,9 @@ class UserNameGeneratorImplTest {
     private final String EXPECTED_USER_NAME_2 = "Sam.Jonson2";
 
     private final String TRAINEE_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainee.json";
-    private final String TRAINEE_PATH_SAME_USER_NAME = "src/test/resources/traineeSameUserName.json";
+    private final String TRAINEE_PATH_SAME_USER_NAME = "src/test/resources/trainee.same.user.name.json";
     private final String TRAINER_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainer.json";
-    private final String TRAINER_PATH_SAME_USER_NAME = "src/test/resources/trainerSameUserName.json";
+    private final String TRAINER_PATH_SAME_USER_NAME = "src/test/resources/trainer.same.user.name.json";
 
     private final TestUtils testUtils = new TestUtils();
     @Mock
