@@ -23,9 +23,7 @@ import static org.mockito.Mockito.when;
 class TraineeServiceImplTest {
     private static final int ID = 1;
     private final TestUtils testUtils = new TestUtils();
-
-
-    private final String TRAINEE_PATH = "src/test/resources/trainee.same.user.name.json";
+    private final String TRAINEE_PATH = "src/test/resources/trainee.without.user.name.json";
     private final String EXPECTED_TRAINEE_PATH = "src/test/resources/trainee.same.user.name.json";
     private final Trainee TRAINEE = testUtils.getUser(TRAINEE_PATH, Trainee.class);
     private final Trainee EXPECTED_TRAINEE = testUtils.getUser(EXPECTED_TRAINEE_PATH, Trainee.class);

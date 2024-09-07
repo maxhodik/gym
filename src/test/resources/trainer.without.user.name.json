@@ -1,8 +1,6 @@
 {
-  "userId": 1,
   "firstName": "Sam",
   "lastName": "Jonson",
-  "userName": "Sam.Jonson",
   "password": "ABCDEFJxyz",
   "active": "true",
   "specialization": "zuma"
