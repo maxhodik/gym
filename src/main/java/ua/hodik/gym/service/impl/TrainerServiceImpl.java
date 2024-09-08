@@ -1,5 +1,6 @@
 package ua.hodik.gym.service.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.hodik.gym.dao.TrainerDao;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Log4j2
 public class TrainerServiceImpl implements TrainerService {
     @Autowired
     private TrainerDao trainerDao;
@@ -32,29 +34,38 @@ public class TrainerServiceImpl implements TrainerService {
         String password = passwordGenerator.generatePassword();
         trainer.setUserName(userName);
         trainer.setPassword(password);
-        return trainerDao.add(trainer);
+        Trainer addedTrainer = trainerDao.add(trainer);
+        log.info("Trainer {} added successfully", userName);
+        return addedTrainer;
     }
 
     @Override
     public Trainer update(Trainer trainer, int id) {
         Objects.requireNonNull(trainer, "Trainer can't be null");
-        return trainerDao.update(trainer, id);
+        Trainer updatedTrainer = trainerDao.update(trainer, id);
+        log.info("Trainer with id= {} updated successfully", id);
+        return updatedTrainer;
     }
 
     @Override
     public boolean delete(int id) {
-        return trainerDao.delete(id);
+
+        boolean delete = trainerDao.delete(id);
+        log.info("Deleting Trainer with id= {}", id);
+        return delete;
     }
 
     @Override
     public Trainer findById(int id) {
-
-        return trainerDao.getById(id);
+        Trainer trainerById = trainerDao.getById(id);
+        log.info("Finding trainer by id={}", id);
+        return trainerById;
     }
 
     @Override
     public List<Trainer> getAllTrainers() {
-
-        return trainerDao.getAllTrainers();
+        List<Trainer> allTrainers = trainerDao.getAllTrainers();
+        log.info("Finding all trainers");
+        return allTrainers;
     }
 }

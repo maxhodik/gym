@@ -1,5 +1,6 @@
 package ua.hodik.gym.util.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.model.Trainee;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Component
+@Log4j2
 public class UserNameGeneratorImpl implements UserNameGenerator {
     @Autowired
     private TraineeService traineeService;
@@ -21,6 +23,7 @@ public class UserNameGeneratorImpl implements UserNameGenerator {
 
     @Override
     public String generateUserName(String firstName, String lastName) {
+        String userName;
         String baseUsername = generateBaseUserName(firstName, lastName);
         List<Trainee> trainees = traineeService.getAllTrainees();
         List<Trainer> trainers = trainerService.getAllTrainers();
@@ -29,8 +32,11 @@ public class UserNameGeneratorImpl implements UserNameGenerator {
                 .filter(u -> u.contains(baseUsername))
                 .count();
         if (count >= 1) {
-            return baseUsername + count;
+            userName = baseUsername + count;
+            log.info("UserName {} created", userName);
+            return userName;
         }
+        log.info("UserName {} created", baseUsername);
         return baseUsername;
     }
 

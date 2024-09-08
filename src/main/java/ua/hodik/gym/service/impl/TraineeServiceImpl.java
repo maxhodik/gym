@@ -46,7 +46,9 @@ public class TraineeServiceImpl implements TraineeService {
         String password = passwordGenerator.generatePassword();
         trainee.setUserName(userName);
         trainee.setPassword(password);
-        return traineeDao.add(trainee);
+        Trainee addedTrainee = traineeDao.add(trainee);
+        log.info("Trainee {} added successfully", userName);
+        return addedTrainee;
     }
 
 
@@ -54,21 +56,29 @@ public class TraineeServiceImpl implements TraineeService {
     public Trainee update(Trainee trainee, int id) {
         Objects.requireNonNull(trainee, "Trainee can't be null");
         trainee.setUserId(id);
-        return traineeDao.update(trainee, id);
+        Trainee updatedTrainee = traineeDao.update(trainee, id);
+        log.info("Trainee with id ={} updated", id);
+        return updatedTrainee;
     }
 
     @Override
     public boolean delete(int id) {
-        return traineeDao.delete(id);
+        boolean delete = traineeDao.delete(id);
+        log.info("Deleting Trainee with id= {}", id);
+        return delete;
     }
 
     @Override
     public Trainee findById(int id) {
-        return traineeDao.getById(id);
+        Trainee traineeById = traineeDao.getById(id);
+        log.info("Finding trainee by id={}", id);
+        return traineeById;
     }
 
     @Override
     public List<Trainee> getAllTrainees() {
-        return traineeDao.getAllTrainees();
+        List<Trainee> allTrainees = traineeDao.getAllTrainees();
+        log.info("Finding all trainees");
+        return allTrainees;
     }
 }
