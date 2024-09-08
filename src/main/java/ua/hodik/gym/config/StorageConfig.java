@@ -1,5 +1,7 @@
 package ua.hodik.gym.config;
 
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@Getter
 @ComponentScan(basePackages = "ua.hodik.gym")
 @PropertySource("classpath:application.properties")
 public class StorageConfig {
+    @Value("${file.path.initialData}")
+    private String filePath;
+
     @Bean
     public Map<Integer, Trainer> trainerDB() {
         return new HashMap<>();

@@ -18,6 +18,7 @@ public class TraineeServiceImpl implements TraineeService {
     private UserNameGenerator userNameGenerator;
     private PasswordGenerator passwordGenerator;
 
+    @Autowired
     public void setTraineeDao(TraineeDao traineeDao) {
         this.traineeDao = traineeDao;
     }

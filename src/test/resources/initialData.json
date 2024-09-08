@@ -1,0 +1,54 @@
+{
+  "traineeList": [
+    {
+      "userId": 1,
+      "firstName": "Vasya",
+      "lastName": "Lis",
+      "userName": "Vasya.Lis",
+      "password": "1234567890",
+      "active": "true",
+      "dayOfBirth": "10-02-1995",
+      "address": "skajgl"
+    },
+    {
+      "userId": 2,
+      "firstName": "Masha",
+      "lastName": "Semenova",
+      "userName": "Masha.Semenova",
+      "password": "1234567890",
+      "active": "true",
+      "dayOfBirth": "08-09-1999",
+      "address": "skajgl"
+    }
+  ],
+  "trainerList": [
+    {
+      "userId": 1,
+      "firstName": "Vasya",
+      "lastName": "Lis",
+      "userName": "Vasya.Lis",
+      "password": "1234567890",
+      "active": "true",
+      "specialization": "zuma"
+    },
+    {
+      "userId": 2,
+      "firstName": "Masha",
+      "lastName": "Semenova",
+      "userName": "Masha.Semenova",
+      "password": "1234567890",
+      "active": "true",
+      "specialization": "boxing"
+    }
+  ],
+  "trainingList": [
+    {
+      "trainingId": 1,
+      "traineeId": 1,
+      "trainerId": 1,
+      "name": "boxing1",
+      "trainingType": "BOXING",
+      "durationMinutes": 40
+    }
+  ]
+}

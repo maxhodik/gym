@@ -4,9 +4,9 @@ package ua.hodik.gym.storage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
+import ua.hodik.gym.config.StorageConfig;
 import ua.hodik.gym.dto.StorageData;
 import ua.hodik.gym.exception.StorageInitializeException;
 import ua.hodik.gym.model.Trainee;
@@ -21,12 +21,19 @@ import java.util.Map;
 
 @Component
 public class Storage {
-    @Value("${file.path.initialData}")
-    private String filePath;
+
+    private StorageConfig storageConfig;
+
 
     private Map<Integer, Trainee> traineeDB;
+
     private Map<Integer, Trainer> trainerDB;
     private Map<Integer, Training> trainingDB;
+
+    @Autowired
+    public void setStorageConfig(StorageConfig storageConfig) {
+        this.storageConfig = storageConfig;
+    }
 
     @Autowired
     public void setTraineeDB(Map<Integer, Trainee> traineeDB) {
@@ -53,6 +60,7 @@ public class Storage {
 
     @PostConstruct
     public void initialize() {
+        String filePath = storageConfig.getFilePath();
         try {
             File file = ResourceUtils.getFile("classpath:" + filePath);
             String data = new String(Files.readAllBytes(file.toPath()));
@@ -65,7 +73,7 @@ public class Storage {
             trainerList.forEach(t -> trainerDB.put(t.getUserId(), t));
 
         } catch (IOException e) {
-            throw new StorageInitializeException(String.format("Can't read file %s", filePath));
+            throw new StorageInitializeException(String.format("Can't read file %s", filePath), e);
         }
     }
 }

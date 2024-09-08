@@ -27,8 +27,8 @@ class TrainerServiceImplTest {
     private final TestUtils testUtils = new TestUtils();
     private final String trainerPath = "src/test/resources/trainer.without.user.name.json";
     private final String expectedTrainerPath = "src/test/resources/trainer.same.user.name.json";
-    private final Trainer trainer = testUtils.getUser(trainerPath, Trainer.class);
-    private final Trainer expectedTrainer = testUtils.getUser(expectedTrainerPath, Trainer.class);
+    private final Trainer trainer = testUtils.readFromFile(trainerPath, Trainer.class);
+    private final Trainer expectedTrainer = testUtils.readFromFile(expectedTrainerPath, Trainer.class);
     public final List<Trainer> expectedTrainerList = List.of(expectedTrainer);
     @Mock
     private PasswordGenerator passwordGenerator;

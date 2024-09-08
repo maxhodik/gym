@@ -25,8 +25,8 @@ class TraineeServiceImplTest {
     private final TestUtils testUtils = new TestUtils();
     private final String traineePath = "src/test/resources/trainee.without.user.name.json";
     private final String expectedTraineePath = "src/test/resources/trainee.same.user.name.json";
-    private final Trainee trainee = testUtils.getUser(traineePath, Trainee.class);
-    private final Trainee expectedTrainee = testUtils.getUser(expectedTraineePath, Trainee.class);
+    private final Trainee trainee = testUtils.readFromFile(traineePath, Trainee.class);
+    private final Trainee expectedTrainee = testUtils.readFromFile(expectedTraineePath, Trainee.class);
     public final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
 
 

@@ -24,8 +24,8 @@ class TraineeDaoImplTest {
     private final TestUtils testUtils = new TestUtils();
     private final String traineePath = "src/test/resources/trainee.with.id.json";
     private final String expectedTraineePath = "src/test/resources/trainee.same.user.name.json";
-    private final Trainee trainee = testUtils.getUser(traineePath, Trainee.class);
-    private final Trainee expectedTrainee = testUtils.getUser(expectedTraineePath, Trainee.class);
+    private final Trainee trainee = testUtils.readFromFile(traineePath, Trainee.class);
+    private final Trainee expectedTrainee = testUtils.readFromFile(expectedTraineePath, Trainee.class);
     public final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
     public static final String USER_NAME = "Sam.Jonson";
     public static final String WRONG_USER_NAME = "Vasya.Lis";
