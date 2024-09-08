@@ -133,7 +133,8 @@ class TrainerDaoImplTest {
     }
 
     @Test
-    void getMaxIdEmptyKeySet() {  //given
+    void getMaxIdEmptyKeySet() {
+        //given
         when(trainerDB.keySet()).thenReturn(Set.of(0));
         //when
         int maxId = trainerDao.getMaxId();

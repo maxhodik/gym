@@ -74,13 +74,17 @@ class TraineeServiceImplTest {
 
     @Test
     void updateShouldUpdate() {
+        //when
         traineeService.update(expectedTrainee, expectedTrainee.getUserId());
+        //then
         verify(traineeDao).update(expectedTrainee, expectedTrainee.getUserId());
     }
 
     @Test
     void shouldDeleteTrainee() {
+        //when
         traineeService.delete(expectedTrainee.getUserId());
+        //then
         verify(traineeDao).delete(expectedTrainee.getUserId());
     }
 

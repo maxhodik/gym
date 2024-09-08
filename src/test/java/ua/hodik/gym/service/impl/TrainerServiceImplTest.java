@@ -73,13 +73,17 @@ class TrainerServiceImplTest {
 
     @Test
     void update() {
+        //when
         trainerService.update(expectedTrainer, expectedTrainer.getUserId());
+        //then
         verify(trainerDao).update(expectedTrainer, expectedTrainer.getUserId());
     }
 
     @Test
     void delete() {
+        //when
         trainerService.delete(expectedTrainer.getUserId());
+        //then
         verify(trainerDao).delete(expectedTrainer.getUserId());
     }
 

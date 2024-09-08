@@ -39,45 +39,45 @@ class UserNameGeneratorImplTest {
 
     @Test
     void generateUserNameTwoEqualName() {
-
+        //given
         when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
         when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
-
+        //when
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
-
+        //then
         assertEquals(EXPECTED_USER_NAME_2, userName);
     }
 
     @Test
     void generateUserNameOneEqualNameTrainer() {
-
+        //given
         when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
         when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
-
+        //when
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
-
+        //then
         assertEquals(EXPECTED_USER_NAME_1, userName);
     }
 
     @Test
     void generateUserNameOneEqualNameTrainee() {
-
+        //given
         when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
         when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
-
+        //when
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
-
+        //then
         assertEquals(EXPECTED_USER_NAME_1, userName);
     }
 
     @Test
     void generateUserNameShouldReturnBAseName() {
-
+        //given
         when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
         when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
-
+        //when
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
-
+        //then
         assertEquals(EXPECTED_BASE_NAME, userName);
     }
 }

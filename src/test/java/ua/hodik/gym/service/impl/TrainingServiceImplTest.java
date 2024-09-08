@@ -39,13 +39,15 @@ class TrainingServiceImplTest {
 
     @Test
     void create() {
+        //when
         trainingService.create(training);
+        //then
         verify(trainingDao).add(training);
     }
 
     @Test
     void findById() {
-        //give
+        //given
         when(trainingDao.getById(ID)).thenReturn(expectedTraining);
         //when
         Training training = trainingService.findById(ID);

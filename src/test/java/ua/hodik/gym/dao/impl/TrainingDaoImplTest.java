@@ -64,6 +64,7 @@ class TrainingDaoImplTest {
 
     @Test
     void getMaxIdEmptyKeySet() {
+        //given
         when(trainingDB.keySet()).thenReturn(Set.of(0));
         //when
         int maxId = trainingDao.getMaxId();
@@ -74,6 +75,7 @@ class TrainingDaoImplTest {
 
     @Test
     void getMaxIdNotEmptyKeySet() {
+        //given
         when(trainingDB.keySet()).thenReturn(Set.of(1));
         //when
         int maxId = trainingDao.getMaxId();

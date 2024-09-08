@@ -23,8 +23,11 @@ class PasswordGeneratorImplTest {
 
     @Test
     void generatePassword() {
+        //given
         when(passwordGeneratorConfig.getPasswordLength()).thenReturn(PASSWORD_LENGTH);
+        //when
         String password = passwordGenerator.generatePassword();
+        //then
         assertEquals(PASSWORD_LENGTH, password.length());
         assertTrue(password.chars().allMatch(Character::isLetter));
     }
