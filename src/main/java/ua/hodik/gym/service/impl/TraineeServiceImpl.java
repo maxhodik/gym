@@ -1,5 +1,6 @@
 package ua.hodik.gym.service.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.hodik.gym.dao.TraineeDao;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Log4j2
 public class TraineeServiceImpl implements TraineeService {
 
     private TraineeDao traineeDao;

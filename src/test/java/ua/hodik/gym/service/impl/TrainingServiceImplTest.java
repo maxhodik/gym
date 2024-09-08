@@ -19,11 +19,10 @@ class TrainingServiceImplTest {
 
 
     public static final int ID = 1;
-    private final TestUtils testUtils = new TestUtils();
     private final String trainingPath = "src/test/resources/training.without.id.json";
     private final String expectedTrainingPath = "src/test/resources/expected.training.json";
-    private final Training training = testUtils.readFromFile(trainingPath, Training.class);
-    private final Training expectedTraining = testUtils.readFromFile(expectedTrainingPath, Training.class);
+    private final Training training = TestUtils.readFromFile(trainingPath, Training.class);
+    private final Training expectedTraining = TestUtils.readFromFile(expectedTrainingPath, Training.class);
     @Mock
     private TrainingDao trainingDao;
     @InjectMocks

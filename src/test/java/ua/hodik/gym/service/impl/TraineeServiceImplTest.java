@@ -1,6 +1,5 @@
 package ua.hodik.gym.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,11 +21,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TraineeServiceImplTest {
     private static final int ID = 1;
-    private final TestUtils testUtils = new TestUtils();
     private final String traineePath = "src/test/resources/trainee.without.user.name.json";
     private final String expectedTraineePath = "src/test/resources/trainee.same.user.name.json";
-    private final Trainee trainee = testUtils.readFromFile(traineePath, Trainee.class);
-    private final Trainee expectedTrainee = testUtils.readFromFile(expectedTraineePath, Trainee.class);
+    private final Trainee trainee = TestUtils.readFromFile(traineePath, Trainee.class);
+    private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     public final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
 
 
@@ -41,10 +39,6 @@ class TraineeServiceImplTest {
     private TraineeDao traineeDao;
     @InjectMocks
     private TraineeServiceImpl traineeService;
-
-    TraineeServiceImplTest() throws JsonProcessingException {
-    }
-
 
     @Test
     void createShouldThrowException() {

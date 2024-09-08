@@ -29,7 +29,6 @@ class UserNameGeneratorImplTest {
     private final String TRAINER_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainer.json";
     private final String TRAINER_PATH_SAME_USER_NAME = "src/test/resources/trainer.same.user.name.json";
 
-    private final TestUtils testUtils = new TestUtils();
     @Mock
     private TraineeService traineeService;
     @Mock
@@ -41,8 +40,8 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameTwoEqualName() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
@@ -52,8 +51,8 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameOneEqualNameTrainer() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.readFromFile(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
@@ -63,8 +62,8 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameOneEqualNameTrainee() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 
@@ -74,8 +73,8 @@ class UserNameGeneratorImplTest {
     @Test
     void generateUserNameShouldReturnBAseName() {
 
-        when(traineeService.getAllTrainees()).thenReturn(List.of(testUtils.readFromFile(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
-        when(trainerService.getAllTrainers()).thenReturn(List.of(testUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
+        when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_DIFFERENT_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
 
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
 

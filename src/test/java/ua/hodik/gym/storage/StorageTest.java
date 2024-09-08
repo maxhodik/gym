@@ -33,9 +33,9 @@ class StorageTest {
     public static final String SECOND_TRAINER_USER_NAME = "Masha.Semenova";
     public static final String INITIAL_DATA_JSON = "initialData.json";
     public static final String WRONG_FILE_JSON = "wrong.file.json";
-    private final TestUtils testUtils = new TestUtils();
+
     private final String storagePath = "src/test/resources/initialData.json";
-    private final StorageData storageData = testUtils.readFromFile(storagePath, StorageData.class);
+    private final StorageData storageData = TestUtils.readFromFile(storagePath, StorageData.class);
     @Mock
     private StorageConfig storageConfig;
     private Map<Integer, Trainee> traineeDB;
@@ -82,6 +82,6 @@ class StorageTest {
         //when
         Exception exception = assertThrows(StorageInitializeException.class, () -> storage.initialize());
         //then
-        assertEquals("Can't read file wrong.file.json", exception.getMessage());
+        assertEquals("Can't read the file wrong.file.json", exception.getMessage());
     }
 }

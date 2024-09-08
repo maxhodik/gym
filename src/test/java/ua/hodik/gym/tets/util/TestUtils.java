@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class TestUtils {
-    public <T> T readFromFile(String filePath, Class<T> type) {
+    public static <T> T readFromFile(String filePath, Class<T> type) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         File file = new File(filePath);

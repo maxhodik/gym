@@ -21,11 +21,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TraineeDaoImplTest {
     public static final int ID = 1;
-    private final TestUtils testUtils = new TestUtils();
     private final String traineePath = "src/test/resources/trainee.with.id.json";
     private final String expectedTraineePath = "src/test/resources/trainee.same.user.name.json";
-    private final Trainee trainee = testUtils.readFromFile(traineePath, Trainee.class);
-    private final Trainee expectedTrainee = testUtils.readFromFile(expectedTraineePath, Trainee.class);
+    private final Trainee trainee = TestUtils.readFromFile(traineePath, Trainee.class);
+    private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     public final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
     public static final String USER_NAME = "Sam.Jonson";
     public static final String WRONG_USER_NAME = "Vasya.Lis";
@@ -101,7 +100,8 @@ class TraineeDaoImplTest {
     }
 
     @Test
-    void getMaxIdNotEmptyKeySet() {  //given
+    void getMaxIdNotEmptyKeySet() {
+        //given
         when(traineeDB.keySet()).thenReturn(Set.of(1));
         //when
         int maxId = traineeDao.getMaxId();
@@ -112,7 +112,8 @@ class TraineeDaoImplTest {
     }
 
     @Test
-    void getMaxIdEmptyKeySet() {  //given
+    void getMaxIdEmptyKeySet() {
+        //given
         when(traineeDB.keySet()).thenReturn(Set.of(0));
         //when
         int maxId = traineeDao.getMaxId();

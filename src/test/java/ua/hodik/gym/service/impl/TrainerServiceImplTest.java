@@ -24,11 +24,10 @@ class TrainerServiceImplTest {
     public static final String PASSWORD = "ABCDEFJxyz";
     private static final String FIRST_NAME = "Sam";
     private static final String LAST_NAME = "Jonson";
-    private final TestUtils testUtils = new TestUtils();
     private final String trainerPath = "src/test/resources/trainer.without.user.name.json";
     private final String expectedTrainerPath = "src/test/resources/trainer.same.user.name.json";
-    private final Trainer trainer = testUtils.readFromFile(trainerPath, Trainer.class);
-    private final Trainer expectedTrainer = testUtils.readFromFile(expectedTrainerPath, Trainer.class);
+    private final Trainer trainer = TestUtils.readFromFile(trainerPath, Trainer.class);
+    private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     public final List<Trainer> expectedTrainerList = List.of(expectedTrainer);
     @Mock
     private PasswordGenerator passwordGenerator;
