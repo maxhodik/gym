@@ -21,8 +21,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TrainerDaoImplTest {
     public static final int ID = 1;
-    private final String trainerPath = "src/test/resources/trainer.json";
-    private final String expectedTrainerPath = "src/test/resources/trainer.same.user.name.json";
+    private final String trainerPath = "trainer.json";
+    private final String expectedTrainerPath = "trainer.same.user.name.json";
     private final Trainer trainer = TestUtils.readFromFile(trainerPath, Trainer.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     public final List<Trainer> expectedTrainerList = List.of(expectedTrainer);

@@ -24,10 +24,10 @@ class UserNameGeneratorImplTest {
     private final String EXPECTED_USER_NAME_1 = "Sam.Jonson1";
     private final String EXPECTED_USER_NAME_2 = "Sam.Jonson2";
 
-    private final String TRAINEE_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainee.json";
-    private final String TRAINEE_PATH_SAME_USER_NAME = "src/test/resources/trainee.same.user.name.json";
-    private final String TRAINER_PATH_DIFFERENT_USER_NAME = "src/test/resources/trainer.json";
-    private final String TRAINER_PATH_SAME_USER_NAME = "src/test/resources/trainer.same.user.name.json";
+    private final String TRAINEE_PATH_DIFFERENT_USER_NAME = "trainee.json";
+    private final String TRAINEE_PATH_SAME_USER_NAME = "trainee.same.user.name.json";
+    private final String TRAINER_PATH_DIFFERENT_USER_NAME = "trainer.json";
+    private final String TRAINER_PATH_SAME_USER_NAME = "trainer.same.user.name.json";
 
     @Mock
     private TraineeService traineeService;

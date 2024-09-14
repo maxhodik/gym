@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TrainingDaoImplTest {
     public static final int ID = 1;
-    private final String trainingPath = "src/test/resources/expected.training.json";
+    private final String trainingPath = "expected.training.json";
     private final Training training = TestUtils.readFromFile(trainingPath, Training.class);
 
     @Mock

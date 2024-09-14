@@ -34,7 +34,7 @@ class StorageTest {
     public static final String INITIAL_DATA_JSON = "initialData.json";
     public static final String WRONG_FILE_JSON = "wrong.file.json";
 
-    private final String storagePath = "src/test/resources/initialData.json";
+    private final String storagePath = "initialData.json";
     private final StorageData storageData = TestUtils.readFromFile(storagePath, StorageData.class);
     @Mock
     private StorageConfig storageConfig;

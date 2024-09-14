@@ -19,8 +19,8 @@ class TrainingServiceImplTest {
 
 
     public static final int ID = 1;
-    private final String trainingPath = "src/test/resources/training.without.id.json";
-    private final String expectedTrainingPath = "src/test/resources/expected.training.json";
+    private final String trainingPath = "training.without.id.json";
+    private final String expectedTrainingPath = "expected.training.json";
     private final Training training = TestUtils.readFromFile(trainingPath, Training.class);
     private final Training expectedTraining = TestUtils.readFromFile(expectedTrainingPath, Training.class);
     @Mock

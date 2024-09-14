@@ -21,8 +21,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TraineeDaoImplTest {
     public static final int ID = 1;
-    private final String traineePath = "src/test/resources/trainee.with.id.json";
-    private final String expectedTraineePath = "src/test/resources/trainee.same.user.name.json";
+    private final String traineePath = "trainee.with.id.json";
+    private final String expectedTraineePath = "trainee.same.user.name.json";
     private final Trainee trainee = TestUtils.readFromFile(traineePath, Trainee.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     public final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
