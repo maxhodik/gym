@@ -31,10 +31,10 @@ class StorageTest {
     public static final String TRAINING_NAME = "boxing1";
     public static final String FIRST_TRAINEE_USER_NAME = "Vasya.Lis";
     public static final String SECOND_TRAINER_USER_NAME = "Masha.Semenova";
-    public static final String INITIAL_DATA_JSON = "initialData.json";
-    public static final String WRONG_FILE_JSON = "wrong.file.json";
+    public static final String INITIAL_DATA_JSON = "src/test/resources/initialData.json";
+    public static final String WRONG_FILE_JSON = "src/test/resources/wrong.file.json";
 
-    private final String storagePath = "initialData.json";
+    private final String storagePath = "src/test/resources/initialData.json";
     private final StorageData storageData = TestUtils.readFromFile(storagePath, StorageData.class);
     @Mock
     private StorageConfig storageConfig;
