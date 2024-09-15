@@ -10,7 +10,6 @@ import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.UserNameGenerator;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 @Component
@@ -25,10 +24,14 @@ public class UserNameGeneratorImpl implements UserNameGenerator {
     public String generateUserName(String firstName, String lastName) {
         String userName;
         String baseUsername = generateBaseUserName(firstName, lastName);
-        List<Trainee> trainees = traineeService.getAllTrainees();
-        List<Trainer> trainers = trainerService.getAllTrainers();
-        long count = Stream.concat(trainees.stream(), trainers.stream())
-                .map(User::getUserName)
+
+        Stream<String> trainersUsernameStream = trainerService.getAllTrainers().stream()
+                .map(Trainer::getUser)
+                .map(User::getUserName);
+        Stream<String> traineeUsernameStream = traineeService.getAllTrainees().stream()
+                .map(Trainee::getUser)
+                .map(User::getUserName);
+        long count = Stream.concat(traineeUsernameStream, trainersUsernameStream)
                 .map(u -> u.replaceAll("\\d+", ""))
                 .filter(u -> u.equals(baseUsername))
                 .count();

@@ -18,7 +18,7 @@ public class TraineeDaoImpl implements TraineeDao {
 
     @Override
     public Trainee add(Trainee trainee) {
-        return traineeDB.put(trainee.getUserId(), trainee);
+        return traineeDB.put(trainee.getTraineeId(), trainee);
 
     }
 
@@ -45,7 +45,7 @@ public class TraineeDaoImpl implements TraineeDao {
     @Override
     public List<Trainee> getAllTraineesByUserName(String userName) {
         return traineeDB.values().stream()
-                .filter(t -> t.getUserName().equals(userName))
+                .filter(t -> t.getUser().getUserName().equals(userName))
                 .collect(Collectors.toList());
     }
 

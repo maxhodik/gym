@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.hodik.gym.dao.TrainerDao;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
@@ -21,19 +22,21 @@ public class TrainerServiceImpl implements TrainerService {
     private UserNameGenerator userNameGenerator;
     @Autowired
     private PasswordGenerator passwordGenerator;
+    @Autowired
+    private TrainerRepository trainerRepository;
 
     @Override
     public Trainer create(Trainer trainer) {
         Objects.requireNonNull(trainer, "Trainer can't be null");
 
         int userId = trainerDao.getMaxId() + 1;
-        trainer.setUserId(userId);
-        String firstName = trainer.getFirstName();
-        String lastName = trainer.getLastName();
+        trainer.setTrainerId(userId);
+        String firstName = trainer.getUser().getFirstName();
+        String lastName = trainer.getUser().getLastName();
         String userName = userNameGenerator.generateUserName(firstName, lastName);
         String password = passwordGenerator.generatePassword();
-        trainer.setUserName(userName);
-        trainer.setPassword(password);
+        trainer.getUser().setUserName(userName);
+        trainer.getUser().setPassword(password);
         Trainer addedTrainer = trainerDao.add(trainer);
         log.info("Trainer {} added successfully", userName);
         return addedTrainer;

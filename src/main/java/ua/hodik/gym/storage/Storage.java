@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import ua.hodik.gym.config.StorageConfig;
 import ua.hodik.gym.dto.StorageData;
@@ -20,7 +19,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
-@Component
+//@Component
 @Log4j2
 public class Storage {
 
@@ -71,8 +70,8 @@ public class Storage {
             List<Trainer> trainerList = storageData.getTrainerList();
             List<Training> trainingList = storageData.getTrainingList();
             trainingList.forEach(t -> trainingDB.put(t.getTrainingId(), t));
-            traineeList.forEach(t -> traineeDB.put(t.getUserId(), t));
-            trainerList.forEach(t -> trainerDB.put(t.getUserId(), t));
+            traineeList.forEach(t -> traineeDB.put(t.getTraineeId(), t));
+            trainerList.forEach(t -> trainerDB.put(t.getTrainerId(), t));
             log.info("Post construct storage initialization completed");
         } catch (IOException e) {
             log.error("Post construct storage initialization failed. Can't read the file {}", filePath);

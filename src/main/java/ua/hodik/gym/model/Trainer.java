@@ -13,7 +13,8 @@ import java.util.List;
 @ToString(callSuper = true)
 @Entity
 @Table(name = "Trainer")
-public class Trainer extends User {
+
+public class Trainer {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +22,10 @@ public class Trainer extends User {
     @Column(name = "Specialization")
     private String specialization;
     @Column(name = "User_id")
-    private int userId;
+    private int trainerId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToMany(mappedBy = "trainers")
     private List<Trainee> trainees = new ArrayList<>();
 }

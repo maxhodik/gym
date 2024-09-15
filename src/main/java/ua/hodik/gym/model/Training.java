@@ -15,7 +15,7 @@ public class Training {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private int trainingId;
-    @Column(name = "Trainee_id")
+
     @ManyToOne
     @JoinColumn(name = "Trainee_id", nullable = false)
     private Trainee trainee;

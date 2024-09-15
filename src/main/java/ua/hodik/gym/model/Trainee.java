@@ -17,22 +17,25 @@ import java.util.List;
 @ToString(callSuper = true)
 @Entity
 @Table(name = "Trainee")
-public class Trainee extends User {
+public class Trainee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private int userId;
+    private int traineeId;
     @JsonFormat(pattern = "dd-MM-yyyy")
-    @Column(name = "Data_of_Birth")
+    @Column(name = "Date_of_Birth")
     private LocalDate dayOfBirth;
     @Column(name = "Address")
     private String address;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToMany()
     @JoinTable(name = "trainer_trainee",
             joinColumns = @JoinColumn(name = "trainee_id"),
             inverseJoinColumns = @JoinColumn(name = "trainer_id"))
     private List<Trainer> trainers = new ArrayList<>();
-    @OneToMany(mappedBy = "trainee_id")
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
     private List<Training> trainings = new ArrayList<>();
 }

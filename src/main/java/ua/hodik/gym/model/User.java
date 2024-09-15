@@ -11,7 +11,6 @@ import lombok.ToString;
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +26,11 @@ public class User {
     private String password;
     @Column(name = "isActive", nullable = false)
     private boolean isActive;
+    @OneToOne(mappedBy = "user")
+    private Trainee trainee;
+    @OneToOne(mappedBy = "user")
+    private Trainer trainer;
+
 
 }
 

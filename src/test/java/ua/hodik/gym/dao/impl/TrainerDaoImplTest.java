@@ -40,7 +40,7 @@ class TrainerDaoImplTest {
         //when
         Trainer addedTrainer = trainerDao.add(trainer);
         //then
-        verify(trainerDB).put(addedTrainer.getUserId(), trainer);
+        verify(trainerDB).put(addedTrainer.getTrainerId(), trainer);
         assertEquals(trainer, addedTrainer);
     }
 
@@ -49,9 +49,9 @@ class TrainerDaoImplTest {
         //given
         when(trainerDB.put(anyInt(), any())).thenReturn(expectedTrainer);
         //when
-        Trainer updatedTrainer = trainerDao.update(expectedTrainer, expectedTrainer.getUserId());
+        Trainer updatedTrainer = trainerDao.update(expectedTrainer, expectedTrainer.getTrainerId());
         //then
-        verify(trainerDB).put(updatedTrainer.getUserId(), expectedTrainer);
+        verify(trainerDB).put(updatedTrainer.getTrainerId(), expectedTrainer);
         assertEquals(expectedTrainer, updatedTrainer);
     }
 
@@ -82,9 +82,9 @@ class TrainerDaoImplTest {
         //given
         when(trainerDB.get(anyInt())).thenReturn(expectedTrainer);
         //when
-        Trainer trainerById = trainerDao.getById(expectedTrainer.getUserId());
+        Trainer trainerById = trainerDao.getById(expectedTrainer.getTrainerId());
         //then
-        verify(trainerDB).get(trainerById.getUserId());
+        verify(trainerDB).get(trainerById.getTrainerId());
         assertEquals(expectedTrainer, trainerById);
     }
 

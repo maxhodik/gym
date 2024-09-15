@@ -17,7 +17,7 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public Trainer add(Trainer trainer) {
-        return trainerDB.put(trainer.getUserId(), trainer);
+        return trainerDB.put(trainer.getTrainerId(), trainer);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class TrainerDaoImpl implements TrainerDao {
     @Override
     public List<Trainer> getAllTrainersByUserName(String userName) {
         return trainerDB.values().stream()
-                .filter(t -> t.getUserName().equals(userName))
+                .filter(t -> t.getUser().getUserName().equals(userName))
                 .collect(Collectors.toList());
     }
 

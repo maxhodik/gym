@@ -71,8 +71,8 @@ class StorageTest {
         assertEquals(2, traineeDB.size());
         assertEquals(2, trainerDB.size());
         assertEquals(TRAINING_NAME, trainingDB.get(1).getName());
-        assertEquals(FIRST_TRAINEE_USER_NAME, traineeDB.get(1).getUserName());
-        assertEquals(SECOND_TRAINER_USER_NAME, trainerDB.get(2).getUserName());
+        assertEquals(FIRST_TRAINEE_USER_NAME, traineeDB.get(1).getUser().getUserName());
+        assertEquals(SECOND_TRAINER_USER_NAME, trainerDB.get(2).getUser().getUserName());
     }
 
     @Test

@@ -40,7 +40,7 @@ class TraineeDaoImplTest {
         //when
         Trainee addedTrainee = traineeDao.add(trainee);
         //then
-        verify(traineeDB).put(addedTrainee.getUserId(), trainee);
+        verify(traineeDB).put(addedTrainee.getTraineeId(), trainee);
         assertEquals(trainee, addedTrainee);
     }
 
@@ -49,9 +49,9 @@ class TraineeDaoImplTest {
         //given
         when(traineeDB.put(anyInt(), any())).thenReturn(expectedTrainee);
         //when
-        Trainee updatedTrainee = traineeDao.update(expectedTrainee, expectedTrainee.getUserId());
+        Trainee updatedTrainee = traineeDao.update(expectedTrainee, expectedTrainee.getTraineeId());
         //then
-        verify(traineeDB).put(updatedTrainee.getUserId(), expectedTrainee);
+        verify(traineeDB).put(updatedTrainee.getTraineeId(), expectedTrainee);
         assertEquals(expectedTrainee, updatedTrainee);
     }
 
@@ -60,9 +60,9 @@ class TraineeDaoImplTest {
         //given
         when(traineeDB.get(anyInt())).thenReturn(expectedTrainee);
         //when
-        Trainee traineeById = traineeDao.getById(expectedTrainee.getUserId());
+        Trainee traineeById = traineeDao.getById(expectedTrainee.getTraineeId());
         //then
-        verify(traineeDB).get(traineeById.getUserId());
+        verify(traineeDB).get(traineeById.getTraineeId());
         assertEquals(expectedTrainee, traineeById);
     }
 

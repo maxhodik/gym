@@ -74,17 +74,17 @@ class TrainerServiceImplTest {
     @Test
     void update() {
         //when
-        trainerService.update(expectedTrainer, expectedTrainer.getUserId());
+        trainerService.update(expectedTrainer, expectedTrainer.getTrainerId());
         //then
-        verify(trainerDao).update(expectedTrainer, expectedTrainer.getUserId());
+        verify(trainerDao).update(expectedTrainer, expectedTrainer.getTrainerId());
     }
 
     @Test
     void delete() {
         //when
-        trainerService.delete(expectedTrainer.getUserId());
+        trainerService.delete(expectedTrainer.getTrainerId());
         //then
-        verify(trainerDao).delete(expectedTrainer.getUserId());
+        verify(trainerDao).delete(expectedTrainer.getTrainerId());
     }
 
     @Test
