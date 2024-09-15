@@ -29,7 +29,8 @@ public class UserNameGeneratorImpl implements UserNameGenerator {
         List<Trainer> trainers = trainerService.getAllTrainers();
         long count = Stream.concat(trainees.stream(), trainers.stream())
                 .map(User::getUserName)
-                .filter(u -> u.contains(baseUsername))
+                .map(u -> u.replaceAll("\\d+", ""))
+                .filter(u -> u.equals(baseUsername))
                 .count();
         if (count >= 1) {
             userName = baseUsername + count;

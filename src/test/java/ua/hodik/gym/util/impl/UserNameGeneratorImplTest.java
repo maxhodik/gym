@@ -18,8 +18,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserNameGeneratorImplTest {
+    public static final String TRAINEE_SHORT_USER_NAME = "trainee.short.user.name";
     private final String FIRST_NAME = "Sam";
     private final String LAST_NAME = "Jonson";
+    public static final String SHORT_LAST_NAME = "Jon";
+    public static final String EXPECTED_SHORT_USER_NAME = "Sam.Jon";
+    public static final String EXPECTED_SHORT_USER_NAME_1 = "Sam.Jon1";
+
     private final String EXPECTED_BASE_NAME = "Sam.Jonson";
     private final String EXPECTED_USER_NAME_1 = "Sam.Jonson1";
     private final String EXPECTED_USER_NAME_2 = "Sam.Jonson2";
@@ -79,5 +84,27 @@ class UserNameGeneratorImplTest {
         String userName = userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME);
         //then
         assertEquals(EXPECTED_BASE_NAME, userName);
+    }
+
+    @Test
+    void generateUserNameShortName() {
+        //given
+        when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_PATH_SAME_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_DIFFERENT_USER_NAME, Trainer.class)));
+        //when
+        String userName = userNameGenerator.generateUserName(FIRST_NAME, SHORT_LAST_NAME);
+        //then
+        assertEquals(EXPECTED_SHORT_USER_NAME, userName);
+    }
+
+    @Test
+    void generateUserNameShortName2() {
+        //given
+        when(traineeService.getAllTrainees()).thenReturn(List.of(TestUtils.readFromFile(TRAINEE_SHORT_USER_NAME, Trainee.class)));
+        when(trainerService.getAllTrainers()).thenReturn(List.of(TestUtils.readFromFile(TRAINER_PATH_SAME_USER_NAME, Trainer.class)));
+        //when
+        String userName = userNameGenerator.generateUserName(FIRST_NAME, SHORT_LAST_NAME);
+        //then
+        assertEquals(EXPECTED_SHORT_USER_NAME_1, userName);
     }
 }
