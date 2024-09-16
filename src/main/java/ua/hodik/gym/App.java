@@ -19,7 +19,7 @@ public class App {
 
     private static TraineeDto getTraineeDto() {
         UserDto userDto = UserDto.builder()
-                .firstName("Sam")
+                .firstName("null")
                 .lastName("Petrov")
                 .isActive(true)
                 .build();
