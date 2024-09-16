@@ -71,7 +71,7 @@ public class Storage {
             List<Training> trainingList = storageData.getTrainingList();
             trainingList.forEach(t -> trainingDB.put(t.getTrainingId(), t));
             traineeList.forEach(t -> traineeDB.put(t.getTraineeId(), t));
-            trainerList.forEach(t -> trainerDB.put(t.getTrainerId(), t));
+            trainerList.forEach(t -> trainerDB.put(t.getId(), t));
             log.info("Post construct storage initialization completed");
         } catch (IOException e) {
             log.error("Post construct storage initialization failed. Can't read the file {}", filePath);

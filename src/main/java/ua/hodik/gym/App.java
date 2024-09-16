@@ -15,20 +15,21 @@ public class App {
         ApplicationContext context = new AnnotationConfigApplicationContext(StorageConfig.class);
         TraineeService traineeService = context.getBean("traineeServiceImpl", TraineeService.class);
         TraineeDto traineeDto = getTraineeDto();
-//        traineeService.createTraineeProfile(traineeDto);
-        UserCredentialDto credential = new UserCredentialDto("Sam.Petrov", "yCnQatZkQy");
-        traineeService.changePassword(credential, "1111111");
+        traineeService.createTraineeProfile(traineeDto);
+        UserCredentialDto credential = new UserCredentialDto("Sam.ivanov", "oKdcgGEhYG");
+//        traineeService.update(credential, traineeDto);
+        traineeService.deleteTrainee(credential);
     }
 
     private static TraineeDto getTraineeDto() {
         UserDto userDto = UserDto.builder()
                 .firstName("Sam")
-                .lastName("Petrov")
+                .lastName("Ivanov")
                 .isActive(true)
                 .build();
         TraineeDto traineeDto = TraineeDto.builder()
                 .userDto(userDto)
-                .address("Kyiv")
+                .address("Lviv")
                 .dayOfBirth(LocalDate.ofEpochDay(10 - 12 - 1999))
                 .build();
         return traineeDto;

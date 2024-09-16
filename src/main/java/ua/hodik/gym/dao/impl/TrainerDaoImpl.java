@@ -17,7 +17,7 @@ public class TrainerDaoImpl implements TrainerDao {
 
     @Override
     public Trainer add(Trainer trainer) {
-        return trainerDB.put(trainer.getTrainerId(), trainer);
+        return trainerDB.put(trainer.getId(), trainer);
     }
 
     @Override

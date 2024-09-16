@@ -8,8 +8,7 @@ import lombok.Data;
 public class TrainerDto {
 
     private UserDto userDto;
-    private int id;
+    private int trainerId;
     private String specialization;
 
-    private int trainerId;
 }

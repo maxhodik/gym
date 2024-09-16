@@ -1,5 +1,6 @@
 package ua.hodik.gym.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class TrainerServiceImpl implements TrainerService {
         Objects.requireNonNull(trainer, "Trainer can't be null");
 
         int userId = trainerDao.getMaxId() + 1;
-        trainer.setTrainerId(userId);
+        trainer.setId(userId);
         String firstName = trainer.getUser().getFirstName();
         String lastName = trainer.getUser().getLastName();
         String userName = userNameGenerator.generateUserName(firstName, lastName);
@@ -103,11 +104,12 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Transactional
     public Trainer createTrainerProfile(TrainerDto trainerDto) {
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
         setGeneratedPassword(trainer);
-        trainer = trainerRepository.saveAndFlush(trainer);
+        trainer = trainerRepository.save(trainer);
         log.info("Trainee {} saved in DB", trainer.getUser().getUserName());
         return trainer;
     }
@@ -132,15 +134,48 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional()
     public Trainer changePassword(@Valid UserCredentialDto credential, @Valid String newPassword) {
         String userName = credential.getUserName();
-        if (matchCredential(credential)) {
-            Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
-            optionalTrainer.orElseThrow().getUser().setPassword(newPassword);
-            log.info("{} password updated", userName);
-            return optionalTrainer.orElseThrow();
-        } else {
-            log.info("{} password isn't updated, incorrect credentials", userName);
+        isMatchCredential(credential);
+        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
+        optionalTrainer.orElseThrow().getUser().setPassword(newPassword);
+        log.info("{} password updated", userName);
+        return optionalTrainer.orElseThrow();
+    }
+
+    private void isMatchCredential(UserCredentialDto credential) {
+        if (!matchCredential(credential)) {
             throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
         }
     }
+
+    @Transactional()
+    public Trainer update(@Valid UserCredentialDto credential, @Valid TrainerDto trainerDto) {
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
+        Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
+        setGeneratedUserName(trainer);
+        Trainer trainerToUpdate = optionalTrainer.orElseThrow(() -> new EntityNotFoundException("Trainer not found"));
+        getTrainerToUpdate(trainerDto, trainer, trainerToUpdate);
+        log.info("{} trainer updated", userName);
+        return trainerToUpdate;
+    }
+
+    @Transactional()
+    public Trainer updateActiveStatus(@Valid UserCredentialDto credential, @Valid boolean isActive) {
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
+        Trainer trainerToUpdate = optionalTrainer.orElseThrow(() -> new EntityNotFoundException("Trainer not found"));
+        trainerToUpdate.getUser().setActive(isActive);
+        log.info("{} trainer updated", userName);
+        return trainerToUpdate;
+    }
+
+    private void getTrainerToUpdate(TrainerDto trainerDto, Trainer trainer, Trainer trainerToUpdate) {
+        trainerToUpdate.setSpecialization(trainerDto.getSpecialization());
+        trainerToUpdate.getUser().setUserName(trainer.getUser().getUserName());
+        trainerToUpdate.getUser().setPassword(trainerToUpdate.getUser().getPassword());
+    }
+
 
 }

@@ -9,5 +9,8 @@ import java.util.Optional;
 @Repository
 public interface TraineeRepository extends JpaRepository<Trainee, Integer> {
     Optional<Trainee> findByUserUserName(String userName);
+
+    void deleteByUserUserName(String userName);
+
 }
 

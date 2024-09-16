@@ -4,7 +4,6 @@ import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainee;
 
-import javax.validation.Valid;
 import java.util.List;
 
 public interface TraineeService {
@@ -23,5 +22,10 @@ public interface TraineeService {
 
     boolean matchCredential(UserCredentialDto credential);
 
-    Trainee changePassword(@Valid UserCredentialDto credential, @Valid String newPassword);
+    Trainee changePassword(UserCredentialDto credential, String newPassword);
+
+    Trainee update(UserCredentialDto credential, TraineeDto traineeDto);
+
+    void deleteTrainee(UserCredentialDto credentialDto);
+
 }

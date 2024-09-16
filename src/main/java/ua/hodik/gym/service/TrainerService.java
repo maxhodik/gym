@@ -23,4 +23,8 @@ public interface TrainerService {
 
     Trainer changePassword(UserCredentialDto credential, String newPassword);
 
+    Trainer update(UserCredentialDto credential, TrainerDto trainerDto);
+
+    Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive);
+
 }

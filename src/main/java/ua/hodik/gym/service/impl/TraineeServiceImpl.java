@@ -1,5 +1,6 @@
 package ua.hodik.gym.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import ua.hodik.gym.dao.TraineeDao;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.mapper.TraineeMapper;
+import ua.hodik.gym.dto.mapper.UserMapper;
 import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.repository.TraineeRepository;
@@ -28,12 +30,14 @@ public class TraineeServiceImpl implements TraineeService {
     private UserNameGenerator userNameGenerator;
     private PasswordGenerator passwordGenerator;
     private final TraineeMapper traineeMapper;
+    private final UserMapper userMapper;
     private final TraineeRepository traineeRepository;
 
 
     @Autowired
-    public TraineeServiceImpl(TraineeMapper traineeMapper, TraineeRepository traineeRepository) {
+    public TraineeServiceImpl(TraineeMapper traineeMapper, UserMapper userMapper, TraineeRepository traineeRepository) {
         this.traineeMapper = traineeMapper;
+        this.userMapper = userMapper;
         this.traineeRepository = traineeRepository;
     }
 
@@ -135,13 +139,55 @@ public class TraineeServiceImpl implements TraineeService {
     @Transactional()
     public Trainee changePassword(@Valid UserCredentialDto credential, @Valid String newPassword) {
         String userName = credential.getUserName();
-        if (matchCredential(credential)) {
-            Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
-            optionalTrainee.orElseThrow().getUser().setPassword(newPassword);
-            log.info("{} password updated", userName);
-            return optionalTrainee.orElseThrow();
-        } else {
-            log.info("{} password isn't updated, incorrect credentials", userName);
+        isMatchCredential(credential);
+        Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
+        optionalTrainee.orElseThrow().getUser().setPassword(newPassword);
+        log.info("{} password updated", userName);
+        return optionalTrainee.orElseThrow();
+    }
+
+    @Transactional()
+    public Trainee update(@Valid UserCredentialDto credential, @Valid TraineeDto traineeDto) {
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
+        Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
+        setGeneratedUserName(trainee);
+        Trainee traineeToUpdate = optionalTrainee.orElseThrow(() -> new EntityNotFoundException("Trainee not found"));
+        getTraineeToUpdate(traineeDto, trainee, traineeToUpdate);
+        log.info("{} trainee updated", userName);
+        return traineeToUpdate;
+    }
+
+    @Override
+    @Transactional
+    public void deleteTrainee(UserCredentialDto credential) {
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        traineeRepository.deleteByUserUserName(userName);
+        log.info("{} trainee  deleted", userName);
+    }
+
+    private void getTraineeToUpdate(TraineeDto traineeDto, Trainee trainee, Trainee traineeToUpdate) {
+        traineeToUpdate.setDayOfBirth(traineeDto.getDayOfBirth());
+        traineeToUpdate.setAddress(traineeDto.getAddress());
+        traineeToUpdate.getUser().setUserName(trainee.getUser().getUserName());
+        traineeToUpdate.getUser().setPassword(traineeToUpdate.getUser().getPassword());
+    }
+
+    @Transactional()
+    public Trainee updateActiveStatus(@Valid UserCredentialDto credential, @Valid boolean isActive) {
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
+        Trainee traineeToUpdate = optionalTrainee.orElseThrow(() -> new EntityNotFoundException("Trainee not found"));
+        traineeToUpdate.getUser().setActive(isActive);
+        log.info("{} trainee active status updated", userName);
+        return traineeToUpdate;
+    }
+
+    private void isMatchCredential(UserCredentialDto credential) {
+        if (!matchCredential(credential)) {
             throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
         }
     }

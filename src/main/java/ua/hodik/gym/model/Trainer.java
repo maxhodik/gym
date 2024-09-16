@@ -21,8 +21,7 @@ public class Trainer {
     private int id;
     @Column(name = "Specialization")
     private String specialization;
-    @Column(name = "User_id")
-    private int trainerId;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
