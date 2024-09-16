@@ -13,8 +13,8 @@ import java.util.List;
 
 @Setter
 @Getter
-@EqualsAndHashCode(callSuper = false)
-@ToString(callSuper = true)
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "Trainee")
 public class Trainee {

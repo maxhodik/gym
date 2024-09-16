@@ -32,9 +32,10 @@ public class TrainerServiceImpl implements TrainerService {
     private TrainerMapper trainerMapper;
 
     @Autowired
-    public TrainerMapper getTrainerMapper() {
-        return trainerMapper;
+    public void setTrainerMapper(TrainerMapper trainerMapper) {
+        this.trainerMapper = trainerMapper;
     }
+
 
     @Autowired
     public void setTrainerDao(TrainerDao trainerDao) {
@@ -153,7 +154,7 @@ public class TrainerServiceImpl implements TrainerService {
         isMatchCredential(credential);
         Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
-        setGeneratedUserName(trainer);
+
         Trainer trainerToUpdate = optionalTrainer.orElseThrow(() -> new EntityNotFoundException("Trainer not found"));
         getTrainerToUpdate(trainerDto, trainer, trainerToUpdate);
         log.info("{} trainer updated", userName);
@@ -173,6 +174,9 @@ public class TrainerServiceImpl implements TrainerService {
 
     private void getTrainerToUpdate(TrainerDto trainerDto, Trainer trainer, Trainer trainerToUpdate) {
         trainerToUpdate.setSpecialization(trainerDto.getSpecialization());
+        trainerToUpdate.getUser().setFirstName(trainer.getUser().getFirstName());
+        trainerToUpdate.getUser().setLastName(trainer.getUser().getLastName());
+        trainerToUpdate.getUser().setActive(trainer.getUser().isActive());
         trainerToUpdate.getUser().setUserName(trainer.getUser().getUserName());
         trainerToUpdate.getUser().setPassword(trainerToUpdate.getUser().getPassword());
     }

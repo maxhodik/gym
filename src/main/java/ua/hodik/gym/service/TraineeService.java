@@ -28,4 +28,6 @@ public interface TraineeService {
 
     void deleteTrainee(UserCredentialDto credentialDto);
 
+    Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive);
+
 }

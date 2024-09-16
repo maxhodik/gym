@@ -105,11 +105,12 @@ public class TraineeServiceImpl implements TraineeService {
 
 
     @Override
+    @Transactional
     public Trainee createTraineeProfile(@Valid TraineeDto traineeDto) {
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
         setGeneratedUserName(trainee);
         setGeneratedPassword(trainee);
-        trainee = traineeRepository.saveAndFlush(trainee);
+        trainee = traineeRepository.save(trainee);
         log.info("Trainee {} saved in DB", trainee.getUser().getUserName());
         return trainee;
     }
@@ -148,11 +149,11 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional()
     public Trainee update(@Valid UserCredentialDto credential, @Valid TraineeDto traineeDto) {
+        //todo valid username if it already exists
         String userName = credential.getUserName();
         isMatchCredential(credential);
         Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
-        setGeneratedUserName(trainee);
         Trainee traineeToUpdate = optionalTrainee.orElseThrow(() -> new EntityNotFoundException("Trainee not found"));
         getTraineeToUpdate(traineeDto, trainee, traineeToUpdate);
         log.info("{} trainee updated", userName);
@@ -171,6 +172,9 @@ public class TraineeServiceImpl implements TraineeService {
     private void getTraineeToUpdate(TraineeDto traineeDto, Trainee trainee, Trainee traineeToUpdate) {
         traineeToUpdate.setDayOfBirth(traineeDto.getDayOfBirth());
         traineeToUpdate.setAddress(traineeDto.getAddress());
+        traineeToUpdate.getUser().setFirstName(trainee.getUser().getFirstName());
+        traineeToUpdate.getUser().setLastName(trainee.getUser().getLastName());
+        traineeToUpdate.getUser().setActive(trainee.getUser().isActive());
         traineeToUpdate.getUser().setUserName(trainee.getUser().getUserName());
         traineeToUpdate.getUser().setPassword(traineeToUpdate.getUser().getPassword());
     }
