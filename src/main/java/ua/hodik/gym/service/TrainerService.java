@@ -1,6 +1,7 @@
 package ua.hodik.gym.service;
 
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainer;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public interface TrainerService {
     List<Trainer> getAllTrainers();
 
     Trainer createTrainerProfile(TrainerDto trainerDto);
+
+    boolean matchCredential(UserCredentialDto credential);
+
+    Trainer changePassword(UserCredentialDto credential, String newPassword);
 
 }

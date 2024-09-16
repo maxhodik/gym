@@ -3,17 +3,22 @@ package ua.hodik.gym.service.impl;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dao.TrainerDao;
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.mapper.TrainerMapper;
+import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -92,8 +97,8 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public List<Trainer> getAllTrainers() {
-        List<Trainer> allTrainers = trainerDao.getAllTrainers();
-        log.info("Finding all trainers");
+        List<Trainer> allTrainers = trainerRepository.findAll();
+        log.info("Finding all trainers from DB");
         return allTrainers;
     }
 
@@ -118,4 +123,24 @@ public class TrainerServiceImpl implements TrainerService {
         String userName = userNameGenerator.generateUserName(firstName, lastName);
         trainer.getUser().setUserName(userName);
     }
+
+    public boolean matchCredential(@Valid UserCredentialDto credential) {
+        Optional<Trainer> trainer = trainerRepository.findByUserUserName(credential.getUserName());
+        return trainer.isPresent() && trainer.get().getUser().getPassword().equals(credential.getPassword());
+    }
+
+    @Transactional()
+    public Trainer changePassword(@Valid UserCredentialDto credential, @Valid String newPassword) {
+        String userName = credential.getUserName();
+        if (matchCredential(credential)) {
+            Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
+            optionalTrainer.orElseThrow().getUser().setPassword(newPassword);
+            log.info("{} password updated", userName);
+            return optionalTrainer.orElseThrow();
+        } else {
+            log.info("{} password isn't updated, incorrect credentials", userName);
+            throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
+        }
+    }
+
 }
