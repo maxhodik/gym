@@ -92,9 +92,9 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public Trainer findById(int id) {
-        Trainer trainerById = trainerDao.getById(id);
+        Optional<Trainer> trainer = trainerRepository.findById(id);
         log.info("Finding trainer by id={}", id);
-        return trainerById;
+        return trainer.orElseThrow(() -> new EntityNotFoundException(String.format("Trainer id= %s not found", id)));
     }
 
     @Override

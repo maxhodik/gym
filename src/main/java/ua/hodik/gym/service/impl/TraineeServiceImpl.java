@@ -91,9 +91,10 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public Trainee findById(int id) {
-        Trainee traineeById = traineeDao.getById(id);
+        Optional<Trainee> trainee = traineeRepository.findById(id);
         log.info("Finding trainee by id={}", id);
-        return traineeById;
+        return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee id= %s not found", id)));
+
     }
 
     @Override

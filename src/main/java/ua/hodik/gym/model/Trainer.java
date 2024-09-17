@@ -27,4 +27,5 @@ public class Trainer {
     private User user;
     @ManyToMany(mappedBy = "trainers")
     private List<Trainee> trainees = new ArrayList<>();
+
 }

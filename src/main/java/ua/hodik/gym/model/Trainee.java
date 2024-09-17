@@ -38,4 +38,26 @@ public class Trainee {
     private List<Trainer> trainers = new ArrayList<>();
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.REMOVE)
     private List<Training> trainings = new ArrayList<>();
+
+
+    public void addTrainer(Trainer trainer) {
+        trainers.add(trainer);
+        trainer.getTrainees().add(this);
+    }
+
+    private void removeTrainer(Trainer trainer) {
+        trainer.getTrainees().remove(this);
+        trainers.remove(trainer);
+    }
+
+    public void addTraining(Training training) {
+        training.setTrainee(this);
+        trainings.add(training);
+    }
+
+    public void removeTraining(Training training) {
+        trainings.remove(training);
+        training.setTrainee(null);
+
+    }
 }
