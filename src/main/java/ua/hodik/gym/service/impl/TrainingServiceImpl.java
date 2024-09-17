@@ -3,8 +3,16 @@ package ua.hodik.gym.service.impl;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dao.TrainingDao;
+import ua.hodik.gym.dto.TrainingDto;
+import ua.hodik.gym.dto.mapper.TrainingMapper;
+import ua.hodik.gym.model.Trainee;
+import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
+import ua.hodik.gym.repository.TrainingRepository;
+import ua.hodik.gym.service.TraineeService;
+import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 
 import java.util.Objects;
@@ -14,6 +22,18 @@ import java.util.Objects;
 public class TrainingServiceImpl implements TrainingService {
     @Autowired
     private TrainingDao trainingDao;
+    private final TrainingRepository trainingRepository;
+    private final TrainingMapper trainingMapper;
+    private final TraineeService traineeService;
+    private final TrainerService trainerService;
+
+    @Autowired
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TraineeService traineeService, TrainerService trainerService) {
+        this.trainingRepository = trainingRepository;
+        this.trainingMapper = trainingMapper;
+        this.traineeService = traineeService;
+        this.trainerService = trainerService;
+    }
 
     @Override
     public Training create(Training training) {
@@ -28,5 +48,16 @@ public class TrainingServiceImpl implements TrainingService {
         Training trainingById = trainingDao.getById(id);
         log.info("Training with id ={} updated", id);
         return trainingById;
+    }
+
+    @Transactional()
+    public Training createTraining(TrainingDto trainingDto) {
+        Training training = trainingMapper.convertToTraining(trainingDto);
+        Trainee trainee = traineeService.findById(trainingDto.getTrainee().getTraineeId());
+        Trainer trainer = trainerService.findById(trainingDto.getTrainer().getId());
+        trainee.addTrainer(trainer);
+        training = trainingRepository.save(training);
+        log.info("Training id= {} saved in DB", training.getTrainingId());
+        return training;
     }
 }

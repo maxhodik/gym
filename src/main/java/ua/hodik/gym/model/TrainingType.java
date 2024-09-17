@@ -1,18 +1,21 @@
 package ua.hodik.gym.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.Immutable;
+//@Entity
+//@Table(name = "Training_Type")
 
-@Entity
-@Table(name = "Training_Type")
-@Immutable
-@Data
-public class TrainingType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public enum TrainingType {
+    //    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private int id;
+//
+//    @Column(name = "name", nullable = false, unique = true)
+//    private String name;
+    BOXING(1), ZUMA(2), STRETCHING(3);
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    int ID;
+
+    TrainingType(int ID) {
+        this.ID = ID;
+    }
+
 }

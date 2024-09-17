@@ -19,9 +19,9 @@ public class Trainer {
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Enumerated(EnumType.STRING)
     @Column(name = "Specialization")
-    private String specialization;
-
+    private TrainingType specialization;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;

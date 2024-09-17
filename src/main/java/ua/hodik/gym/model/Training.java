@@ -24,8 +24,10 @@ public class Training {
     private Trainer trainer;
     @Column(name = "Training_name", nullable = false)
     private String name;
-    @OneToOne
-    @JoinColumn(name = "Training_Type_id")
+    //    @OneToOne
+//    @JoinColumn(name = "Training_Type_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Training_Type_id")
     private TrainingType trainingType;
     @Column(name = "Training_Date", nullable = false)
     private LocalDate date;
