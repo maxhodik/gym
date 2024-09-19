@@ -3,6 +3,7 @@ package ua.hodik.gym.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dao.TraineeDao;
@@ -12,12 +13,15 @@ import ua.hodik.gym.dto.mapper.TraineeMapper;
 import ua.hodik.gym.dto.mapper.UserMapper;
 import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainee;
+import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.repository.TraineeRepository;
 import ua.hodik.gym.service.TraineeService;
+import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,13 +36,14 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeMapper traineeMapper;
     private final UserMapper userMapper;
     private final TraineeRepository traineeRepository;
-
+    private final TrainerService trainerService;
 
     @Autowired
-    public TraineeServiceImpl(TraineeMapper traineeMapper, UserMapper userMapper, TraineeRepository traineeRepository) {
+    public TraineeServiceImpl(TraineeMapper traineeMapper, UserMapper userMapper, TraineeRepository traineeRepository, @Lazy TrainerService trainerService) {
         this.traineeMapper = traineeMapper;
         this.userMapper = userMapper;
         this.traineeRepository = traineeRepository;
+        this.trainerService = trainerService;
     }
 
     @Autowired
@@ -83,10 +88,10 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public boolean delete(int id) {
-        boolean delete = traineeDao.delete(id);
+    public void delete(int id) {
+        traineeRepository.deleteById(id);
         log.info("Deleting Trainee with id= {}", id);
-        return delete;
+
     }
 
     @Override
@@ -189,6 +194,20 @@ public class TraineeServiceImpl implements TraineeService {
         traineeToUpdate.getUser().setActive(isActive);
         log.info("{} trainee active status updated", userName);
         return traineeToUpdate;
+    }
+
+    @Transactional
+    public void updateTrainersList(@Valid UserCredentialDto credential, String traineeUserName, List<String> trainers) {
+        isMatchCredential(credential);
+        Trainee trainee = traineeRepository.findByUserUserName(traineeUserName).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Trainee %S not found", traineeUserName)));
+        List<Trainer> trainerList = new ArrayList<>();
+        for (String trainerUserName : trainers) {
+            Trainer trainer = trainerService.findByUserName(trainerUserName);
+            trainerList.add(trainer);
+        }
+        trainee.addTrainersList(trainerList);
+        log.info("Updating {} trainersList", traineeUserName);
     }
 
 

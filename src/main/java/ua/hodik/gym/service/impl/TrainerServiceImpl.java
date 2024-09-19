@@ -61,7 +61,7 @@ public class TrainerServiceImpl implements TrainerService {
         setGeneratedUserName(trainer);
         setGeneratedPassword(trainer);
         trainer = trainerRepository.save(trainer);
-        log.info("Trainee {} saved in DB", trainer.getUser().getUserName());
+        log.info("Trainer {} saved in DB", trainer.getUser().getUserName());
         return trainer;
     }
 

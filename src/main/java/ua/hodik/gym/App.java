@@ -13,6 +13,7 @@ import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -51,7 +52,7 @@ public class App {
 //                filterFormDto);
 //        List<Training> trainerList=facade.getTrainerTrainingList(filterFormDto);
         System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
-
+        facade.updateTrainersList(credential, "Jon.Ivanov4", List.of("Yura.Vasil4"));
 //        System.out.println(allWithFilters);
 //        System.out.println(trainerList);
     }

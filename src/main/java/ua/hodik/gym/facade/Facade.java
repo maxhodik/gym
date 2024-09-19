@@ -3,6 +3,7 @@ package ua.hodik.gym.facade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.FilterFormDto;
+import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -33,8 +34,8 @@ public class Facade {
         return traineeService.update(trainee, id);
     }
 
-    public boolean deleteTrainee(int id) {
-        return traineeService.delete(id);
+    public void deleteTrainee(int id) {
+        traineeService.delete(id);
     }
 
     public Trainee findTraineeById(int id) {
@@ -65,6 +66,14 @@ public class Facade {
 
     public List<Trainer> getNotAssignedTrainers(String traineeName) {
         return trainerService.getNotAssignedTrainers(traineeName);
+    }
+
+    public void updateTrainersList(UserCredentialDto credential, String traineeUserName, List<String> trainers) {
+        traineeService.updateTrainersList(credential, traineeUserName, trainers);
+    }
+
+    public Trainer getTrainerByUserName(String userName) {
+        return trainerService.findByUserName(userName);
     }
 }
 
