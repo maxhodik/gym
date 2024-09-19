@@ -72,6 +72,8 @@ public class TrainingServiceImpl implements TrainingService {
         return training;
     }
 
+    @Transactional(readOnly = true)
+
     public List<Training> findAllWithFilters(FilterFormDto filterFormDto) {
         Map<String, FilterDto<?>> filters = convertToFilterDto.convert(filterFormDto);
         Specification<Training> specification = trainingSpecification.getTraining(filters);

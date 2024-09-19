@@ -7,11 +7,6 @@ import ua.hodik.gym.model.Trainer;
 import java.util.List;
 
 public interface TrainerService {
-    Trainer create(Trainer trainer);
-
-    Trainer update(Trainer trainer, int id);
-
-    boolean delete(int id);
 
     Trainer findById(int id);
 
@@ -26,5 +21,7 @@ public interface TrainerService {
     Trainer update(UserCredentialDto credential, TrainerDto trainerDto);
 
     Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive);
+
+    List<Trainer> getNotAssignedTrainers(String traineeName);
 
 }

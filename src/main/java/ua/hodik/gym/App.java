@@ -4,16 +4,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.hodik.gym.config.StorageConfig;
 import ua.hodik.gym.dto.*;
+import ua.hodik.gym.facade.Facade;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
-import ua.hodik.gym.model.Training;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class App {
     public static void main(String[] args) {
@@ -21,6 +20,7 @@ public class App {
         TraineeService traineeService = context.getBean("traineeServiceImpl", TraineeService.class);
         TrainerService trainerService = context.getBean("trainerServiceImpl", TrainerService.class);
         TrainingService trainingService = context.getBean("trainingServiceImpl", TrainingService.class);
+        Facade facade = context.getBean("facade", Facade.class);
 
         TraineeDto traineeDto = getTraineeDto();
         TrainerDto trainerDto = getTrainerDto();
@@ -40,17 +40,20 @@ public class App {
 //        trainerService.updateActiveStatus(credential, true);
 //        trainerService.update(credential, trainerDto);
         FilterFormDto filterFormDto = FilterFormDto.builder()
-                .traineeName("Jon.Ivano")
+                .traineeName("Jon.Ivanov")
                 .trainerName("Yura.Vasil")
                 .trainingType(TrainingType.BOXING)
                 .dateFrom(LocalDate.of(2024, 9, 18))
                 .dateTo(LocalDate.of(2024, 9, 18))
                 .build();
-        System.out.println(filterFormDto);
-        List<Training> allWithFilters = trainingService.findAllWithFilters(
-                filterFormDto);
+//        System.out.println(filterFormDto);
+//        List<Training> allWithFilters = facade.getTraineeTrainingList(
+//                filterFormDto);
+//        List<Training> trainerList=facade.getTrainerTrainingList(filterFormDto);
+        System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
 
-        System.out.println(allWithFilters);
+//        System.out.println(allWithFilters);
+//        System.out.println(trainerList);
     }
 
     private static TrainingDto getTrainingDto(Trainee trainee, Trainer trainer) {
