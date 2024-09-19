@@ -7,7 +7,7 @@ import ua.hodik.gym.model.Training;
 import java.util.List;
 
 public interface TrainingService {
-  Training create(Training training);
+
 
   Training findById(int id);
 

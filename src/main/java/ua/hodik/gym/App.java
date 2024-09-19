@@ -2,7 +2,7 @@ package ua.hodik.gym;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.hodik.gym.config.StorageConfig;
+import ua.hodik.gym.config.HibernateConfig;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.facade.Facade;
 import ua.hodik.gym.model.Trainee;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class App {
     public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(StorageConfig.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(HibernateConfig.class);
         TraineeService traineeService = context.getBean("traineeServiceImpl", TraineeService.class);
         TrainerService trainerService = context.getBean("trainerServiceImpl", TrainerService.class);
         TrainingService trainingService = context.getBean("trainingServiceImpl", TrainingService.class);

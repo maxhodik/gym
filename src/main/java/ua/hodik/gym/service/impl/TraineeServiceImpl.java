@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.hodik.gym.dao.TraineeDao;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.mapper.TraineeMapper;
@@ -23,14 +22,13 @@ import ua.hodik.gym.util.UserNameGenerator;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Log4j2
 public class TraineeServiceImpl implements TraineeService {
 
-    private TraineeDao traineeDao;
+
     private UserNameGenerator userNameGenerator;
     private PasswordGenerator passwordGenerator;
     private final TraineeMapper traineeMapper;
@@ -46,10 +44,6 @@ public class TraineeServiceImpl implements TraineeService {
         this.trainerService = trainerService;
     }
 
-    @Autowired
-    public void setTraineeDao(TraineeDao traineeDao) {
-        this.traineeDao = traineeDao;
-    }
 
     @Autowired
     public void setUserNameGenerator(UserNameGenerator userNameGenerator) {
@@ -61,31 +55,6 @@ public class TraineeServiceImpl implements TraineeService {
         this.passwordGenerator = passwordGenerator;
     }
 
-    @Override
-    public Trainee create(Trainee trainee) {
-        Objects.requireNonNull(trainee, "Trainee can't be null");
-        int userId = traineeDao.getMaxId() + 1;
-        trainee.setTraineeId(userId);
-        String firstName = trainee.getUser().getFirstName();
-        String lastName = trainee.getUser().getLastName();
-        String userName = userNameGenerator.generateUserName(firstName, lastName);
-        String password = passwordGenerator.generatePassword();
-        trainee.getUser().setUserName(userName);
-        trainee.getUser().setPassword(password);
-        Trainee addedTrainee = traineeDao.add(trainee);
-        log.info("Trainee {} added successfully", userName);
-        return addedTrainee;
-    }
-
-
-    @Override
-    public Trainee update(Trainee trainee, int id) {
-        Objects.requireNonNull(trainee, "Trainee can't be null");
-        trainee.setTraineeId(id);
-        Trainee updatedTrainee = traineeDao.update(trainee, id);
-        log.info("Trainee with id ={} updated", id);
-        return updatedTrainee;
-    }
 
     @Override
     public void delete(int id) {

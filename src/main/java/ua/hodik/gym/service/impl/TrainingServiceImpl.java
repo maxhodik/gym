@@ -1,11 +1,11 @@
 package ua.hodik.gym.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.hodik.gym.dao.TrainingDao;
 import ua.hodik.gym.dao.TrainingSpecification;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
@@ -22,13 +22,11 @@ import ua.hodik.gym.service.TrainingService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Log4j2
 public class TrainingServiceImpl implements TrainingService {
-    @Autowired
-    private TrainingDao trainingDao;
+
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
     private final TraineeService traineeService;
@@ -46,18 +44,12 @@ public class TrainingServiceImpl implements TrainingService {
         this.trainingSpecification = trainingSpecification;
     }
 
-    @Override
-    public Training create(Training training) {
-        Objects.requireNonNull(training, "Training can't be null");
-        Training addTraining = trainingDao.add(training);
-        log.info("Training {} added successfully", training.getName());
-        return addTraining;
-    }
 
     @Override
     public Training findById(int id) {
-        Training trainingById = trainingDao.getById(id);
-        log.info("Training with id ={} updated", id);
+        Training trainingById = trainingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Training with id= %s not found", id)));
+        log.info("Training with id ={} found", id);
         return trainingById;
     }
 

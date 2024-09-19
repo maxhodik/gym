@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ua.hodik.gym.dao.TrainingDao;
 import ua.hodik.gym.model.Training;
 import ua.hodik.gym.tets.util.TestUtils;
 

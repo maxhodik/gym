@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ua.hodik.gym.dao.TrainerDao;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.tets.util.TestUtils;
 import ua.hodik.gym.util.PasswordGenerator;

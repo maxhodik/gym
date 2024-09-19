@@ -7,10 +7,7 @@ import ua.hodik.gym.model.Trainee;
 import java.util.List;
 
 public interface TraineeService {
-    Trainee create(Trainee trainee);
 
-
-    Trainee update(Trainee trainee, int id);
 
     void delete(int id);
 
