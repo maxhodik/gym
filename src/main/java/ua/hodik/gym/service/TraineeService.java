@@ -12,7 +12,7 @@ public interface TraineeService {
 
     Trainee update(Trainee trainee, int id);
 
-    boolean delete(int id);
+    void delete(int id);
 
     Trainee findById(int id);
 
@@ -30,4 +30,5 @@ public interface TraineeService {
 
     Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive);
 
+    void updateTrainersList(UserCredentialDto credential, String traineeUserName, List<String> trainers);
 }

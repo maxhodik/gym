@@ -127,6 +127,12 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerRepository.findAll(specification);
     }
 
+    @Override
+    public Trainer findByUserName(String trainerUserName) {
+        return trainerRepository.findByUserUserName(trainerUserName).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
+    }
+
     private void getTrainerToUpdate(TrainerDto trainerDto, Trainer trainer, Trainer trainerToUpdate) {
         trainerToUpdate.setSpecialization(trainerDto.getSpecialization());
         trainerToUpdate.getUser().setFirstName(trainer.getUser().getFirstName());

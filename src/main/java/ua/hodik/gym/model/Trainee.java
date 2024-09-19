@@ -60,4 +60,11 @@ public class Trainee {
         training.setTrainee(null);
 
     }
+
+    public void addTrainersList(List<Trainer> trainerList) {
+        for (Trainer t : trainerList) {
+            t.getTrainees().add(this);
+        }
+        this.setTrainers(trainerList);
+    }
 }
