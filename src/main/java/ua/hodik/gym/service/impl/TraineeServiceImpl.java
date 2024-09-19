@@ -191,6 +191,7 @@ public class TraineeServiceImpl implements TraineeService {
         return traineeToUpdate;
     }
 
+
     private void isMatchCredential(UserCredentialDto credential) {
         if (!matchCredential(credential)) {
             throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");

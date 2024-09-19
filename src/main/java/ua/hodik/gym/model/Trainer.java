@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(exclude = "trainees")
+@ToString(exclude = "trainees")
 @Entity
 @Table(name = "Trainer")
 

@@ -13,8 +13,8 @@ import java.util.List;
 
 @Setter
 @Getter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(exclude = {"trainers", "trainings"})
+@ToString(exclude = {"trainers", "trainings"})
 @Entity
 @Table(name = "Trainee")
 public class Trainee {

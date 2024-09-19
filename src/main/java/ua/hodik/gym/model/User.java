@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@ToString
+@ToString(exclude = {"trainee", "trainer"})
 @Entity
 @Table(name = "User")
 @NoArgsConstructor
@@ -30,7 +30,5 @@ public class User {
     private Trainee trainee;
     @OneToOne(mappedBy = "user")
     private Trainer trainer;
-
-
 }
 
