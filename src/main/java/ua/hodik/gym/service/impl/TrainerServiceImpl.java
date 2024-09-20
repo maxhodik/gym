@@ -12,6 +12,7 @@ import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.mapper.TrainerMapper;
 import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
@@ -117,8 +118,11 @@ public class TrainerServiceImpl implements TrainerService {
         isMatchCredential(credential);
         Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
         Trainer trainerToUpdate = optionalTrainer.orElseThrow(() -> new EntityNotFoundException("Trainer not found"));
-        trainerToUpdate.getUser().setActive(isActive);
-        log.info("{} trainer updated", userName);
+        User user = trainerToUpdate.getUser();
+        if (!user.isActive()) {
+            user.setActive(isActive);
+            log.info("Trainer {} active status updated", userName);
+        }
         return trainerToUpdate;
     }
 
