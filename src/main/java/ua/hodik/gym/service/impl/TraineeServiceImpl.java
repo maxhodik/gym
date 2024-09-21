@@ -1,15 +1,21 @@
 package ua.hodik.gym.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.mapper.TraineeMapper;
 import ua.hodik.gym.dto.mapper.UserMapper;
+import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
@@ -20,10 +26,11 @@ import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -36,9 +43,13 @@ public class TraineeServiceImpl implements TraineeService {
     private final UserMapper userMapper;
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
+    @Autowired
+    private Validator validator;
+
 
     @Autowired
-    public TraineeServiceImpl(TraineeMapper traineeMapper, UserMapper userMapper, TraineeRepository traineeRepository, @Lazy TrainerService trainerService) {
+    public TraineeServiceImpl(TraineeMapper traineeMapper, UserMapper userMapper,
+                              TraineeRepository traineeRepository, @Lazy TrainerService trainerService) {
         this.traineeMapper = traineeMapper;
         this.userMapper = userMapper;
         this.traineeRepository = traineeRepository;
@@ -82,7 +93,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
-    public Trainee createTraineeProfile(@Valid TraineeDto traineeDto) {
+    public Trainee createTraineeProfile(TraineeDto traineeDto) {
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
         setGeneratedUserName(trainee);
         setGeneratedPassword(trainee);
@@ -105,7 +116,9 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional(readOnly = true)
-    public boolean matchCredential(@Valid UserCredentialDto credential) {
+    public boolean matchCredential(@Validated UserCredentialDto credential) {
+        validate(credential);
+
         String userName = credential.getUserName();
         Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
         boolean result = trainee.isPresent() && trainee.get().getUser().getPassword().equals(credential.getPassword());
@@ -113,8 +126,37 @@ public class TraineeServiceImpl implements TraineeService {
         return result;
     }
 
+    public void validate(UserCredentialDto credential) {
+        Map<String, List<Map<String, String>>> validationResult = getMapOfErrors(credential);
+        if (!validationResult.isEmpty()) {
+            throw new ValidationException("Validation ran in service" + validationResult);
+        }
+    }
+
+    private Map<String, List<Map<String, String>>> getMapOfErrors(UserCredentialDto credential) {
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(credential, credential.getClass().getName());
+        validator.validate(credential, bindingResult);
+
+        return appendErrorsToMap(bindingResult);
+    }
+
+    private Map<String, List<Map<String, String>>> appendErrorsToMap(BeanPropertyBindingResult bindingResult) {
+        return bindingResult.getFieldErrors().stream()
+                .collect(Collectors.groupingBy(
+                        FieldError::getField,  // Group by field name
+                        Collectors.mapping(
+                                error -> Map.of(
+                                        "rejectedValue", error.getRejectedValue() != null ? error.getRejectedValue().toString() : "null",
+                                        "message", error.getDefaultMessage() != null ? error.getDefaultMessage() : "No message"
+                                ),
+                                Collectors.toList()  // Collect errors for each field into a list
+                        )
+                ));
+    }
+
+
     @Transactional()
-    public Trainee changePassword(@Valid UserCredentialDto credential, @Valid String newPassword) {
+    public Trainee changePassword(UserCredentialDto credential, String newPassword) {
         String userName = credential.getUserName();
         isMatchCredential(credential);
         Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
@@ -124,7 +166,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional()
-    public Trainee update(@Valid UserCredentialDto credential, @Valid TraineeDto traineeDto) {
+    public Trainee update(UserCredentialDto credential, TraineeDto traineeDto) {
         //todo valid username if it already exists
         String userName = credential.getUserName();
         isMatchCredential(credential);
@@ -146,6 +188,8 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     private void getTraineeToUpdate(TraineeDto traineeDto, Trainee trainee, Trainee traineeToUpdate) {
+        //todo
+//        traineeToUpdate = traineeMapper.convertToTrainee(traineeDto);
         traineeToUpdate.setDayOfBirth(traineeDto.getDayOfBirth());
         traineeToUpdate.setAddress(traineeDto.getAddress());
         traineeToUpdate.getUser().setFirstName(trainee.getUser().getFirstName());
@@ -156,7 +200,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional()
-    public Trainee updateActiveStatus(@Valid UserCredentialDto credential, @Valid boolean isActive) {
+    public Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive) {
         String userName = credential.getUserName();
         isMatchCredential(credential);
         Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);

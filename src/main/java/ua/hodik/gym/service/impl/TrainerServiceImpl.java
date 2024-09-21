@@ -1,6 +1,7 @@
 package ua.hodik.gym.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,22 +19,21 @@ import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Log4j2
 public class TrainerServiceImpl implements TrainerService {
-    private UserNameGenerator userNameGenerator;
-    private PasswordGenerator passwordGenerator;
-    private TrainerRepository trainerRepository;
-
-    private TrainerMapper trainerMapper;
-    private TrainerSpecification trainerSpecification;
+    private final UserNameGenerator userNameGenerator;
+    private final PasswordGenerator passwordGenerator;
+    private final TrainerRepository trainerRepository;
+    private final TrainerMapper trainerMapper;
+    private final TrainerSpecification trainerSpecification;
 
     @Autowired
-    public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator, TrainerRepository trainerRepository, TrainerMapper trainerMapper, TrainerSpecification trainerSpecification) {
+    public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
+                              TrainerRepository trainerRepository, TrainerMapper trainerMapper, TrainerSpecification trainerSpecification) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;

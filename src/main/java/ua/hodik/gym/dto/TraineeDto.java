@@ -1,11 +1,11 @@
 package ua.hodik.gym.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Past;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
-import javax.validation.constraints.Past;
 import java.time.LocalDate;
 
 @Data

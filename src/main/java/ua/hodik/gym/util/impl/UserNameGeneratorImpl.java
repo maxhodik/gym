@@ -2,6 +2,7 @@ package ua.hodik.gym.util.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
@@ -16,8 +17,10 @@ import java.util.stream.Stream;
 @Log4j2
 public class UserNameGeneratorImpl implements UserNameGenerator {
     @Autowired
+    @Lazy
     private TraineeService traineeService;
     @Autowired
+    @Lazy
     private TrainerService trainerService;
 
     @Override
