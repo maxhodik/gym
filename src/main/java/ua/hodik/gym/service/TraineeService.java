@@ -13,6 +13,8 @@ public interface TraineeService {
 
     Trainee findById(int id);
 
+    Trainee findByUserName(String userName);
+
     List<Trainee> getAllTrainees();
 
     Trainee createTraineeProfile(TraineeDto traineeDto);
@@ -27,5 +29,5 @@ public interface TraineeService {
 
     Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive);
 
-    void updateTrainersList(UserCredentialDto credential, String traineeUserName, List<String> trainers);
+    void updateTrainersList(UserCredentialDto credential, List<String> trainers);
 }

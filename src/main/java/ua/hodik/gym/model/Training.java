@@ -24,8 +24,6 @@ public class Training {
     private Trainer trainer;
     @Column(name = "Training_name", nullable = false)
     private String name;
-    //    @OneToOne
-//    @JoinColumn(name = "Training_Type_id")
     @Enumerated(EnumType.STRING)
     @Column(name = "Training_Type_id")
     private TrainingType trainingType;

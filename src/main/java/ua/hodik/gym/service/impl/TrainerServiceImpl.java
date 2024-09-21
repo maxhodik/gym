@@ -1,7 +1,6 @@
 package ua.hodik.gym.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,6 +10,7 @@ import ua.hodik.gym.dao.TrainerSpecification;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.mapper.TrainerMapper;
+import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -18,6 +18,7 @@ import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
+import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,15 +31,17 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
     private final TrainerMapper trainerMapper;
     private final TrainerSpecification trainerSpecification;
+    private final MyValidator credentialValidator;
 
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
-                              TrainerRepository trainerRepository, TrainerMapper trainerMapper, TrainerSpecification trainerSpecification) {
+                              TrainerRepository trainerRepository, TrainerMapper trainerMapper, TrainerSpecification trainerSpecification, MyValidator credentialValidator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
         this.trainerMapper = trainerMapper;
         this.trainerSpecification = trainerSpecification;
+        this.credentialValidator = credentialValidator;
     }
 
     @Override
@@ -47,6 +50,14 @@ public class TrainerServiceImpl implements TrainerService {
         log.info("Finding trainer by id={}", id);
         return trainer.orElseThrow(() -> new EntityNotFoundException(String.format("Trainer id= %s not found", id)));
     }
+
+    @Override
+    public Trainer findByUserName(String trainerUserName) {
+        log.info("Finding trainer by userName {}", trainerUserName);
+        return trainerRepository.findByUserUserName(trainerUserName).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
+    }
+
 
     @Override
     public List<Trainer> getAllTrainers() {
@@ -58,6 +69,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     @Transactional
     public Trainer createTrainerProfile(TrainerDto trainerDto) {
+        credentialValidator.validate(trainerDto);
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
         setGeneratedPassword(trainer);
@@ -78,13 +90,17 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.getUser().setUserName(userName);
     }
 
-    public boolean matchCredential(@Valid UserCredentialDto credential) {
+    public boolean matchCredential(UserCredentialDto credential) {
+        credentialValidator.validate(credential);
         Optional<Trainer> trainer = trainerRepository.findByUserUserName(credential.getUserName());
         return trainer.isPresent() && trainer.get().getUser().getPassword().equals(credential.getPassword());
     }
 
     @Transactional()
-    public Trainer changePassword(@Valid UserCredentialDto credential, @Valid String newPassword) {
+    public Trainer changePassword(UserCredentialDto credential, String newPassword) {
+        if (newPassword == null || newPassword.isEmpty()) {
+            throw new ValidationException("Password can't be null or empty");
+        }
         String userName = credential.getUserName();
         isMatchCredential(credential);
         Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
@@ -94,15 +110,17 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     private void isMatchCredential(UserCredentialDto credential) {
+        credentialValidator.validate(credential);
         if (!matchCredential(credential)) {
             throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
         }
     }
 
     @Transactional()
-    public Trainer update(@Valid UserCredentialDto credential, @Valid TrainerDto trainerDto) {
+    public Trainer update(UserCredentialDto credential, TrainerDto trainerDto) {
         String userName = credential.getUserName();
         isMatchCredential(credential);
+        credentialValidator.validate(trainerDto);
         Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
 
@@ -113,7 +131,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Transactional()
-    public Trainer updateActiveStatus(@Valid UserCredentialDto credential, @Valid boolean isActive) {
+    public Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive) {
         String userName = credential.getUserName();
         isMatchCredential(credential);
         Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
@@ -129,12 +147,6 @@ public class TrainerServiceImpl implements TrainerService {
     public List<Trainer> getNotAssignedTrainers(String traineeName) {
         Specification<Trainer> specification = trainerSpecification.getTrainer(traineeName);
         return trainerRepository.findAll(specification);
-    }
-
-    @Override
-    public Trainer findByUserName(String trainerUserName) {
-        return trainerRepository.findByUserUserName(trainerUserName).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
     }
 
     private void getTrainerToUpdate(TrainerDto trainerDto, Trainer trainer, Trainer trainerToUpdate) {

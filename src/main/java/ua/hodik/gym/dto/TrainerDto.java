@@ -1,5 +1,6 @@
 package ua.hodik.gym.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -12,6 +13,8 @@ public class TrainerDto {
 
     private UserDto userDto;
     private int trainerId;
+    @NotBlank(message = "Can't be null or empty")
+
     private TrainingType specialization;
 
 }

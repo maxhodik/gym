@@ -32,7 +32,7 @@ public class App {
         Trainer trainer = trainerService.findById(7);
         Trainee trainee = traineeService.findById(1);
         TrainingDto trainingDto = getTrainingDto(trainee, trainer);
-//        trainingService.createTraining(trainingDto);
+       trainingService.createTraining(trainingDto);
         UserCredentialDto credential = new UserCredentialDto("Jon.Ivanov1", "MlPyvxOSAw");
 //        traineeService.updateActiveStatus(credential, false);
 //       traineeService.update(credential, traineeDto);
@@ -52,7 +52,7 @@ public class App {
 //                filterFormDto);
 //        List<Training> trainerList=facade.getTrainerTrainingList(filterFormDto);
         System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
-        facade.updateTrainersList(credential, "Jon.Ivanov1", List.of("Yura.Vasil4"));
+        facade.updateTrainersList(credential, List.of("Yura.Vasil4"));
 //        System.out.println(allWithFilters);
 //        System.out.println(trainerList);
     }
@@ -62,9 +62,9 @@ public class App {
                 .date(LocalDate.now().plusDays(1))
                 .name("Boxing")
                 .durationMinutes(50)
-                .trainer(trainer)
-                .trainee(trainee)
-                .trainingType(TrainingType.STRETCHING)
+                .trainerName(trainer.getUser().getUserName())
+                .traineeName(trainee.getUser().getUserName())
+                .trainingType("STRETCHING")
                 .build();
     }
 

@@ -19,6 +19,7 @@ import ua.hodik.gym.repository.TrainingRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
+import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
 import java.util.Map;
@@ -33,15 +34,17 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainerService trainerService;
     private final ConvertToFilterDto convertToFilterDto;
     private final TrainingSpecification trainingSpecification;
+    private final MyValidator validator;
 
     @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TraineeService traineeService, TrainerService trainerService, ConvertToFilterDto convertToFilterDto, TrainingSpecification trainingSpecification) {
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TraineeService traineeService, TrainerService trainerService, ConvertToFilterDto convertToFilterDto, TrainingSpecification trainingSpecification, MyValidator validator) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.convertToFilterDto = convertToFilterDto;
         this.trainingSpecification = trainingSpecification;
+        this.validator = validator;
     }
 
 
@@ -55,18 +58,21 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Transactional()
     public Training createTraining(TrainingDto trainingDto) {
+        validator.validate(trainingDto);
         Training training = trainingMapper.convertToTraining(trainingDto);
-        Trainee trainee = traineeService.findById(trainingDto.getTrainee().getTraineeId());
-        Trainer trainer = trainerService.findById(trainingDto.getTrainer().getId());
+        Trainee trainee = traineeService.findByUserName(trainingDto.getTraineeName());
+        Trainer trainer = trainerService.findByUserName(trainingDto.getTrainerName());
         trainee.addTrainer(trainer);
+        training.setTrainee(trainee);
+        training.setTrainer(trainer);
         training = trainingRepository.save(training);
         log.info("Training id= {} saved in DB", training.getTrainingId());
         return training;
     }
 
     @Transactional(readOnly = true)
-
     public List<Training> findAllWithFilters(FilterFormDto filterFormDto) {
+
         Map<String, FilterDto<?>> filters = convertToFilterDto.convert(filterFormDto);
         Specification<Training> specification = trainingSpecification.getTraining(filters);
         return trainingRepository.findAll(specification);

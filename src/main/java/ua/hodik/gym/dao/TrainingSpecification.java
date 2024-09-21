@@ -48,9 +48,9 @@ public class TrainingSpecification {
         }
     }
 
-    private static void addTrainingTypePredicate(Map<String, FilterDto<?>> filters,
-                                                 Root<Training> root, CriteriaBuilder criteriaBuilder,
-                                                 List<Predicate> predicates) {
+    private void addTrainingTypePredicate(Map<String, FilterDto<?>> filters,
+                                          Root<Training> root, CriteriaBuilder criteriaBuilder,
+                                          List<Predicate> predicates) {
         FilterDto<?> filterDto = filters.get("trainingType");
         if (filterDto != null) {
             String trainingType = filterDto.getValues().get(0).toString();
@@ -59,9 +59,9 @@ public class TrainingSpecification {
         }
     }
 
-    private static void addTrainerNamePredicate(Map<String, FilterDto<?>> filters,
-                                                CriteriaBuilder criteriaBuilder,
-                                                List<Predicate> predicates, Join<Trainer, User> trainingRoot) {
+    private void addTrainerNamePredicate(Map<String, FilterDto<?>> filters,
+                                         CriteriaBuilder criteriaBuilder,
+                                         List<Predicate> predicates, Join<Trainer, User> trainingRoot) {
         FilterDto<?> filterDto = filters.get("trainer");
         if (filterDto != null) {
             String value = (String) filterDto.getValues().get(0);
@@ -72,8 +72,8 @@ public class TrainingSpecification {
         }
     }
 
-    private static void addDatePredicate(Map<String, FilterDto<?>> filters,
-                                         Root<Training> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicates) {
+    private void addDatePredicate(Map<String, FilterDto<?>> filters,
+                                  Root<Training> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicates) {
         FilterDto<?> filterDate = filters.get("date");
         if (filterDate != null) {
             List<?> values = filterDate.getValues();

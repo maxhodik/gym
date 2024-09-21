@@ -67,8 +67,8 @@ public class Facade {
         return trainerService.getNotAssignedTrainers(traineeName);
     }
 
-    public void updateTrainersList(UserCredentialDto credential, String traineeUserName, List<String> trainers) {
-        traineeService.updateTrainersList(credential, traineeUserName, trainers);
+    public void updateTrainersList(UserCredentialDto credential, List<String> trainers) {
+        traineeService.updateTrainersList(credential, trainers);
     }
 
     public Trainer getTrainerByUserName(String userName) {
