@@ -72,7 +72,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Transactional(readOnly = true)
     public List<Training> findAllWithFilters(FilterFormDto filterFormDto) {
-
+        validator.validate(filterFormDto);
         Map<String, FilterDto<?>> filters = convertToFilterDto.convert(filterFormDto);
         Specification<Training> specification = trainingSpecification.getTraining(filters);
         return trainingRepository.findAll(specification);

@@ -20,8 +20,8 @@ public class ConvertToFilterDto {
         LocalDate dateTo = filterFormDto.getDateTo();
         String trainerName = filterFormDto.getTrainerName();
         String traineeName = filterFormDto.getTraineeName();
-
-        TrainingType trainingType = filterFormDto.getTrainingType();
+        String trainingTypeString = filterFormDto.getTrainingType();
+        TrainingType trainingType = getTrainingType(trainingTypeString);
         if (dateFrom != null && dateTo != null) {
             filters.put("date", new FilterDto<>("Training_Date", List.of(dateFrom, dateTo), Operation.BETWEEN));
         }
@@ -35,6 +35,16 @@ public class ConvertToFilterDto {
             filters.put("trainingType", new FilterDto<>("trainingType", List.of(trainingType), Operation.IS));
         }
         return filters;
+    }
+
+    private TrainingType getTrainingType(String trainingTypeString) {
+        TrainingType trainingType;
+        if (trainingTypeString == null) {
+            trainingType = null;
+        } else {
+            trainingType = TrainingType.valueOf(trainingTypeString);
+        }
+        return trainingType;
     }
 
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import ua.hodik.gym.model.TrainingType;
+import ua.hodik.gym.util.ValidDataRange;
+import ua.hodik.gym.util.ValidTrainingTypeEnum;
 
 import java.time.LocalDate;
 
@@ -13,13 +15,18 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ValidDataRange
 public class FilterFormDto {
+
     private String traineeName;
+
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate dateFrom;
+
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private LocalDate dateTo;
-    private String trainerName;
 
-    private TrainingType trainingType;
+    private String trainerName;
+    @ValidTrainingTypeEnum(enumClass = TrainingType.class)
+    private String trainingType;
 }

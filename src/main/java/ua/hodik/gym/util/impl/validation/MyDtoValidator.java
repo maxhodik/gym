@@ -14,21 +14,21 @@ import java.util.stream.Collectors;
 
 @Component
 @Log4j2
-public class UserCredentialDtoValidator implements MyValidator {
+public class MyDtoValidator implements MyValidator {
     private final Validator validator;
 
     @Autowired
-    public UserCredentialDtoValidator(Validator validator) {
+    public MyDtoValidator(Validator validator) {
         this.validator = validator;
     }
 
     @Override
-    public <T> void validate(T credential) {
-        Map<String, List<Map<String, String>>> validationResult = getMapOfErrors(credential);
+    public <T> void validate(T value) {
+        Map<String, List<Map<String, String>>> validationResult = getMapOfErrors(value);
         if (!validationResult.isEmpty()) {
             throw new ValidationException("Validation ran in service" + validationResult);
         }
-        log.info("{}} is valid", credential.getClass());
+        log.info("{}} is valid", value.getClass());
     }
 
     private Map<String, List<Map<String, String>>> getMapOfErrors(Object credential) {

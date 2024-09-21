@@ -11,18 +11,18 @@ import java.util.stream.Collectors;
 public class CustomTrainingTypeValidator implements ConstraintValidator<ValidTrainingTypeEnum, String> {
     private List<String> valueList;
 
-
     @Override
     public void initialize(ValidTrainingTypeEnum constraintAnnotation) {
         valueList = Arrays.stream(constraintAnnotation.enumClass().getEnumConstants())
                 .map(Enum::name)
                 .collect(Collectors.toList());
-
     }
-
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null) {
+            return true;
+        }
         return valueList.contains(value.toUpperCase());
     }
 

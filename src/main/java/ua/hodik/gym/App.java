@@ -7,6 +7,7 @@ import ua.hodik.gym.dto.*;
 import ua.hodik.gym.facade.Facade;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.model.Training;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
@@ -32,7 +33,7 @@ public class App {
         Trainer trainer = trainerService.findById(7);
         Trainee trainee = traineeService.findById(1);
         TrainingDto trainingDto = getTrainingDto(trainee, trainer);
-       trainingService.createTraining(trainingDto);
+//       trainingService.createTraining(trainingDto);
         UserCredentialDto credential = new UserCredentialDto("Jon.Ivanov1", "MlPyvxOSAw");
 //        traineeService.updateActiveStatus(credential, false);
 //       traineeService.update(credential, traineeDto);
@@ -43,17 +44,17 @@ public class App {
         FilterFormDto filterFormDto = FilterFormDto.builder()
                 .traineeName("Jon.Ivanov1")
                 .trainerName("Yura.Vasil")
-                .trainingType(TrainingType.BOXING)
-                .dateFrom(LocalDate.of(2024, 9, 18))
+                .trainingType("BOXING")
+                .dateFrom(LocalDate.of(2024, 9, 19))
                 .dateTo(LocalDate.of(2024, 9, 18))
                 .build();
 //        System.out.println(filterFormDto);
-//        List<Training> allWithFilters = facade.getTraineeTrainingList(
-//                filterFormDto);
+        List<Training> allWithFilters = facade.getTraineeTrainingList(
+                filterFormDto);
 //        List<Training> trainerList=facade.getTrainerTrainingList(filterFormDto);
         System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
         facade.updateTrainersList(credential, List.of("Yura.Vasil4"));
-//        System.out.println(allWithFilters);
+        System.out.println(allWithFilters);
 //        System.out.println(trainerList);
     }
 
