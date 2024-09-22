@@ -10,7 +10,7 @@ import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
 import ua.hodik.gym.service.TraineeService;
-import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.TrainerRepositiry;
 import ua.hodik.gym.service.TrainingService;
 
 import java.util.List;
@@ -18,11 +18,11 @@ import java.util.List;
 @Component
 public class Facade {
     private final TraineeService traineeService;
-    private final TrainerService trainerService;
+    private final TrainerRepositiry trainerService;
     private final TrainingService trainingService;
 
     @Autowired
-    public Facade(TraineeService traineeService, TrainerService trainerService, TrainingService trainingService) {
+    public Facade(TraineeService traineeService, TrainerRepositiry trainerService, TrainingService trainingService) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.trainingService = trainingService;
@@ -33,8 +33,8 @@ public class Facade {
         return traineeService.update(credential, trainee);
     }
 
-    public void deleteTrainee(int id) {
-        traineeService.delete(id);
+    public void deleteTrainee(UserCredentialDto credential) {
+        traineeService.deleteTrainee(credential);
     }
 
     public Trainee findTraineeById(int id) {
@@ -67,8 +67,8 @@ public class Facade {
         return trainerService.getNotAssignedTrainers(traineeName);
     }
 
-    public void updateTrainersList(UserCredentialDto credential, List<String> trainers) {
-        traineeService.updateTrainersList(credential, trainers);
+    public void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList) {
+        traineeService.updateTrainersList(credential, trainerNameList);
     }
 
     public Trainer getTrainerByUserName(String userName) {

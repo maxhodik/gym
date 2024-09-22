@@ -1,9 +1,8 @@
-package ua.hodik.gym.util;
+package ua.hodik.gym.util.impl.validation;
 
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import ua.hodik.gym.util.impl.validation.CustomTrainingTypeValidator;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

@@ -2,7 +2,6 @@ package ua.hodik.gym.util.impl.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import ua.hodik.gym.util.ValidTrainingTypeEnum;
 
 import java.util.Arrays;
 import java.util.List;

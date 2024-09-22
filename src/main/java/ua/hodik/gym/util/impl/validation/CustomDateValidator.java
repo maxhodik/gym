@@ -3,7 +3,6 @@ package ua.hodik.gym.util.impl.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import ua.hodik.gym.dto.FilterFormDto;
-import ua.hodik.gym.util.ValidDataRange;
 
 import java.time.LocalDate;
 

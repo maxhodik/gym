@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import ua.hodik.gym.model.TrainingType;
-import ua.hodik.gym.util.ValidDataRange;
-import ua.hodik.gym.util.ValidTrainingTypeEnum;
+import ua.hodik.gym.util.impl.validation.ValidDataRange;
+import ua.hodik.gym.util.impl.validation.ValidTrainingTypeEnum;
 
 import java.time.LocalDate;
 

@@ -24,6 +24,7 @@ public class MyDtoValidator implements MyValidator {
 
     @Override
     public <T> void validate(T value) {
+
         Map<String, List<Map<String, String>>> validationResult = getMapOfErrors(value);
         if (!validationResult.isEmpty()) {
             throw new ValidationException("Validation ran in service" + validationResult);
@@ -31,9 +32,9 @@ public class MyDtoValidator implements MyValidator {
         log.info("{}} is valid", value.getClass());
     }
 
-    private Map<String, List<Map<String, String>>> getMapOfErrors(Object credential) {
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(credential, credential.getClass().getName());
-        validator.validate(credential, bindingResult);
+    private Map<String, List<Map<String, String>>> getMapOfErrors(Object value) {
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(value, value.getClass().getName());
+        validator.validate(value, bindingResult);
         return appendErrorsToMap(bindingResult);
     }
 

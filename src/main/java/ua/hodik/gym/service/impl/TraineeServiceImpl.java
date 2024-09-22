@@ -3,13 +3,12 @@ package ua.hodik.gym.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.dto.mapper.TraineeMapper;
-import ua.hodik.gym.dto.mapper.UserMapper;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.exception.WrongCredentialException;
@@ -17,57 +16,81 @@ import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TraineeRepository;
+import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TraineeService;
-import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.TrainerRepositiry;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Log4j2
 public class TraineeServiceImpl implements TraineeService {
 
+    private final UserNameGenerator userNameGenerator;
 
-    private UserNameGenerator userNameGenerator;
-    private PasswordGenerator passwordGenerator;
+    private final PasswordGenerator passwordGenerator;
     private final TraineeMapper traineeMapper;
-    private final UserMapper userMapper;
+
     private final TraineeRepository traineeRepository;
-    private final TrainerService trainerService;
-    private final MyValidator credentialValidator;
+    private final TrainerRepositiry trainerRepositiry;
+    private final UserRepository userRepository;
+
+    private final MyValidator validator;
 
 
     @Autowired
-    public TraineeServiceImpl(TraineeMapper traineeMapper, UserMapper userMapper,
-                              TraineeRepository traineeRepository, @Lazy TrainerService trainerService,
-                              MyValidator credentialValidator) {
-        this.traineeMapper = traineeMapper;
-        this.userMapper = userMapper;
-        this.traineeRepository = traineeRepository;
-        this.trainerService = trainerService;
-        this.credentialValidator = credentialValidator;
-    }
-
-
-    @Autowired
-    public void setUserNameGenerator(UserNameGenerator userNameGenerator) {
+    public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
+                              TraineeMapper traineeMapper,
+                              TraineeRepository traineeRepository, TrainerRepositiry trainerService,
+                              UserRepository userRepository, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
-    }
-
-    @Autowired
-    public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
+        this.traineeMapper = traineeMapper;
+        this.traineeRepository = traineeRepository;
+        this.trainerRepositiry = trainerService;
+        this.userRepository = userRepository;
+        this.validator = validator;
     }
 
 
     @Override
-    public void delete(int id) {
-        traineeRepository.deleteById(id);
-        log.info("Deleting Trainee with id= {}", id);
+    @Transactional
+    public Trainee createTraineeProfile(TraineeDto traineeDto) {
+        Objects.requireNonNull(traineeDto, "Trainee can't be null");
+        validator.validate(traineeDto);
+        Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
+        setGeneratedUserName(trainee);
+        setGeneratedPassword(trainee);
+        trainee = traineeRepository.save(trainee);
+        log.info("Trainee {} saved in DB", trainee.getUser().getUserName());
+        return trainee;
+    }
+
+    @Transactional()
+    public Trainee update(UserCredentialDto credential, TraineeDto traineeDto) {
+        isMatchCredential(credential);
+        int traineeId = traineeDto.getTraineeId();
+        validator.validate(traineeDto);
+        String userNameFromDto = traineeDto.getUserDto().getUserName();
+        Trainee traineeToUpdate = findTraineeToUpdate(traineeId);
+        checkIfUserNameAllowedToChange(userNameFromDto, traineeToUpdate.getUser().getUserName());
+        updateTrainee(traineeDto, traineeToUpdate);
+        log.info("{} trainee updated", userNameFromDto);
+        return traineeToUpdate;
+    }
+
+    private Trainee findTraineeToUpdate(int traineeId) {
+        if (traineeId == 0) {
+            throw new EntityNotFoundException("Trainee with id = 0 cant be found");
+        }
+        return traineeRepository.findById(traineeId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Trainee not found with id=%s", traineeId)));
     }
 
     @Override
@@ -81,9 +104,29 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Trainee findByUserName(String userName) {
         Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
-        log.info("Finding trainee by userName", userName);
+        log.info("Finding trainee by {}", userName);
         return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee  %s not found", userName)));
 
+    }
+
+    @Transactional()
+    public Trainee changePassword(UserCredentialDto credential, String newPassword) {
+        validatePassword(newPassword);
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
+        optionalTrainee.orElseThrow().getUser().setPassword(newPassword);
+        log.info("{} password updated", userName);
+        return optionalTrainee.orElseThrow();
+    }
+
+    @Override
+    @Transactional
+    public void deleteTrainee(UserCredentialDto credential) {
+        String userName = credential.getUserName();
+        isMatchCredential(credential);
+        traineeRepository.deleteByUserUserName(userName);
+        log.info("{} trainee  deleted", userName);
     }
 
     @Override
@@ -93,18 +136,6 @@ public class TraineeServiceImpl implements TraineeService {
         return allTrainees;
     }
 
-
-    @Override
-    @Transactional
-    public Trainee createTraineeProfile(TraineeDto traineeDto) {
-        credentialValidator.validate(traineeDto);
-        Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
-        setGeneratedUserName(trainee);
-        setGeneratedPassword(trainee);
-        trainee = traineeRepository.save(trainee);
-        log.info("Trainee {} saved in DB", trainee.getUser().getUserName());
-        return trainee;
-    }
 
     private void setGeneratedPassword(Trainee trainee) {
         String password = passwordGenerator.generatePassword();
@@ -121,7 +152,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional(readOnly = true)
     public boolean matchCredential(UserCredentialDto credential) {
-        credentialValidator.validate(credential);
+        validator.validate(credential);
 
         String userName = credential.getUserName();
         Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
@@ -131,62 +162,31 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
 
-    @Transactional()
-    public Trainee changePassword(UserCredentialDto credential, String newPassword) {
-        validatePassword(newPassword);
-        String userName = credential.getUserName();
-        isMatchCredential(credential);
-        Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
-        optionalTrainee.orElseThrow().getUser().setPassword(newPassword);
-        log.info("{} password updated", userName);
-        return optionalTrainee.orElseThrow();
-    }
-
     private void validatePassword(String newPassword) {
         if (newPassword == null || newPassword.isEmpty()) {
             throw new ValidationException("Password can't be null or empty");
         }
     }
 
-    @Transactional()
-    public Trainee update(UserCredentialDto credential, TraineeDto traineeDto) {
-        String userName = credential.getUserName();
-        isMatchCredential(credential);
-        String userNameDto = traineeDto.getUserDto().getUserName();
-        checkUserName(userName, userNameDto);
-        Optional<Trainee> optionalTrainee = traineeRepository.findByUserUserName(userName);
-        Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
-        Trainee traineeToUpdate = optionalTrainee.orElseThrow(() -> new EntityNotFoundException("Trainee not found"));
-        getTraineeToUpdate(traineeDto, trainee, traineeToUpdate);
-        log.info("{} trainee updated", userName);
-        return traineeToUpdate;
-    }
-
-    private void checkUserName(String userName, String userNameDto) {
+    private void checkIfUserNameAllowedToChange(String userName, String userNameDto) {
         if (!userName.equals(userNameDto)) {
-            if (traineeRepository.findByUserUserName(userNameDto).isPresent()) {
+            if (userRepository.findByUserName(userNameDto).isPresent()) {
                 throw new EntityAlreadyExistsException(String.format("User %s already exists", userNameDto));
             }
         }
+
     }
 
-    @Override
-    @Transactional
-    public void deleteTrainee(UserCredentialDto credential) {
-        String userName = credential.getUserName();
-        isMatchCredential(credential);
-        traineeRepository.deleteByUserUserName(userName);
-        log.info("{} trainee  deleted", userName);
-    }
-
-    private void getTraineeToUpdate(TraineeDto traineeDto, Trainee trainee, Trainee traineeToUpdate) {
-        traineeToUpdate.setDayOfBirth(traineeDto.getDayOfBirth());
+    private void updateTrainee(TraineeDto traineeDto, Trainee traineeToUpdate) {
+        Optional.ofNullable(traineeDto.getDayOfBirth()).ifPresent(traineeToUpdate::setDayOfBirth);
         traineeToUpdate.setAddress(traineeDto.getAddress());
-        traineeToUpdate.getUser().setFirstName(trainee.getUser().getFirstName());
-        traineeToUpdate.getUser().setLastName(trainee.getUser().getLastName());
-        traineeToUpdate.getUser().setActive(trainee.getUser().isActive());
-        traineeToUpdate.getUser().setUserName(trainee.getUser().getUserName());
-        traineeToUpdate.getUser().setPassword(traineeToUpdate.getUser().getPassword());
+        User user = traineeToUpdate.getUser();
+        user.setFirstName(traineeDto.getUserDto().getFirstName());
+        Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getFirstName).ifPresent(user::setFirstName);
+        user.setLastName(traineeDto.getUserDto().getLastName());
+        user.setActive(traineeDto.getUserDto().isActive());
+        user.setUserName(traineeDto.getUserDto().getUserName());
+        user.setPassword(user.getPassword());
     }
 
     @Transactional()
@@ -204,16 +204,15 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional
-    public void updateTrainersList(UserCredentialDto credential, List<String> trainers) {
+    public void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList) {
         isMatchCredential(credential);
         String traineeUserName = credential.getUserName();
         Trainee trainee = traineeRepository.findByUserUserName(traineeUserName).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Trainee %S not found", traineeUserName)));
         List<Trainer> trainerList = new ArrayList<>();
-        for (String trainerUserName : trainers) {
-            Trainer trainer = trainerService.findByUserName(trainerUserName);
-            trainerList.add(trainer);
-        }
+        trainerNameList.stream()
+                .map(trainerRepositiry::findByUserName)
+                .forEach(trainerList::add);
         trainee.addTrainersList(trainerList);
         log.info("Updating {} trainersList", traineeUserName);
     }

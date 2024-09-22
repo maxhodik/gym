@@ -6,7 +6,7 @@ import ua.hodik.gym.model.Trainer;
 
 import java.util.List;
 
-public interface TrainerService {
+public interface TrainerRepositiry {
 
     Trainer findById(int id);
 

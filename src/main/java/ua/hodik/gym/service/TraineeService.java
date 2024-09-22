@@ -9,7 +9,7 @@ import java.util.List;
 public interface TraineeService {
 
 
-    void delete(int id);
+
 
     Trainee findById(int id);
 
@@ -29,5 +29,5 @@ public interface TraineeService {
 
     Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive);
 
-    void updateTrainersList(UserCredentialDto credential, List<String> trainers);
+    void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList);
 }
