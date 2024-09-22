@@ -1,9 +1,11 @@
 {
-  "userId": 1,
-  "firstName": "Sam",
-  "lastName": "Jonson",
-  "userName": "Sam.Jonson",
-  "password": "ABCDEFJxyz",
-  "active": "true",
-  "specialization": "zuma"
+  "id": 1,
+  "user": {
+    "firstName": "Sam",
+    "lastName": "Jonson",
+    "userName": "Sam.Jonson",
+    "password": "ABCDEFJxyz",
+    "active": "true"
+  },
+  "specialization": "ZUMA"
 }

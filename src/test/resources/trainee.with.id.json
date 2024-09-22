@@ -1,10 +1,12 @@
 {
-  "userId": 1,
-  "firstName": "Vasya",
-  "lastName": "Lis",
-  "userName": "Vasya.Lis",
-  "password": "ABCDEFJxyz",
-  "active": "true",
+  "traineeId": 1,
+  "user": {
+    "firstName": "Vasya",
+    "lastName": "Lis",
+    "password": "ABCDEFJxyz",
+    "active": "true",
+    "userName": "Vasya.Lis"
+  },
   "dayOfBirth": "10-02-1995",
   "address": "Lviv"
 }

@@ -12,11 +12,6 @@ public class TestUtils {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         File file = new File(filePath);
-//        try {
-//            return objectMapper.readValue(file, type);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
         try (InputStream stream = TestUtils.class.getClassLoader().getResourceAsStream(filePath)) {
             return objectMapper.readValue(stream, type);
         } catch (IOException e) {

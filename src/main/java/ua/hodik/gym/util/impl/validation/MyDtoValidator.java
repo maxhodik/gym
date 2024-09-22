@@ -24,7 +24,9 @@ public class MyDtoValidator implements MyValidator {
 
     @Override
     public <T> void validate(T value) {
-
+        if (value == null) {
+            throw new ValidationException("Value can't be null");
+        }
         Map<String, List<Map<String, String>>> validationResult = getMapOfErrors(value);
         if (!validationResult.isEmpty()) {
             throw new ValidationException("Validation ran in service" + validationResult);

@@ -10,7 +10,7 @@ import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.service.TraineeService;
-import ua.hodik.gym.service.TrainerRepositiry;
+import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ public class App {
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(HibernateConfig.class);
         TraineeService traineeService = context.getBean("traineeServiceImpl", TraineeService.class);
-        TrainerRepositiry trainerService = context.getBean("trainerServiceImpl", TrainerRepositiry.class);
+        TrainerService trainerService = context.getBean("trainerServiceImpl", TrainerService.class);
         TrainingService trainingService = context.getBean("trainingServiceImpl", TrainingService.class);
         Facade facade = context.getBean("facade", Facade.class);
 
@@ -36,7 +36,7 @@ public class App {
 //       trainingService.createTraining(trainingDto);
         UserCredentialDto credential = new UserCredentialDto("Jon.Ivanov1", "MlPyvxOSAw");
 //        traineeService.updateActiveStatus(credential, false);
-//       traineeService.update(credential, traineeDto);
+        traineeService.update(credential, traineeDto);
 //        traineeService.deleteTrainee(credential);
 //
 //        trainerService.updateActiveStatus(credential, true);

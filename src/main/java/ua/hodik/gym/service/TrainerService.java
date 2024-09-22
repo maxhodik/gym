@@ -6,7 +6,8 @@ import ua.hodik.gym.model.Trainer;
 
 import java.util.List;
 
-public interface TrainerRepositiry {
+public interface TrainerService {
+
 
     Trainer findById(int id);
 
@@ -25,5 +26,4 @@ public interface TrainerRepositiry {
     List<Trainer> getNotAssignedTrainers(String traineeName);
 
     Trainer findByUserName(String trainerUserName);
-
 }

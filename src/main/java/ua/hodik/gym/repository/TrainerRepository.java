@@ -14,6 +14,7 @@ public interface TrainerRepository extends JpaRepository<Trainer, Integer> {
 
     List<Trainer> findAll(Specification specification);
 
+
 }
 
 

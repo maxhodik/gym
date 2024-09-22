@@ -1,11 +1,11 @@
 {
   "traineeId": 1,
-  "user": {
+  "userDto": {
     "firstName": "Sam",
     "lastName": "Jonson",
+    "userName": "Sam.Jonson",
     "password": "ABCDEFJxyz",
-    "active": "true",
-    "userName": "Sam.Jonson"
+    "active": "true"
   },
   "dayOfBirth": "10-02-1995",
   "address": "Chicago"
