@@ -209,7 +209,7 @@ public class TraineeServiceImpl implements TraineeService {
         isMatchCredential(credential);
         String traineeUserName = credential.getUserName();
         Trainee trainee = traineeRepository.findByUserUserName(traineeUserName).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Trainee %S not found", traineeUserName)));
+                new EntityNotFoundException(String.format("Trainee %s not found", traineeUserName)));
         List<Trainer> trainerList = new ArrayList<>();
         trainerNameList.stream()
                 .map(trainerService::findByUserName)
