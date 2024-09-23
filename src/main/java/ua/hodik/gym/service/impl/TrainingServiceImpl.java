@@ -1,6 +1,5 @@
 package ua.hodik.gym.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,6 +11,7 @@ import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
 import ua.hodik.gym.dto.mapper.ConvertToFilterDto;
 import ua.hodik.gym.dto.mapper.TrainingMapper;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
