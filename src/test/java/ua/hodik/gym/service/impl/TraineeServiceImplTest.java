@@ -14,7 +14,6 @@ import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.repository.TraineeRepository;
-import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.tets.util.TestUtils;
@@ -63,8 +62,6 @@ class TraineeServiceImplTest {
     private UserNameGenerator userNameGenerator;
     @Mock
     private TraineeRepository traineeRepository;
-    @Mock
-    private TrainerRepository trainerRepository;
     @Mock
     private TrainerService trainerService;
     @Mock
@@ -258,7 +255,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void findByUsrNameShouldReturnTrainee() {
+    void findByUserNameShouldReturnTrainee() {
         //give
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainee));
         //when

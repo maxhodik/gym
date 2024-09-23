@@ -1,6 +1,5 @@
 package ua.hodik.gym.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,6 +11,7 @@ import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.dto.mapper.TrainerMapper;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainer;
@@ -24,6 +24,7 @@ import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -53,6 +54,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     @Transactional
     public Trainer createTrainerProfile(TrainerDto trainerDto) {
+        Objects.requireNonNull(trainerDto, "Trainer can't be null");
         validator.validate(trainerDto);
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
@@ -65,35 +67,16 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional()
     @Override
     public Trainer update(UserCredentialDto credential, TrainerDto trainerDto) {
-
         isMatchCredential(credential);
         validator.validate(trainerDto);
         int trainerId = trainerDto.getTrainerId();
         String userNameFromDto = trainerDto.getUserDto().getUserName();
         Trainer trainerToUpdate = findTrainerToUpdate(trainerId);
-        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
-        Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         checkIfUserNameAllowedToChange(userNameFromDto, trainerToUpdate.getUser().getUserName());
         updateTrainer(trainerDto, trainerToUpdate);
 
         log.info("{} trainer updated", userNameFromDto);
         return trainerToUpdate;
-    }
-
-    private Trainer findTrainerToUpdate(int trainerId) {
-        if (trainerId == 0) {
-            throw new EntityNotFoundException("Trainer with id = 0 cant be found");
-        }
-        return trainerRepository.findById(trainerId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Trainer not found with id=%s", trainerId)));
-    }
-
-    private void checkIfUserNameAllowedToChange(String userName, String userNameDto) {
-        if (!userName.equals(userNameDto)) {
-            if (userRepository.findByUserName(userNameDto).isPresent()) {
-                throw new EntityAlreadyExistsException(String.format("User %s already exists", userNameDto));
-            }
-        }
     }
 
     @Override
@@ -118,6 +101,53 @@ public class TrainerServiceImpl implements TrainerService {
         return allTrainers;
     }
 
+    @Transactional()
+    @Override
+    public Trainer changePassword(UserCredentialDto credential, String newPassword) {
+        validatePassword(newPassword);
+        isMatchCredential(credential);
+        String userName = credential.getUserName();
+        Trainer trainerToUpdate = findByUserName(userName);
+        trainerToUpdate.getUser().setPassword(newPassword);
+        log.info("{} password updated", userName);
+        return trainerToUpdate;
+    }
+
+    @Transactional()
+    @Override
+    public Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive) {
+        isMatchCredential(credential);
+        String userName = credential.getUserName();
+        Trainer trainerToUpdate = findByUserName(credential.getUserName());
+        User user = trainerToUpdate.getUser();
+        if (!user.isActive() == isActive) {
+            user.setActive(isActive);
+            log.info("Trainer {} active status updated", userName);
+        }
+        return trainerToUpdate;
+    }
+
+    @Override
+    public List<Trainer> getNotAssignedTrainers(String traineeName) {
+        Specification<Trainer> specification = trainerSpecification.getTrainer(traineeName);
+        return trainerRepository.findAll(specification);
+    }
+
+    private Trainer findTrainerToUpdate(int trainerId) {
+        if (trainerId == 0) {
+            throw new EntityNotFoundException("Trainer with id = 0 cant be found");
+        }
+        return findById(trainerId);
+    }
+
+    private void checkIfUserNameAllowedToChange(String userNameFromDto, String userNameFromDB) {
+        if (!userNameFromDto.equals(userNameFromDB)) {
+            if (userRepository.findByUserName(userNameFromDto).isPresent()) {
+                throw new EntityAlreadyExistsException(String.format("User %s already exists", userNameFromDto));
+            }
+        }
+    }
+
     private void setGeneratedPassword(Trainer trainer) {
         String password = passwordGenerator.generatePassword();
         trainer.getUser().setPassword(password);
@@ -131,49 +161,22 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     public boolean matchCredential(UserCredentialDto credential) {
+        Objects.requireNonNull(credential, "Credential can't be null");
         validator.validate(credential);
         Optional<Trainer> trainer = trainerRepository.findByUserUserName(credential.getUserName());
         return trainer.isPresent() && trainer.get().getUser().getPassword().equals(credential.getPassword());
     }
 
-    @Transactional()
-    @Override
-    public Trainer changePassword(UserCredentialDto credential, String newPassword) {
+    private void validatePassword(String newPassword) {
         if (newPassword == null || newPassword.isEmpty()) {
             throw new ValidationException("Password can't be null or empty");
         }
-        String userName = credential.getUserName();
-        isMatchCredential(credential);
-        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
-        optionalTrainer.orElseThrow().getUser().setPassword(newPassword);
-        log.info("{} password updated", userName);
-        return optionalTrainer.orElseThrow();
     }
 
     private void isMatchCredential(UserCredentialDto credential) {
         if (!matchCredential(credential)) {
             throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
         }
-    }
-
-    @Transactional()
-    @Override
-    public Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive) {
-        String userName = credential.getUserName();
-        isMatchCredential(credential);
-        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(credential.getUserName());
-        Trainer trainerToUpdate = optionalTrainer.orElseThrow(() -> new EntityNotFoundException("Trainer not found"));
-        User user = trainerToUpdate.getUser();
-        if (!user.isActive()) {
-            user.setActive(isActive);
-            log.info("Trainer {} active status updated", userName);
-        }
-        return trainerToUpdate;
-    }
-
-    public List<Trainer> getNotAssignedTrainers(String traineeName) {
-        Specification<Trainer> specification = trainerSpecification.getTrainer(traineeName);
-        return trainerRepository.findAll(specification);
     }
 
     private void updateTrainer(TrainerDto trainerDto, Trainer trainerToUpdate) {
@@ -185,6 +188,4 @@ public class TrainerServiceImpl implements TrainerService {
         Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::isActive).ifPresent(user::setActive);
         Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::getPassword).ifPresent(user::setPassword);
     }
-
-
 }

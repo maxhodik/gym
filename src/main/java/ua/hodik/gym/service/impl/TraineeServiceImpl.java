@@ -194,8 +194,7 @@ public class TraineeServiceImpl implements TraineeService {
     public Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive) {
         isMatchCredential(credential);
         String userName = credential.getUserName();
-        Trainee traineeToUpdate = traineeRepository.findByUserUserName(userName)
-                .orElseThrow(() -> new EntityNotFoundException("Trainee not found"));
+        Trainee traineeToUpdate = findByUserName(userName);
         User user = traineeToUpdate.getUser();
         if (!user.isActive() == isActive) {
             user.setActive(isActive);

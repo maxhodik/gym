@@ -1,8 +1,9 @@
 {
-  "id": 1,
-  "user": {
+  "trainerId": 1,
+  "userDto": {
     "firstName": "Sam",
     "lastName": "Jonson",
+    "userName": "Sam.Jonson",
     "password": "ABCDEFJxyz",
     "active": "true"
   },

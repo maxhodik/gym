@@ -21,7 +21,8 @@ public class UserNameGeneratorImpl implements UserNameGenerator {
         String userName;
         String baseUsername = generateBaseUserName(firstName, lastName);
 
-        long count = userService.getAllUsers().stream().map(User::getUserName)
+        long count = userService.getAllUsers().stream()
+                .map(User::getUserName)
                 .map(u -> u.replaceAll("\\d+", ""))
                 .filter(u -> u.equals(baseUsername))
                 .count();
