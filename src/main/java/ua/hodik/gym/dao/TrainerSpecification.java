@@ -20,7 +20,7 @@ public class TrainerSpecification {
             Join<Trainer, Trainee> traineeJoin = root.join("trainees");
 
             Join<Trainer, User> trainerUserJoin = traineeJoin.join("user");
-//
+
             Join<Trainee, User> traineeUserJoin = traineeJoin.join("user");
 
             addTraineeNamePredicate(traineeName, criteriaBuilder, predicates, traineeUserJoin);
