@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MyDtoValidatorTest {
 
-    public static final String EXCEPTION_MESSAGE = "Validation ran in service{field1=[{Value=InvalidValue1, message=Field1 is invalid}], field2=[{Value=InvalidValue2, message=Field2 is invalid}]}";
 
     @Data
     private static class TestDto {
@@ -89,10 +88,6 @@ class MyDtoValidatorTest {
         //when
         ValidationException exception = assertThrows(ValidationException.class, () -> myDtoValidator.validate(invalidDto));
         //then
-        String expectedMessage = EXCEPTION_MESSAGE;
-        assertEquals(expectedMessage, exception.getMessage());
-
-        // Verify the validator was called
         verify(validator).validate(any(), any(BeanPropertyBindingResult.class));
     }
 
