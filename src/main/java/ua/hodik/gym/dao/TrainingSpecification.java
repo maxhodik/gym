@@ -21,13 +21,17 @@ import java.util.Map;
 public class TrainingSpecification {
 
 
+    public static final String TRAINER = "trainer";
+    public static final String USER = "user";
+    public static final String TRAINEE = "trainee";
+
     public Specification<Training> getTraining(Map<String, FilterDto<?>> filters) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            Join<Training, Trainer> trainerJoin = root.join("trainer");
-            Join<Trainer, User> trainerUserJoin = trainerJoin.join("user");
-            Join<Training, Trainee> traineeJoin = root.join("trainee");
-            Join<Trainee, User> traineeUserJoin = traineeJoin.join("user");
+            Join<Training, Trainer> trainerJoin = root.join(TRAINER);
+            Join<Trainer, User> trainerUserJoin = trainerJoin.join(USER);
+            Join<Training, Trainee> traineeJoin = root.join(TRAINEE);
+            Join<Trainee, User> traineeUserJoin = traineeJoin.join(USER);
 
             addDatePredicate(filters, root, criteriaBuilder, predicates);
             addTraineeNamePredicate(filters, criteriaBuilder, predicates, traineeUserJoin);

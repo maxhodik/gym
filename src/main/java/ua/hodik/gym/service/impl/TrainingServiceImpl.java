@@ -9,8 +9,6 @@ import ua.hodik.gym.dao.TrainingSpecification;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
-import ua.hodik.gym.dto.mapper.ConvertToFilterDto;
-import ua.hodik.gym.dto.mapper.TrainingMapper;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
@@ -19,6 +17,8 @@ import ua.hodik.gym.repository.TrainingRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
+import ua.hodik.gym.service.mapper.FilterDtoConverter;
+import ua.hodik.gym.service.mapper.TrainingMapper;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
@@ -32,17 +32,17 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingMapper trainingMapper;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
-    private final ConvertToFilterDto convertToFilterDto;
+    private final FilterDtoConverter filterDtoConverter;
     private final TrainingSpecification trainingSpecification;
     private final MyValidator validator;
 
     @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TraineeService traineeService, TrainerService trainerService, ConvertToFilterDto convertToFilterDto, TrainingSpecification trainingSpecification, MyValidator validator) {
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TraineeService traineeService, TrainerService trainerService, FilterDtoConverter filterDtoConverter, TrainingSpecification trainingSpecification, MyValidator validator) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
         this.traineeService = traineeService;
         this.trainerService = trainerService;
-        this.convertToFilterDto = convertToFilterDto;
+        this.filterDtoConverter = filterDtoConverter;
         this.trainingSpecification = trainingSpecification;
         this.validator = validator;
     }
@@ -73,7 +73,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Transactional(readOnly = true)
     public List<Training> findAllWithFilters(FilterFormDto filterFormDto) {
         validator.validate(filterFormDto);
-        Map<String, FilterDto<?>> filters = convertToFilterDto.convert(filterFormDto);
+        Map<String, FilterDto<?>> filters = filterDtoConverter.convert(filterFormDto);
         Specification<Training> specification = trainingSpecification.getTraining(filters);
         return trainingRepository.findAll(specification);
     }

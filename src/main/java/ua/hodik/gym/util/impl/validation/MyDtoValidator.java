@@ -31,7 +31,6 @@ public class MyDtoValidator implements MyValidator {
         if (!validationResult.isEmpty()) {
             throw new ValidationException("Validation ran in service" + validationResult);
         }
-        log.info("{}} is valid", value.getClass());
     }
 
     private Map<String, List<Map<String, String>>> getMapOfErrors(Object value) {

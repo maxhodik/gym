@@ -2,13 +2,13 @@ package ua.hodik.gym.service.impl;
 
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.dto.mapper.TraineeMapper;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
@@ -17,10 +17,10 @@ import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TraineeRepository;
-import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.mapper.TraineeMapper;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
@@ -40,7 +40,6 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeMapper traineeMapper;
 
     private final TraineeRepository traineeRepository;
-    private final TrainerRepository trainerRepository;
     private final TrainerService trainerService;
     private final UserRepository userRepository;
 
@@ -50,13 +49,12 @@ public class TraineeServiceImpl implements TraineeService {
     @Autowired
     public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TraineeMapper traineeMapper,
-                              TraineeRepository traineeRepository, TrainerRepository trainerRepository,
+                              TraineeRepository traineeRepository,
                               TrainerService trainerService, UserRepository userRepository, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.traineeMapper = traineeMapper;
         this.traineeRepository = traineeRepository;
-        this.trainerRepository = trainerRepository;
         this.trainerService = trainerService;
         this.userRepository = userRepository;
         this.validator = validator;
@@ -76,42 +74,33 @@ public class TraineeServiceImpl implements TraineeService {
         return trainee;
     }
 
-    @Transactional()
+    @Transactional
     public Trainee update(UserCredentialDto credential, TraineeDto traineeDto) {
         isMatchCredential(credential);
         validator.validate(traineeDto);
         int traineeId = traineeDto.getTraineeId();
         String userNameFromDto = traineeDto.getUserDto().getUserName();
-        Trainee traineeToUpdate = findTraineeToUpdate(traineeId);
+        Trainee traineeToUpdate = findById(traineeId);
         checkIfUserNameAllowedToChange(userNameFromDto, traineeToUpdate.getUser().getUserName());
         updateTrainee(traineeDto, traineeToUpdate);
         log.info("{} trainee updated", userNameFromDto);
         return traineeToUpdate;
     }
 
-    private Trainee findTraineeToUpdate(int traineeId) {
-        if (traineeId == 0) {
-            throw new EntityNotFoundException("Trainee with id = 0 cant be found");
-        }
-        return findById(traineeId);
-    }
-
     @Override
     public Trainee findById(int id) {
         Optional<Trainee> trainee = traineeRepository.findById(id);
-        log.info("Finding trainee by id={}", id);
         return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee id= %s not found", id)));
     }
 
     @Override
     public Trainee findByUserName(String userName) {
         Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
-        log.info("Finding trainee by {}", userName);
         return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee %s not found", userName)));
 
     }
 
-    @Transactional()
+    @Transactional
     public Trainee changePassword(UserCredentialDto credential, String newPassword) {
         validatePassword(newPassword);
         isMatchCredential(credential);
@@ -133,9 +122,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public List<Trainee> getAllTrainees() {
-        List<Trainee> allTrainees = traineeRepository.findAll();
-        log.info("Finding all trainees from DB");
-        return allTrainees;
+        return traineeRepository.findAll();
     }
 
 
@@ -159,14 +146,14 @@ public class TraineeServiceImpl implements TraineeService {
 
         String userName = credential.getUserName();
         Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
-        boolean result = trainee.isPresent() && trainee.get().getUser().getPassword().equals(credential.getPassword());
-        log.info("User's {} credential matching is {}", userName, result);
-        return result;
+        return trainee
+                .map(t -> t.getUser().getPassword().equals(credential.getPassword()))
+                .orElse(false);
     }
 
 
     private void validatePassword(String newPassword) {
-        if (newPassword == null || newPassword.isEmpty()) {
+        if (StringUtils.isBlank(newPassword)) {
             throw new ValidationException("Password can't be null or empty");
         }
     }
@@ -182,6 +169,7 @@ public class TraineeServiceImpl implements TraineeService {
     private void updateTrainee(TraineeDto traineeDto, Trainee traineeToUpdate) {
         Optional.ofNullable(traineeDto.getDayOfBirth()).ifPresent(traineeToUpdate::setDayOfBirth);
         traineeToUpdate.setAddress(traineeDto.getAddress());
+        //todo make update User
         User user = traineeToUpdate.getUser();
         Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getFirstName).ifPresent(user::setFirstName);
         Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getLastName).ifPresent(user::setLastName);
@@ -196,10 +184,8 @@ public class TraineeServiceImpl implements TraineeService {
         String userName = credential.getUserName();
         Trainee traineeToUpdate = findByUserName(userName);
         User user = traineeToUpdate.getUser();
-        if (!user.isActive() == isActive) {
-            user.setActive(isActive);
-            log.info("Trainee {} active status updated", userName);
-        }
+        user.setActive(isActive);
+        log.info("Trainee {} active status updated", userName);
         return traineeToUpdate;
     }
 

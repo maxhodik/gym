@@ -1,4 +1,4 @@
-package ua.hodik.gym.dto.mapper;
+package ua.hodik.gym.service.mapper;
 
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.FilterDto;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class ConvertToFilterDto {
+public class FilterDtoConverter {
 
     public Map<String, FilterDto<?>> convert(FilterFormDto filterFormDto) {
         Map<String, FilterDto<?>> filters = new HashMap<>();

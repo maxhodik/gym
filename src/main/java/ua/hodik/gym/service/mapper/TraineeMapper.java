@@ -1,4 +1,4 @@
-package ua.hodik.gym.dto.mapper;
+package ua.hodik.gym.service.mapper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

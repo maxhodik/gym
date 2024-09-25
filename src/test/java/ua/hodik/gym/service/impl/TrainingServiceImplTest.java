@@ -10,8 +10,6 @@ import ua.hodik.gym.dao.TrainingSpecification;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
-import ua.hodik.gym.dto.mapper.ConvertToFilterDto;
-import ua.hodik.gym.dto.mapper.TrainingMapper;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.Trainee;
@@ -20,6 +18,8 @@ import ua.hodik.gym.model.Training;
 import ua.hodik.gym.repository.TrainingRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.mapper.FilterDtoConverter;
+import ua.hodik.gym.service.mapper.TrainingMapper;
 import ua.hodik.gym.tets.util.TestUtils;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
@@ -66,7 +66,7 @@ class TrainingServiceImplTest {
     @Mock
     private MyValidator validator;
     @Mock
-    private ConvertToFilterDto convertToFilterDto;
+    private FilterDtoConverter filterDtoConverter;
     @Mock
     private TrainingSpecification trainingSpecification;
     @InjectMocks
@@ -133,7 +133,7 @@ class TrainingServiceImplTest {
     void findAllWithFilters() {
         //given
         doNothing().when(validator).validate(any(FilterFormDto.class));
-        when(convertToFilterDto.convert(any(FilterFormDto.class))).thenReturn(filters);
+        when(filterDtoConverter.convert(any(FilterFormDto.class))).thenReturn(filters);
         when(trainingSpecification.getTraining(filters)).thenReturn(specification);
         when(trainingRepository.findAll(specification)).thenReturn(expectedTrainings);
 
@@ -142,7 +142,7 @@ class TrainingServiceImplTest {
         //then
         assertEquals(expectedTrainings, trainings);
         verify(validator).validate(filterFormDto);
-        verify(convertToFilterDto).convert(filterFormDto);
+        verify(filterDtoConverter).convert(filterFormDto);
         verify(trainingSpecification).getTraining(filters);
         verify(trainingRepository).findAll(specification);
     }
@@ -151,7 +151,7 @@ class TrainingServiceImplTest {
     void findAllWithFilters_shouldReturnEmptyList_whenNoTrainingsFound() {
         //given
         doNothing().when(validator).validate(any(FilterFormDto.class));
-        when(convertToFilterDto.convert(any(FilterFormDto.class))).thenReturn(filters);
+        when(filterDtoConverter.convert(any(FilterFormDto.class))).thenReturn(filters);
         when(trainingSpecification.getTraining(filters)).thenReturn(specification);
         when(trainingRepository.findAll(specification)).thenReturn(List.of());
         //when
@@ -159,7 +159,7 @@ class TrainingServiceImplTest {
         //then
         assertTrue(actualTrainings.isEmpty());
         verify(validator).validate(filterFormDto);
-        verify(convertToFilterDto).convert(filterFormDto);
+        verify(filterDtoConverter).convert(filterFormDto);
         verify(trainingSpecification).getTraining(filters);
         verify(trainingRepository).findAll(specification);
     }
@@ -175,7 +175,7 @@ class TrainingServiceImplTest {
                 trainingService.findAllWithFilters(filterFormDto));
         //then
         verify(validator).validate(filterFormDto);
-        verifyNoMoreInteractions(convertToFilterDto, trainingSpecification, trainingRepository);
+        verifyNoMoreInteractions(filterDtoConverter, trainingSpecification, trainingRepository);
     }
 
 
