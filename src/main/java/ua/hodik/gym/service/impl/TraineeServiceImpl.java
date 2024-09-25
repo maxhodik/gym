@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
@@ -19,6 +18,7 @@ import ua.hodik.gym.repository.TraineeRepository;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TraineeMapper;
 import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
@@ -42,6 +42,8 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
     private final UserRepository userRepository;
+    private final UserService userService;
+
     private final CredentialChecker credentialChecker;
 
     private final MyValidator validator;
@@ -51,13 +53,14 @@ public class TraineeServiceImpl implements TraineeService {
     public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TraineeMapper traineeMapper,
                               TraineeRepository traineeRepository,
-                              TrainerService trainerService, UserRepository userRepository, CredentialChecker credentialChecker, MyValidator validator) {
+                              TrainerService trainerService, UserRepository userRepository, UserService userService, CredentialChecker credentialChecker, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.traineeMapper = traineeMapper;
         this.traineeRepository = traineeRepository;
         this.trainerService = trainerService;
         this.userRepository = userRepository;
+        this.userService = userService;
         this.credentialChecker = credentialChecker;
         this.validator = validator;
     }
@@ -83,8 +86,10 @@ public class TraineeServiceImpl implements TraineeService {
         int traineeId = traineeDto.getTraineeId();
         String userNameFromDto = traineeDto.getUserDto().getUserName();
         Trainee traineeToUpdate = findById(traineeId);
-        checkIfUserNameAllowedToChange(userNameFromDto, traineeToUpdate.getUser().getUserName());
+        User updatedUser = userService.update(traineeToUpdate.getUser().getId(), traineeDto.getUserDto());
+        traineeToUpdate.setUser(updatedUser);
         updateTrainee(traineeDto, traineeToUpdate);
+
         log.info("{} trainee updated", userNameFromDto);
         return traineeToUpdate;
     }
@@ -158,13 +163,6 @@ public class TraineeServiceImpl implements TraineeService {
     private void updateTrainee(TraineeDto traineeDto, Trainee traineeToUpdate) {
         Optional.ofNullable(traineeDto.getDayOfBirth()).ifPresent(traineeToUpdate::setDayOfBirth);
         traineeToUpdate.setAddress(traineeDto.getAddress());
-        //todo make update User
-        User user = traineeToUpdate.getUser();
-        Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getFirstName).ifPresent(user::setFirstName);
-        Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getLastName).ifPresent(user::setLastName);
-        Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getUserName).ifPresent(user::setUserName);
-        Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::isActive).ifPresent(user::setActive);
-        Optional.ofNullable(traineeDto.getUserDto()).map(UserDto::getPassword).ifPresent(user::setPassword);
     }
 
     @Transactional()

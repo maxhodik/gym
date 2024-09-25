@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import ua.hodik.gym.dao.TrainerSpecification;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
@@ -16,6 +17,7 @@ import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
+import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.tets.util.TestUtils;
 import ua.hodik.gym.util.CredentialChecker;
@@ -64,6 +66,8 @@ class TrainerServiceImplTest {
     private UserNameGenerator userNameGenerator;
     @Mock
     private TrainerRepository trainerRepository;
+    @Mock
+    private UserService userService;
     @Mock
     private MyValidator validator;
     @Mock
@@ -152,20 +156,19 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void update_DifferentUserName_Update() {
+    void update_DifferentUserName_ReturnTrainer() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
         doNothing().when(validator).validate(any(TrainerDto.class));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
-        when(userRepository.findByUserName(anyString())).thenReturn(Optional.empty());
+        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         //when
         Trainer updatedTrainer = trainerService.update(userCredentialDto, trainerDtoWithUserName);
         //then
         verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
         verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
-        verify(userRepository).findByUserName(trainerDtoWithUserName.getUserDto().getUserName());
+        verify(userService).update(0, trainerDtoWithUserName.getUserDto());
         assertEquals(expectedTrainer, updatedTrainer);
     }
 
@@ -173,19 +176,17 @@ class TrainerServiceImplTest {
     void update_DoubleUserName_ThrowException() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(userShortUserName));
         doNothing().when(validator).validate(any(TrainerDto.class));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
-        when(userRepository.findByUserName(anyString())).thenReturn(Optional.of(expectedTrainer.getUser()));
-        //when
+        when(userService.update(anyInt(), any(UserDto.class))).thenThrow(
+                new EntityAlreadyExistsException("User Sam.Jonson already exists"));        //when
         EntityAlreadyExistsException exception = assertThrows(EntityAlreadyExistsException.class,
                 () -> trainerService.update(userCredentialDto, trainerDtoWithUserName));
         //then
         verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
-        verify(userRepository).findByUserName(userCredentialDto.getUserName());
         verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
-        verify(userRepository).findByUserName(trainerDtoWithUserName.getUserDto().getUserName());
+        verify(userService).update(0, trainerDtoWithUserName.getUserDto());
         assertEquals("User Sam.Jonson already exists", exception.getMessage());
     }
 

@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dao.TrainerSpecification;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.Trainer;
@@ -17,6 +15,7 @@ import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
@@ -34,6 +33,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final PasswordGenerator passwordGenerator;
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final TrainerMapper trainerMapper;
     private final CredentialChecker credentialChecker;
     private final TrainerSpecification trainerSpecification;
@@ -42,12 +42,13 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
-                              TrainerRepository trainerRepository, UserRepository userRepository, TrainerMapper trainerMapper,
+                              TrainerRepository trainerRepository, UserRepository userRepository, UserService userService, TrainerMapper trainerMapper,
                               CredentialChecker credentialChecker, TrainerSpecification trainerSpecification, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
         this.trainerMapper = trainerMapper;
         this.credentialChecker = credentialChecker;
         this.trainerSpecification = trainerSpecification;
@@ -75,9 +76,9 @@ public class TrainerServiceImpl implements TrainerService {
         int trainerId = trainerDto.getTrainerId();
         String userNameFromDto = trainerDto.getUserDto().getUserName();
         Trainer trainerToUpdate = findTrainerToUpdate(trainerId);
-        checkIfUserNameAllowedToChange(userNameFromDto, trainerToUpdate.getUser().getUserName());
+        User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserDto());
+        trainerToUpdate.setUser(updatedUser);
         updateTrainer(trainerDto, trainerToUpdate);
-
         log.info("{} trainer updated", userNameFromDto);
         return trainerToUpdate;
     }
@@ -143,14 +144,6 @@ public class TrainerServiceImpl implements TrainerService {
         return findById(trainerId);
     }
 
-    private void checkIfUserNameAllowedToChange(String userNameFromDto, String userNameFromDB) {
-        if (!userNameFromDto.equals(userNameFromDB)) {
-            if (userRepository.findByUserName(userNameFromDto).isPresent()) {
-                throw new EntityAlreadyExistsException(String.format("User %s already exists", userNameFromDto));
-            }
-        }
-    }
-
     private void setGeneratedPassword(Trainer trainer) {
         String password = passwordGenerator.generatePassword();
         trainer.getUser().setPassword(password);
@@ -173,11 +166,5 @@ public class TrainerServiceImpl implements TrainerService {
 
     private void updateTrainer(TrainerDto trainerDto, Trainer trainerToUpdate) {
         Optional.ofNullable(trainerDto.getSpecialization()).ifPresent(trainerToUpdate::setSpecialization);
-        User user = trainerToUpdate.getUser();
-        Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::getFirstName).ifPresent(user::setFirstName);
-        Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::getLastName).ifPresent(user::setLastName);
-        Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::getUserName).ifPresent(user::setUserName);
-        Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::isActive).ifPresent(user::setActive);
-        Optional.ofNullable(trainerDto.getUserDto()).map(UserDto::getPassword).ifPresent(user::setPassword);
     }
 }
