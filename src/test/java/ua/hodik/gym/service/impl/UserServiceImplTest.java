@@ -34,7 +34,7 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Test
-    void getAllUsers() {
+    void getAllUsers_ReturnUsersList() {
         //given
         when(userRepository.findAll()).thenReturn(expectedUserList);
         //then
@@ -45,7 +45,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByUserName() {
+    void findByUserName_ReturnUser() {
         //given
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
         //when
@@ -56,7 +56,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByUserName_Should_Throw_Null_UserName() {
+    void findByUserName_UserNameIsNull_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class, () -> userService.findByUserName(null));
         //then
@@ -64,7 +64,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByUserName_Should_Throw_Empty_UserName() {
+    void findByUserName_EmptyUserName_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class, () -> userService.findByUserName(""));
         //then
@@ -72,7 +72,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByUserName_Should_Throw_Wrong_UserName() {
+    void findByUserName_WrongUserName_ThrowException() {
         //given
         when(userRepository.findByUserName(anyString())).thenThrow(new EntityNotFoundException(String.format("User  %s not found", WRONG_USER_NAME)));
         //when

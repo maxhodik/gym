@@ -68,5 +68,4 @@ public class Trainee {
         this.setTrainers(trainerList);
     }
 
-
 }

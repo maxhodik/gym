@@ -73,7 +73,7 @@ class TrainingServiceImplTest {
     private TrainingServiceImpl trainingService;
 
     @Test
-    void findByIdShouldReturnTraining() {
+    void findById_dReturnTraining() {
         //give
         when(trainingRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTraining));
         //when
@@ -84,7 +84,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void createShouldThrowException() {
+    void create_TrainingDtoNull_ThrowException() {
         //given
         doThrow(new ValidationException()).when(validator).validate(null);
         //when
@@ -94,7 +94,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void createShouldThrowException_Invalid_TrainingDto() {
+    void create_InvalidTrainingDto_ThrowException() {
         //given
         doThrow(new ValidationException()).when(validator).validate(any());
         //when
@@ -104,7 +104,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void create() {
+    void create_ValidTrainingDto_CreateTraining() {
         //given
         doNothing().when(validator).validate(any(TrainingDto.class));
         when(trainingMapper.convertToTraining(any(TrainingDto.class))).thenReturn(expectedTraining);
@@ -119,7 +119,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void findByIdNotFoundException() {
+    void findById_NotFoundException() {
         //give
         when(trainingRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
@@ -130,7 +130,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void findAllWithFilters() {
+    void findAllWithFilters_ReturnListTraining() {
         //given
         doNothing().when(validator).validate(any(FilterFormDto.class));
         when(filterDtoConverter.convert(any(FilterFormDto.class))).thenReturn(filters);
@@ -148,7 +148,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void findAllWithFilters_shouldReturnEmptyList_whenNoTrainingsFound() {
+    void findAllWithFilters_NoTrainingsFound_ReturnEmptyList() {
         //given
         doNothing().when(validator).validate(any(FilterFormDto.class));
         when(filterDtoConverter.convert(any(FilterFormDto.class))).thenReturn(filters);
@@ -165,7 +165,7 @@ class TrainingServiceImplTest {
     }
 
     @Test
-    void findAllWithFilters_shouldThrowException_whenValidationFails() {
+    void findAllWithFilters_ValidationFails_ThrowException() {
 
         //given
         doThrow(new ValidationException())

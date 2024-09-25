@@ -21,14 +21,17 @@ import static org.mockito.Mockito.*;
 class MyDtoValidatorTest {
 
 
+    public static final String VALID_VALUE_1 = "ValidValue1";
+    public static final String VALID_VALUE_2 = "ValidValue2";
+    public static final String INVALID_VALUE_1 = "InvalidValue1";
+    public static final String INVALID_VALUE_2 = "InvalidValue2";
+
     @Data
     private static class TestDto {
         private String field1;
         private String field2;
     }
 
-    private final FieldError error = new FieldError("TestDto", "field1", "InvalidValue1", false, null, null, "Field1 is invalid");
-    private final FieldError error1 = new FieldError("TestDto", "field2", "InvalidValue2", false, null, null, "Field2 is invalid");
     private final FieldError error2 = new FieldError("TestDto", "field1", "InvalidValue1", false, null, null, "Field1 is invalid");
     private final FieldError error3 = new FieldError("TestDto", "field2", "InvalidValue2", false, null, null, "Field2 is invalid");
     @Mock
@@ -43,16 +46,17 @@ class MyDtoValidatorTest {
     @BeforeEach
     void setUp() {
         validDto = new TestDto();
-        validDto.setField1("ValidValue1");
-        validDto.setField2("ValidValue2");
+        validDto.setField1(VALID_VALUE_1);
+        validDto.setField2(VALID_VALUE_2);
 
         invalidDto = new TestDto();
-        invalidDto.setField1("InvalidValue1");
-        invalidDto.setField2("InvalidValue2");
+        invalidDto.setField1(INVALID_VALUE_1);
+        invalidDto.setField2(INVALID_VALUE_2);
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(invalidDto, "TestDto");
     }
 
     @Test
-    void validate_shouldPass_whenNoValidationErrors() {
+    void validate_NoValidationErrors_Pass() {
         //given
         doNothing().when(validator).validate(eq(validDto), any(BeanPropertyBindingResult.class));
         //when
@@ -62,7 +66,7 @@ class MyDtoValidatorTest {
     }
 
     @Test
-    void validate_shouldThrowException_whenInputIsNull() {
+    void validate_InputIsNull_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class, () -> myDtoValidator.validate(null));
 
@@ -72,21 +76,16 @@ class MyDtoValidatorTest {
 
 
     @Test
-    void validate_shouldThrowValidationException_whenThereAreValidationErrors() {
+    void validate_ValidationErrors_ThrowValidationException() {
         //given
-        invalidDto.setField1("InvalidValue1");
-        invalidDto.setField2("InvalidValue2");
-        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(invalidDto, "TestDto");
-
         doAnswer(invocation -> {
             BeanPropertyBindingResult result = invocation.getArgument(1);
-
             result.addError(error2);
             result.addError(error3);
             return null;
         }).when(validator).validate(any(), any(BeanPropertyBindingResult.class));
         //when
-        ValidationException exception = assertThrows(ValidationException.class, () -> myDtoValidator.validate(invalidDto));
+        assertThrows(ValidationException.class, () -> myDtoValidator.validate(invalidDto));
         //then
         verify(validator).validate(any(), any(BeanPropertyBindingResult.class));
     }

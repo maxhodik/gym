@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.exception.InvalidCredentialException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
@@ -14,7 +15,8 @@ import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -34,31 +36,34 @@ class CredentialCheckerTest {
     private CredentialChecker credentialChecker;
 
     @Test
-    void matchCredential() {
+    void checkIfMatchCredentialsOrThrow_Valid() {
         //given
         doNothing().when(validator).validate(any(UserCredentialDto.class));
         when(userRepository.findByUserName(USER_NAME)).thenReturn(Optional.of(expectedUser));
         //when
-        boolean b = credentialChecker.matchCredential(userCredentialDto);
+        credentialChecker.checkIfMatchCredentialsOrThrow(userCredentialDto);
         //then
+        verify(validator).validate(userCredentialDto);
         verify(userRepository).findByUserName(USER_NAME);
-        assertTrue(b);
     }
 
     @Test
-    void notMatchCredential() {
+    void notMatchCredential_ValidNotFoundInDB_ThrowException() {
         //given
         doNothing().when(validator).validate(any(UserCredentialDto.class));
         when(userRepository.findByUserName(USER_NAME)).thenReturn(Optional.empty());
         //when
-        boolean b = credentialChecker.matchCredential(userCredentialDto);
+        InvalidCredentialException exception = assertThrows(InvalidCredentialException.class,
+                () -> credentialChecker.checkIfMatchCredentialsOrThrow(userCredentialDto));
         //then
+        verify(validator).validate(userCredentialDto);
         verify(userRepository).findByUserName(USER_NAME);
-        assertFalse(b);
+        assertEquals("Incorrect credentials, this operation is prohibited", exception.getMessage());
+
     }
 
     @Test
-    void matchCredentialNull() {
+    void matchCredential_Null_ThrowException() {
         //when
         NullPointerException exception = assertThrows(NullPointerException.class, () -> credentialChecker.matchCredential(null));
         //then
@@ -66,11 +71,13 @@ class CredentialCheckerTest {
     }
 
     @Test
-    void matchCredentialNoValidCredential() {
+    void matchCredential_NoValidCredential_ThrowException() {
         //given
         doThrow(new ValidationException()).when(validator).validate(any(UserCredentialDto.class));
         //when
         assertThrows(ValidationException.class, () -> credentialChecker.matchCredential(userCredentialDto));
+        //then
+        verify(userRepository, never()).findByUserName(USER_NAME);
     }
 
 }

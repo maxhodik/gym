@@ -2,9 +2,8 @@ package ua.hodik.gym.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.exception.WrongCredentialException;
+import ua.hodik.gym.exception.InvalidCredentialException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.util.impl.validation.MyValidator;
@@ -24,7 +23,6 @@ public class CredentialChecker {
     }
 
 
-    @Transactional(readOnly = true)
     public boolean matchCredential(UserCredentialDto credential) {
         Objects.requireNonNull(credential, "Credential can't be null");
         validator.validate(credential);
@@ -38,7 +36,7 @@ public class CredentialChecker {
 
     public void checkIfMatchCredentialsOrThrow(UserCredentialDto credential) {
         if (!matchCredential(credential)) {
-            throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
+            throw new InvalidCredentialException("Incorrect credentials, this operation is prohibited");
         }
     }
 }

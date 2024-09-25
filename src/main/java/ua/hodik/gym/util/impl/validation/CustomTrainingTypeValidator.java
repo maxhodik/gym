@@ -20,7 +20,7 @@ public class CustomTrainingTypeValidator implements ConstraintValidator<ValidTra
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            return false;
         }
         return valueList.contains(value.toUpperCase());
     }

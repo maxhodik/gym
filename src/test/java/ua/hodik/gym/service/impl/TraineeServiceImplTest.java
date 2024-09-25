@@ -42,7 +42,7 @@ class TraineeServiceImplTest {
     private final String traineeWithIdPath = "trainee.with.id.json";
     private final String trainerUserName = "trainer.same.user.name.json";
     private final String userPath = "user.json";
-    private static String userShortUserNamePath = "user.short.user.name.json";
+    private final String userShortUserNamePath = "user.short.user.name.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final User userShortUserName = TestUtils.readFromFile(userShortUserNamePath, User.class);
     private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
@@ -81,7 +81,7 @@ class TraineeServiceImplTest {
     private TraineeServiceImpl traineeService;
 
     @Test
-    void createShouldThrowException() {
+    void create_TraineeIsNull_ThrowException() {
         //when
         NullPointerException exception = assertThrows(NullPointerException.class, () -> traineeService.createTraineeProfile(null));
         //then
@@ -89,7 +89,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void create() {
+    void create_Pass() {
         //given
         doNothing().when(validator).validate(traineeDtoWithoutUserName);
         when(traineeMapper.convertToTrainee(any(TraineeDto.class))).thenReturn(traineeWithoutUserName);
@@ -107,7 +107,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void createShouldTrowValidationException() {
+    void create_InvalidTrainee_ThrowValidationException() {
         //given
         doThrow(new ValidationException("Invalid TraineeDto")).when(validator).validate(any(TraineeDto.class));
         //when
@@ -120,7 +120,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateShouldThrowException_Credential_Null() {
+    void update_CredentialIsNull_ThrowException() {
         //given
         doThrow(new NullPointerException("Credential can't be null")).when(credentialChecker).checkIfMatchCredentialsOrThrow(null);
         //when
@@ -131,7 +131,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateShouldThrowExceptionByTrainerDto() {
+    void update_TrainerDtoIsNull_ThrowException() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         doThrow(new ValidationException("Value can't be null")).when(validator).validate(any(TraineeDto.class));
@@ -140,7 +140,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateShouldUpdateWithEqualsUserName() {
+    void update_EqualsUserName_Pass() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         doNothing().when(validator).validate(any(TraineeDto.class));
@@ -155,7 +155,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateShouldUpdateWithDifferentUserName() {
+    void update_DifferentUserName_Pass() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
@@ -174,7 +174,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateDoubleUserName() {
+    void update_DoubleUserName_ThrowException() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(userShortUserName));
@@ -194,7 +194,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void deleteShouldThrowException_Credential_Null() {
+    void delete_CredentialIsNull_ThrowException() {
         doThrow(new NullPointerException("Credential can't be null")).when(credentialChecker).checkIfMatchCredentialsOrThrow(null);
         //when
         NullPointerException exception = assertThrows(NullPointerException.class,
@@ -204,7 +204,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void shouldDeleteTrainee() {
+    void deleteTrainee_ValidCredential_Pass() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         //when
@@ -214,7 +214,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateActiveStatusShouldChange() {
+    void updateActiveStatus_ValidCredential_Pass() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
@@ -226,7 +226,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateActiveStatusShouldNotChange() {
+    void updateActiveStatus_SameStatus_StatusNotChange() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
@@ -238,7 +238,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void findByIdShouldReturnTrainee() {
+    void findById_ReturnTrainee() {
         //give
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainee));
         //when
@@ -249,7 +249,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void findByIdNotFoundException() {
+    void findById_ThrowNotFoundException() {
         //give
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
@@ -260,7 +260,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void findByUserNameShouldReturnTrainee() {
+    void findByUserName_ValidName_ReturnTrainee() {
         //give
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainee));
         //when
@@ -271,7 +271,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void findByUserNameNotFoundException() {
+    void findByUserName_ThrowNotFoundException() {
         //give
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
         //when
@@ -283,7 +283,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void changePassport() {
+    void changePassword_ValidCredential_ChangePassword() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
@@ -294,7 +294,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void changeWrongPassportThrowException() {
+    void changePassword_WrongPassword_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> traineeService.changePassword(userCredentialDto, null));
@@ -303,7 +303,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void changeEmptyPassportThrowException() {
+    void changePassword_EmptyPassword_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> traineeService.changePassword(userCredentialDto, ""));
@@ -312,7 +312,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void getAllTrainees() {
+    void getAllTrainees_Pass() {
         //given
         when(traineeRepository.findAll()).thenReturn(expectedTraineeList);
         //when
@@ -324,7 +324,7 @@ class TraineeServiceImplTest {
 
 
     @Test
-    void updateTrainersList() {
+    void updateTrainersList_ValidCredential_UpdateList() {
 
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
@@ -338,7 +338,7 @@ class TraineeServiceImplTest {
     }
 
     @Test
-    void updateTrainersList_shouldThrowEntityNotFoundException() {
+    void updateTrainersList_TraineeNotExists_ThrowEntityNotFoundException() {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());

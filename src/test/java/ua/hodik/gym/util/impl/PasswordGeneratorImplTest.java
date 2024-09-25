@@ -22,7 +22,7 @@ class PasswordGeneratorImplTest {
 
 
     @Test
-    void generatePassword() {
+    void generatePassword_GeneratePassword() {
         //given
         when(passwordGeneratorConfig.getPasswordLength()).thenReturn(PASSWORD_LENGTH);
         //when

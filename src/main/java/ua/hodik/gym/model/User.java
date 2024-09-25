@@ -30,5 +30,15 @@ public class User {
     private Trainee trainee;
     @OneToOne(mappedBy = "user")
     private Trainer trainer;
+
+    public void setTrainee(Trainee trainee) {
+        this.trainee = trainee;
+        trainee.setUser(this);
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
+        trainer.setUser(this);
+    }
 }
 

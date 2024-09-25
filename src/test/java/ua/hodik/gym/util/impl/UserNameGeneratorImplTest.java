@@ -38,7 +38,7 @@ class UserNameGeneratorImplTest {
 
 
     @Test
-    void generateUserNameTwoEqualName() {
+    void generateUserName_TwoEqualName_GenerateName2() {
         //given
         when(userService.getAllUsers()).thenReturn(List.of(sameName, sameName));
         //when
@@ -48,7 +48,7 @@ class UserNameGeneratorImplTest {
     }
 
     @Test
-    void generateUserNameOneEqualNameTrainer() {
+    void generateUserName_OneEqualName_GenerateName1() {
         //given
         when(userService.getAllUsers()).thenReturn(List.of(sameName));
         //when
@@ -59,7 +59,7 @@ class UserNameGeneratorImplTest {
 
 
     @Test
-    void generateUserNameShouldReturnBAseName() {
+    void generateUserName_ReturnBAseName() {
         //given
         when(userService.getAllUsers()).thenReturn(List.of());
         //when
@@ -69,7 +69,7 @@ class UserNameGeneratorImplTest {
     }
 
     @Test
-    void generateUserNameShortName() {
+    void generateUserName_ShortName_GenerateShortName() {
         //given
         when(userService.getAllUsers()).thenReturn(List.of(sameName, sameName));
         //when
@@ -79,7 +79,7 @@ class UserNameGeneratorImplTest {
     }
 
     @Test
-    void generateUserNameShortName1() {
+    void generateUserName_OneName_GenerateShortName1() {
         //given
         when(userService.getAllUsers()).thenReturn(List.of(shortName, sameName));
         //when

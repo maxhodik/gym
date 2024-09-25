@@ -13,10 +13,12 @@ import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.tets.util.TestUtils;
+import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
@@ -41,6 +43,10 @@ class TrainerServiceImplTest {
     private final String trainerDtoPathWithoutUserName = "trainer.dto.without.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
+    private final String userPath = "user.json";
+    private final String userShortUserNamePath = "user.short.user.name.json";
+    private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
+    private final User userShortUserName = TestUtils.readFromFile(userShortUserNamePath, User.class);
 
 
     private final Trainer trainerWithoutUserName = TestUtils.readFromFile(trainerPath, Trainer.class);
@@ -66,11 +72,14 @@ class TrainerServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private TrainerSpecification trainerSpecification;
+    @Mock
+    private CredentialChecker credentialChecker;
+
     @InjectMocks
     private TrainerServiceImpl trainerService;
 
     @Test
-    void createShouldThrowException() {
+    void create_TrainerIsNull_ThrowException() {
         //when
         NullPointerException exception = assertThrows(NullPointerException.class, () -> trainerService.createTrainerProfile(null));
         //then
@@ -78,7 +87,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void create() {
+    void create_TrainerValid_CreateTrainer() {
         //given
         doNothing().when(validator).validate(trainerDtoWithoutUserName);
         when(trainerMapper.convertToTrainer(any(TrainerDto.class))).thenReturn(trainerWithoutUserName);
@@ -96,7 +105,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void createShouldTrowValidationException() {
+    void create_InvalidTrainer_ThrowValidationException() {
         //given
         doThrow(new ValidationException("Invalid TrainerDto")).when(validator).validate(any(TrainerDto.class));
         //when
@@ -109,7 +118,9 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void updateShouldThrowException() {
+    void update_CredentialIsNull_ThrowException() {
+        //given
+        doThrow(new NullPointerException("Credential can't be null")).when(credentialChecker).checkIfMatchCredentialsOrThrow(null);
         //when
         NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> trainerService.update(null, trainerDtoWithoutUserName));
@@ -118,46 +129,40 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void updateShouldThrowExceptionByTrainerDto() {
+    void update_TrainerDtoIsInvalid_ThrowException() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         doThrow(new ValidationException("Value can't be null")).when(validator).validate(any(TrainerDto.class));
         //when
         assertThrows(ValidationException.class, () -> trainerService.update(userCredentialDto, trainerDtoWithoutUserName));
     }
 
     @Test
-    void updateShouldUpdateWithEqualsUserName() {
+    void update_EqualsUserName_Update() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         doNothing().when(validator).validate(any(TrainerDto.class));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainer));
         //when
         Trainer updatedTrainer = trainerService.update(userCredentialDto, trainerDtoWithUserName);
         //then
-        verify(validator).validate(userCredentialDto);
-        verify(trainerRepository).findByUserUserName(userCredentialDto.getUserName());
         verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
-
         assertEquals(expectedTrainer, updatedTrainer);
     }
 
     @Test
-    void updateShouldUpdateWithDifferentUserName() {
+    void update_DifferentUserName_Update() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
+        when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
         doNothing().when(validator).validate(any(TrainerDto.class));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.empty());
         //when
         Trainer updatedTrainer = trainerService.update(userCredentialDto, trainerDtoWithUserName);
         //then
-        verify(validator).validate(userCredentialDto);
-        verify(trainerRepository).findByUserUserName(userCredentialDto.getUserName());
+        verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
         verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
         verify(userRepository).findByUserName(trainerDtoWithUserName.getUserDto().getUserName());
@@ -165,10 +170,10 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void updateDoubleUserName() {
+    void update_DoubleUserName_ThrowException() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
+        when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(userShortUserName));
         doNothing().when(validator).validate(any(TrainerDto.class));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.of(expectedTrainer.getUser()));
@@ -176,8 +181,8 @@ class TrainerServiceImplTest {
         EntityAlreadyExistsException exception = assertThrows(EntityAlreadyExistsException.class,
                 () -> trainerService.update(userCredentialDto, trainerDtoWithUserName));
         //then
-        verify(validator).validate(userCredentialDto);
-        verify(trainerRepository).findByUserUserName(userCredentialDto.getUserName());
+        verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
+        verify(userRepository).findByUserName(userCredentialDto.getUserName());
         verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
         verify(userRepository).findByUserName(trainerDtoWithUserName.getUserDto().getUserName());
@@ -185,31 +190,31 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void updateActiveStatusShouldChange() {
+    void updateActiveStatus_ValidCredential_ChangeStatus() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainer));
         //when
         Trainer trainer = trainerService.updateActiveStatus(userCredentialDto, false);
         //then
-        verify(trainerRepository, times(2)).findByUserUserName(userCredentialDto.getUserName());
+        verify(trainerRepository).findByUserUserName(userCredentialDto.getUserName());
         assertFalse(trainer.getUser().isActive());
     }
 
     @Test
-    void updateActiveStatusShouldNotChange() {
+    void updateActiveStatus_ValidCredentialTheSameStatus_StatusNotChange() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainer));
         //when
         Trainer trainer = trainerService.updateActiveStatus(userCredentialDto, true);
         //then
-        verify(trainerRepository, times(2)).findByUserUserName(userCredentialDto.getUserName());
+        verify(trainerRepository).findByUserUserName(userCredentialDto.getUserName());
         assertTrue(trainer.getUser().isActive());
     }
 
     @Test
-    void findByIdShouldReturnTrainer() {
+    void findById_ReturnTrainer() {
         //give
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainer));
         //when
@@ -220,7 +225,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void findByIdNotFoundException() {
+    void findById_ThrowNotFoundException() {
         //give
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
@@ -231,7 +236,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void findByUserNameShouldReturnTrainer() {
+    void findByUserName_ValidName_ReturnTrainer() {
         //give
         when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
         //when
@@ -242,7 +247,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void findByUserNameNotFoundException() {
+    void findByUserName_ValidName_ThrowNotFoundException() {
         //give
         when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
         //when
@@ -254,9 +259,9 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void changePassport() {
+    void changePassword_ValidPassword_Change() {
         //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
+        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainer));
         //when
         Trainer trainer = trainerService.changePassword(userCredentialDto, NEW_PASSWORD);
@@ -265,7 +270,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void changeWrongPassportThrowException() {
+    void change_WrongPassword_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> trainerService.changePassword(userCredentialDto, null));
@@ -274,7 +279,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void changeEmptyPassportThrowException() {
+    void change_EmptyPassword_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> trainerService.changePassword(userCredentialDto, ""));
@@ -283,7 +288,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void getAllTrainers() {
+    void getAllTrainers_Pass() {
         //given
         when(trainerRepository.findAll()).thenReturn(expectedTrainerList);
         //when
@@ -293,48 +298,9 @@ class TrainerServiceImplTest {
 
     }
 
-//    @Test
-//    void matchCredential() {
-//        //given
-//        doNothing().when(validator).validate(any(UserCredentialDto.class));
-//        when(trainerRepository.findByUserUserName(USER_NAME)).thenReturn(Optional.of(expectedTrainer));
-//        //when
-//        boolean b = trainerService.matchCredential(userCredentialDto);
-//        //then
-//        verify(trainerRepository).findByUserUserName(USER_NAME);
-//        assertTrue(b);
-//    }
-//
-//    @Test
-//    void notMatchCredential() {
-//        //given
-//        doNothing().when(validator).validate(any(UserCredentialDto.class));
-//        when(trainerRepository.findByUserUserName(USER_NAME)).thenReturn(Optional.empty());
-//        //when
-//        boolean b = trainerService.matchCredential(userCredentialDto);
-//        //then
-//        verify(trainerRepository).findByUserUserName(USER_NAME);
-//        assertFalse(b);
-//    }
-//
-//    @Test
-//    void matchCredentialNull() {
-//        //when
-//        NullPointerException exception = assertThrows(NullPointerException.class, () -> trainerService.matchCredential(null));
-//        //then
-//        assertEquals("Credential can't be null", exception.getMessage());
-//    }
-//
-//    @Test
-//    void matchCredentialNoValidCredential() {
-//        //given
-//        doThrow(new ValidationException()).when(validator).validate(any(UserCredentialDto.class));
-//        //when
-//        assertThrows(ValidationException.class, () -> trainerService.matchCredential(userCredentialDto));
-//    }
 
     @Test
-    void getNotAssignedTrainers_shouldReturnTrainersList() {
+    void getNotAssignedTrainers_ValidTraineeName_ReturnTrainersList() {
         //given
         String traineeName = "validTrainee";
         Specification<Trainer> trainerSpecificationMock = mock(Specification.class);
@@ -350,7 +316,7 @@ class TrainerServiceImplTest {
     }
 
     @Test
-    void getNotAssignedTrainers_shouldReturnEmptyList_whenNoTrainersFound() {
+    void getNotAssignedTrainers_NoTrainersFound_ReturnEmptyList() {
         //given
         String traineeName = "validTrainee";
         Specification<Trainer> trainerSpecificationMock = mock(Specification.class);
