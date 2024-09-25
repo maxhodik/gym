@@ -15,8 +15,6 @@ public interface TrainerService {
 
     Trainer createTrainerProfile(TrainerDto trainerDto);
 
-    boolean matchCredential(UserCredentialDto credential);
-
     Trainer changePassword(UserCredentialDto credential, String newPassword);
 
     Trainer update(UserCredentialDto credential, TrainerDto trainerDto);

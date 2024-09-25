@@ -50,13 +50,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public Training findById(int id) {
-        Training trainingById = trainingRepository.findById(id)
+        return trainingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Training with id= %s not found", id)));
-        log.info("Training with id ={} found", id);
-        return trainingById;
     }
 
-    @Transactional()
+    @Transactional
     public Training createTraining(TrainingDto trainingDto) {
         validator.validate(trainingDto);
         Training training = trainingMapper.convertToTraining(trainingDto);

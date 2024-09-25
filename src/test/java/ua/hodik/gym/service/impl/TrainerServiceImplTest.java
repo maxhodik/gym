@@ -293,45 +293,45 @@ class TrainerServiceImplTest {
 
     }
 
-    @Test
-    void matchCredential() {
-        //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
-        when(trainerRepository.findByUserUserName(USER_NAME)).thenReturn(Optional.of(expectedTrainer));
-        //when
-        boolean b = trainerService.matchCredential(userCredentialDto);
-        //then
-        verify(trainerRepository).findByUserUserName(USER_NAME);
-        assertTrue(b);
-    }
-
-    @Test
-    void notMatchCredential() {
-        //given
-        doNothing().when(validator).validate(any(UserCredentialDto.class));
-        when(trainerRepository.findByUserUserName(USER_NAME)).thenReturn(Optional.empty());
-        //when
-        boolean b = trainerService.matchCredential(userCredentialDto);
-        //then
-        verify(trainerRepository).findByUserUserName(USER_NAME);
-        assertFalse(b);
-    }
-
-    @Test
-    void matchCredentialNull() {
-        //when
-        NullPointerException exception = assertThrows(NullPointerException.class, () -> trainerService.matchCredential(null));
-        //then
-        assertEquals("Credential can't be null", exception.getMessage());
-    }
-
-    @Test
-    void matchCredentialNoValidCredential() {
-        //given
-        doThrow(new ValidationException()).when(validator).validate(any(UserCredentialDto.class));
-        //when
-        assertThrows(ValidationException.class, () -> trainerService.matchCredential(userCredentialDto));
-    }
+//    @Test
+//    void matchCredential() {
+//        //given
+//        doNothing().when(validator).validate(any(UserCredentialDto.class));
+//        when(trainerRepository.findByUserUserName(USER_NAME)).thenReturn(Optional.of(expectedTrainer));
+//        //when
+//        boolean b = trainerService.matchCredential(userCredentialDto);
+//        //then
+//        verify(trainerRepository).findByUserUserName(USER_NAME);
+//        assertTrue(b);
+//    }
+//
+//    @Test
+//    void notMatchCredential() {
+//        //given
+//        doNothing().when(validator).validate(any(UserCredentialDto.class));
+//        when(trainerRepository.findByUserUserName(USER_NAME)).thenReturn(Optional.empty());
+//        //when
+//        boolean b = trainerService.matchCredential(userCredentialDto);
+//        //then
+//        verify(trainerRepository).findByUserUserName(USER_NAME);
+//        assertFalse(b);
+//    }
+//
+//    @Test
+//    void matchCredentialNull() {
+//        //when
+//        NullPointerException exception = assertThrows(NullPointerException.class, () -> trainerService.matchCredential(null));
+//        //then
+//        assertEquals("Credential can't be null", exception.getMessage());
+//    }
+//
+//    @Test
+//    void matchCredentialNoValidCredential() {
+//        //given
+//        doThrow(new ValidationException()).when(validator).validate(any(UserCredentialDto.class));
+//        //when
+//        assertThrows(ValidationException.class, () -> trainerService.matchCredential(userCredentialDto));
+//    }
 
     @Test
     void getNotAssignedTrainers_shouldReturnTrainersList() {

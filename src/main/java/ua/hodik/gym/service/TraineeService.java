@@ -19,8 +19,6 @@ public interface TraineeService {
 
     Trainee createTraineeProfile(TraineeDto traineeDto);
 
-    boolean matchCredential(UserCredentialDto credential);
-
     Trainee changePassword(UserCredentialDto credential, String newPassword);
 
     Trainee update(UserCredentialDto credential, TraineeDto traineeDto);

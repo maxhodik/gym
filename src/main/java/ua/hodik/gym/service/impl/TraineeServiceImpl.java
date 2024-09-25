@@ -12,7 +12,6 @@ import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
-import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -21,6 +20,7 @@ import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.mapper.TraineeMapper;
+import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
@@ -42,6 +42,7 @@ public class TraineeServiceImpl implements TraineeService {
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
     private final UserRepository userRepository;
+    private final CredentialChecker credentialChecker;
 
     private final MyValidator validator;
 
@@ -50,13 +51,14 @@ public class TraineeServiceImpl implements TraineeService {
     public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TraineeMapper traineeMapper,
                               TraineeRepository traineeRepository,
-                              TrainerService trainerService, UserRepository userRepository, MyValidator validator) {
+                              TrainerService trainerService, UserRepository userRepository, CredentialChecker credentialChecker, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.traineeMapper = traineeMapper;
         this.traineeRepository = traineeRepository;
         this.trainerService = trainerService;
         this.userRepository = userRepository;
+        this.credentialChecker = credentialChecker;
         this.validator = validator;
     }
 
@@ -76,7 +78,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional
     public Trainee update(UserCredentialDto credential, TraineeDto traineeDto) {
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         validator.validate(traineeDto);
         int traineeId = traineeDto.getTraineeId();
         String userNameFromDto = traineeDto.getUserDto().getUserName();
@@ -103,7 +105,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Transactional
     public Trainee changePassword(UserCredentialDto credential, String newPassword) {
         validatePassword(newPassword);
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String userName = credential.getUserName();
         Trainee traineeForUpdate = findByUserName(userName);
         traineeForUpdate.getUser().setPassword(newPassword);
@@ -114,7 +116,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public void deleteTrainee(UserCredentialDto credential) {
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String userName = credential.getUserName();
         traineeRepository.deleteByUserUserName(userName);
         log.info("{} trainee  deleted", userName);
@@ -138,19 +140,6 @@ public class TraineeServiceImpl implements TraineeService {
         trainee.getUser().setUserName(userName);
 
     }
-
-    @Transactional(readOnly = true)
-    public boolean matchCredential(UserCredentialDto credential) {
-        Objects.requireNonNull(credential, "Credential can't be null");
-        validator.validate(credential);
-
-        String userName = credential.getUserName();
-        Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
-        return trainee
-                .map(t -> t.getUser().getPassword().equals(credential.getPassword()))
-                .orElse(false);
-    }
-
 
     private void validatePassword(String newPassword) {
         if (StringUtils.isBlank(newPassword)) {
@@ -180,7 +169,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional()
     public Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive) {
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String userName = credential.getUserName();
         Trainee traineeToUpdate = findByUserName(userName);
         User user = traineeToUpdate.getUser();
@@ -191,7 +180,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional
     public void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList) {
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String traineeUserName = credential.getUserName();
         Trainee trainee = traineeRepository.findByUserUserName(traineeUserName).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Trainee %s not found", traineeUserName)));
@@ -203,10 +192,4 @@ public class TraineeServiceImpl implements TraineeService {
         log.info("Updating {} trainersList", traineeUserName);
     }
 
-
-    private void isMatchCredential(UserCredentialDto credential) {
-        if (!matchCredential(credential)) {
-            throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
-        }
-    }
 }

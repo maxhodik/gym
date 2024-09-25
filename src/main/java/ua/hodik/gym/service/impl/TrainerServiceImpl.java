@@ -12,13 +12,13 @@ import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
-import ua.hodik.gym.exception.WrongCredentialException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.mapper.TrainerMapper;
+import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
@@ -35,18 +35,21 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final TrainerMapper trainerMapper;
+    private final CredentialChecker credentialChecker;
     private final TrainerSpecification trainerSpecification;
     private final MyValidator validator;
+
 
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TrainerRepository trainerRepository, UserRepository userRepository, TrainerMapper trainerMapper,
-                              TrainerSpecification trainerSpecification, MyValidator validator) {
+                              CredentialChecker credentialChecker, TrainerSpecification trainerSpecification, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
         this.userRepository = userRepository;
         this.trainerMapper = trainerMapper;
+        this.credentialChecker = credentialChecker;
         this.trainerSpecification = trainerSpecification;
         this.validator = validator;
     }
@@ -67,7 +70,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional()
     @Override
     public Trainer update(UserCredentialDto credential, TrainerDto trainerDto) {
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         validator.validate(trainerDto);
         int trainerId = trainerDto.getTrainerId();
         String userNameFromDto = trainerDto.getUserDto().getUserName();
@@ -105,7 +108,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Trainer changePassword(UserCredentialDto credential, String newPassword) {
         validatePassword(newPassword);
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String userName = credential.getUserName();
         Trainer trainerToUpdate = findByUserName(userName);
         trainerToUpdate.getUser().setPassword(newPassword);
@@ -116,7 +119,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional()
     @Override
     public Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive) {
-        isMatchCredential(credential);
+        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String userName = credential.getUserName();
         Trainer trainerToUpdate = findByUserName(credential.getUserName());
         User user = trainerToUpdate.getUser();
@@ -160,12 +163,6 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.getUser().setUserName(userName);
     }
 
-    public boolean matchCredential(UserCredentialDto credential) {
-        Objects.requireNonNull(credential, "Credential can't be null");
-        validator.validate(credential);
-        Optional<Trainer> trainer = trainerRepository.findByUserUserName(credential.getUserName());
-        return trainer.isPresent() && trainer.get().getUser().getPassword().equals(credential.getPassword());
-    }
 
     private void validatePassword(String newPassword) {
         if (newPassword == null || newPassword.isEmpty()) {
@@ -173,11 +170,6 @@ public class TrainerServiceImpl implements TrainerService {
         }
     }
 
-    private void isMatchCredential(UserCredentialDto credential) {
-        if (!matchCredential(credential)) {
-            throw new WrongCredentialException("Incorrect credentials, this operation is prohibited");
-        }
-    }
 
     private void updateTrainer(TrainerDto trainerDto, Trainer trainerToUpdate) {
         Optional.ofNullable(trainerDto.getSpecialization()).ifPresent(trainerToUpdate::setSpecialization);

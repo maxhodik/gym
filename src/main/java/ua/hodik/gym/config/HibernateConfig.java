@@ -1,12 +1,11 @@
 package ua.hodik.gym.config;
 
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -23,21 +22,32 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "ua.hodik.gym")
 public class HibernateConfig {
-    private final Environment env;
+    @Value("${hibernate.driver-class}")
+    private String hibernateDriverClass;
+    @Value("${hibernate.connection.url}")
+    private String hibernateConnectionUrl;
 
+    @Value("${hibernate.username}")
+    private String userName;
+    @Value("${hibernate.password}")
+    private String password;
 
-    @Autowired
-    public HibernateConfig(Environment env) {
-        this.env = env;
-    }
+    @Value("${hibernate.dialect}")
+    private String hibernateDialect;
+
+    @Value("${hibernate.show_sql}")
+    private String showSql;
+    @Value("${hibernate.hbm2ddl.auto}")
+    private String ddl;
+
 
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getRequiredProperty("hibernate.driver-class"));
-        dataSource.setUrl(env.getRequiredProperty("hibernate.connection.url"));
-        dataSource.setUsername(env.getRequiredProperty("hibernate.username"));
-        dataSource.setPassword(env.getRequiredProperty("hibernate.password"));
+        dataSource.setDriverClassName(hibernateDriverClass);
+        dataSource.setUrl((hibernateConnectionUrl));
+        dataSource.setUsername((userName));
+        dataSource.setPassword(password);
         return dataSource;
     }
 
@@ -52,9 +62,9 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
-        properties.put("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
-        properties.put("hibernate.hbm2ddl.auto", env.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        properties.put("hibernate.dialect", hibernateDialect);
+        properties.put("hibernate.show_sql", showSql);
+        properties.put("hibernate.hbm2ddl.auto", ddl);
 
         return properties;
     }
