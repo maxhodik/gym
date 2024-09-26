@@ -39,6 +39,7 @@ class TrainerServiceImplTest {
     private static final String NEW_PASSWORD = "AAAAAAAA";
     private static final String FIRST_NAME = "Sam";
     private static final String LAST_NAME = "Jonson";
+    public static final String VALID_TRAINEE = "validTrainee";
     private final String trainerAnotherName = "trainer.json";
     private final String trainerPath = "trainer.without.user.name.json";
     private final String expectedTrainerPath = "trainer.same.user.name.json";
@@ -303,31 +304,25 @@ class TrainerServiceImplTest {
     @Test
     void getNotAssignedTrainers_ValidTraineeName_ReturnTrainersList() {
         //given
-        String traineeName = "validTrainee";
         Specification<Trainer> trainerSpecificationMock = mock(Specification.class);
         List<Trainer> expectedTrainers = List.of(expectedTrainer, expectedTrainer);
-        when(trainerSpecification.getTrainer(traineeName)).thenReturn(trainerSpecificationMock);
-        when(trainerRepository.findAll(trainerSpecificationMock)).thenReturn(expectedTrainers);
+        when(trainerRepository.findAllNotAssignedTrainers(anyString())).thenReturn(expectedTrainers);
         // when
-        List<Trainer> actualTrainers = trainerService.getNotAssignedTrainers(traineeName);
+        List<Trainer> actualTrainers = trainerService.getNotAssignedTrainers(VALID_TRAINEE);
         // then
         assertEquals(expectedTrainers, actualTrainers);
-        verify(trainerSpecification).getTrainer(traineeName);
-        verify(trainerRepository).findAll(trainerSpecificationMock);
+        verify(trainerRepository).findAllNotAssignedTrainers(VALID_TRAINEE);
     }
 
     @Test
     void getNotAssignedTrainers_NoTrainersFound_ReturnEmptyList() {
         //given
-        String traineeName = "validTrainee";
         Specification<Trainer> trainerSpecificationMock = mock(Specification.class);
-        when(trainerSpecification.getTrainer(traineeName)).thenReturn(trainerSpecificationMock);
-        when(trainerRepository.findAll(trainerSpecificationMock)).thenReturn(List.of());
+        when(trainerRepository.findAllNotAssignedTrainers(anyString())).thenReturn(List.of());
         //when
-        List<Trainer> actualTrainers = trainerService.getNotAssignedTrainers(traineeName);
+        List<Trainer> actualTrainers = trainerService.getNotAssignedTrainers(VALID_TRAINEE);
         //then
         assertTrue(actualTrainers.isEmpty());
-        verify(trainerSpecification).getTrainer(traineeName);
-        verify(trainerRepository).findAll(trainerSpecificationMock);
+        verify(trainerRepository).findAllNotAssignedTrainers(VALID_TRAINEE);
     }
 }
