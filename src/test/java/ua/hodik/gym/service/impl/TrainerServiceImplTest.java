@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
-import ua.hodik.gym.dao.TrainerSpecification;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserDto;
@@ -16,7 +15,6 @@ import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
-import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.tets.util.TestUtils;
@@ -47,9 +45,7 @@ class TrainerServiceImplTest {
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String userPath = "user.json";
-    private final String userShortUserNamePath = "user.short.user.name.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
-    private final User userShortUserName = TestUtils.readFromFile(userShortUserNamePath, User.class);
 
 
     private final Trainer trainerWithoutUserName = TestUtils.readFromFile(trainerPath, Trainer.class);
@@ -73,10 +69,7 @@ class TrainerServiceImplTest {
     private MyValidator validator;
     @Mock
     private TrainerMapper trainerMapper;
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private TrainerSpecification trainerSpecification;
+
     @Mock
     private CredentialChecker credentialChecker;
 
@@ -317,7 +310,6 @@ class TrainerServiceImplTest {
     @Test
     void getNotAssignedTrainers_NoTrainersFound_ReturnEmptyList() {
         //given
-        Specification<Trainer> trainerSpecificationMock = mock(Specification.class);
         when(trainerRepository.findAllNotAssignedTrainers(anyString())).thenReturn(List.of());
         //when
         List<Trainer> actualTrainers = trainerService.getNotAssignedTrainers(VALID_TRAINEE);
