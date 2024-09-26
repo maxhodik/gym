@@ -7,7 +7,6 @@ import ua.hodik.gym.dto.*;
 import ua.hodik.gym.facade.Facade;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
-import ua.hodik.gym.model.Training;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
@@ -49,12 +48,13 @@ public class App {
                 .dateTo(LocalDate.of(2024, 9, 25))
                 .build();
 //        System.out.println(filterFormDto);
-        List<Training> allWithFilters = facade.getTraineeTrainingList(
-                filterFormDto);
+//        List<Training> allWithFilters = facade.getTraineeTrainingList(filterFormDto);
 //        List<Training> trainerList=facade.getTrainerTrainingList(filterFormDto);
-//        System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
+        List<Trainer> notAssignedTrainers = facade.getNotAssignedTrainers("Jon.Ivanov");
+//        notAssignedTrainers.forEach((t) -> System.out.println(t.getUser()));
+        System.out.println(notAssignedTrainers);
 //        facade.updateTrainersList(credential, List.of("Yura.Vasil4"));
-        System.out.println(allWithFilters);
+//        System.out.println(allWithFilters);
 //        System.out.println(trainerList);
     }
 

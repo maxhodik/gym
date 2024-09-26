@@ -2,7 +2,6 @@ package ua.hodik.gym.service.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dao.TrainerSpecification;
@@ -133,9 +132,9 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public List<Trainer> getNotAssignedTrainers(String traineeName) {
-        Specification<Trainer> specification = trainerSpecification.getTrainer(traineeName);
-        return trainerRepository.findAll(specification);
+        return trainerRepository.findAllNotAssignedTrainers(traineeName);
     }
+
 
     private Trainer findTrainerToUpdate(int trainerId) {
         if (trainerId == 0) {
