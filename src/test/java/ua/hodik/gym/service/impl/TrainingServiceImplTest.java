@@ -98,7 +98,7 @@ class TrainingServiceImplTest {
         //given
         doThrow(new ValidationException()).when(validator).validate(any());
         //when
-        ValidationException exception = assertThrows(ValidationException.class,
+        assertThrows(ValidationException.class,
                 () -> trainingService.createTraining(invalidTrainingDto));
 
     }

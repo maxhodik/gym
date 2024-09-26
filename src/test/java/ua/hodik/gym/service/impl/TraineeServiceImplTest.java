@@ -15,7 +15,6 @@ import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TraineeRepository;
-import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TraineeMapper;
@@ -44,9 +43,7 @@ class TraineeServiceImplTest {
     private final String traineeWithIdPath = "trainee.with.id.json";
     private final String trainerUserName = "trainer.same.user.name.json";
     private final String userPath = "user.json";
-    private final String userShortUserNamePath = "user.short.user.name.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
-    private final User userShortUserName = TestUtils.readFromFile(userShortUserNamePath, User.class);
     private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
     private final TraineeDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
@@ -71,8 +68,6 @@ class TraineeServiceImplTest {
     private TraineeRepository traineeRepository;
     @Mock
     private TrainerService trainerService;
-    @Mock
-    private UserRepository userRepository;
     @Mock
     private UserService userService;
     @Mock
@@ -345,9 +340,8 @@ class TraineeServiceImplTest {
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
         //when
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            traineeService.updateTrainersList(userCredentialDto, TRAINER_NAME_LIST);
-        });
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
+                traineeService.updateTrainersList(userCredentialDto, TRAINER_NAME_LIST));
         //then
         verify(traineeRepository).findByUserUserName(userCredentialDto.getUserName());
         assertEquals("Trainee Sam.Jonson not found", exception.getMessage());

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.ValidationException;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByUserName(String userName) {
         validateUserName(userName);
         User foundedUser = userRepository.findByUserName(userName)
@@ -45,6 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User update(int id, UserDto userDto) {
         validator.validate(userDto);
         User userToUpdate = findById(id);

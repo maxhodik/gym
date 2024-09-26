@@ -4,7 +4,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.hodik.gym.dao.TrainerSpecification;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
@@ -35,14 +34,13 @@ public class TrainerServiceImpl implements TrainerService {
     private final UserService userService;
     private final TrainerMapper trainerMapper;
     private final CredentialChecker credentialChecker;
-    private final TrainerSpecification trainerSpecification;
     private final MyValidator validator;
 
 
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TrainerRepository trainerRepository, UserRepository userRepository, UserService userService, TrainerMapper trainerMapper,
-                              CredentialChecker credentialChecker, TrainerSpecification trainerSpecification, MyValidator validator) {
+                              CredentialChecker credentialChecker, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
@@ -50,7 +48,6 @@ public class TrainerServiceImpl implements TrainerService {
         this.userService = userService;
         this.trainerMapper = trainerMapper;
         this.credentialChecker = credentialChecker;
-        this.trainerSpecification = trainerSpecification;
         this.validator = validator;
     }
 
@@ -67,7 +64,7 @@ public class TrainerServiceImpl implements TrainerService {
         return trainer;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Trainer update(UserCredentialDto credential, TrainerDto trainerDto) {
         credentialChecker.checkIfMatchCredentialsOrThrow(credential);
@@ -83,6 +80,7 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Trainer findById(int id) {
         Optional<Trainer> trainer = trainerRepository.findById(id);
         log.info("Finding trainer by id={}", id);
@@ -98,13 +96,14 @@ public class TrainerServiceImpl implements TrainerService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<Trainer> getAllTrainers() {
         List<Trainer> allTrainers = trainerRepository.findAll();
         log.info("Finding all trainers from DB");
         return allTrainers;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Trainer changePassword(UserCredentialDto credential, String newPassword) {
         validatePassword(newPassword);
@@ -116,7 +115,7 @@ public class TrainerServiceImpl implements TrainerService {
         return trainerToUpdate;
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive) {
         credentialChecker.checkIfMatchCredentialsOrThrow(credential);

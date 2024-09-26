@@ -22,7 +22,7 @@ class CustomTrainingTypeValidatorTest {
     @Mock
     private ValidTrainingTypeEnum mockAnnotation;
     private List<String> valueList;
-    private CustomTrainingTypeValidator validator = new CustomTrainingTypeValidator();
+    private final CustomTrainingTypeValidator validator = new CustomTrainingTypeValidator();
     @Mock
     private ConstraintValidatorContextImpl context;
 

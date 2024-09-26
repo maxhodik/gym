@@ -18,9 +18,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomDateValidatorTest {
-    private LocalDate now = LocalDate.now();
+    private final LocalDate now = LocalDate.now();
     private FilterFormDto filterFormDto;
-    private CustomDateValidator validator = new CustomDateValidator();
+    private final CustomDateValidator validator = new CustomDateValidator();
     @Mock
     private ConstraintValidatorContextImpl context;
     @Mock

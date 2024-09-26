@@ -37,9 +37,9 @@ class UserServiceImplTest {
     void getAllUsers_ReturnUsersList() {
         //given
         when(userRepository.findAll()).thenReturn(expectedUserList);
-        //then
+        //when
         List<User> userList = userService.getAllUsers();
-        //
+        //then
         assertEquals(expectedUserList, userList);
         verify(userRepository).findAll();
     }

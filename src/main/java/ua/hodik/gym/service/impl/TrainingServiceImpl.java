@@ -55,6 +55,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Transactional
+    @Override
     public Training createTraining(TrainingDto trainingDto) {
         validator.validate(trainingDto);
         Training training = trainingMapper.convertToTraining(trainingDto);
@@ -69,6 +70,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<Training> findAllWithFilters(FilterFormDto filterFormDto) {
         validator.validate(filterFormDto);
         Map<String, FilterDto<?>> filters = filterDtoConverter.convert(filterFormDto);

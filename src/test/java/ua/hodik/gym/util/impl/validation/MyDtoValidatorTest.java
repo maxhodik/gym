@@ -32,8 +32,8 @@ class MyDtoValidatorTest {
         private String field2;
     }
 
-    private final FieldError error2 = new FieldError("TestDto", "field1", "InvalidValue1", false, null, null, "Field1 is invalid");
-    private final FieldError error3 = new FieldError("TestDto", "field2", "InvalidValue2", false, null, null, "Field2 is invalid");
+    private final FieldError error1 = new FieldError("TestDto", "field1", "InvalidValue1", false, null, null, "Field1 is invalid");
+    private final FieldError error2 = new FieldError("TestDto", "field2", "InvalidValue2", false, null, null, "Field2 is invalid");
     @Mock
     private Validator validator;
 
@@ -69,19 +69,17 @@ class MyDtoValidatorTest {
     void validate_InputIsNull_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class, () -> myDtoValidator.validate(null));
-
         //then
         assertEquals("Value can't be null", exception.getMessage());
     }
-
 
     @Test
     void validate_ValidationErrors_ThrowValidationException() {
         //given
         doAnswer(invocation -> {
             BeanPropertyBindingResult result = invocation.getArgument(1);
+            result.addError(error1);
             result.addError(error2);
-            result.addError(error3);
             return null;
         }).when(validator).validate(any(), any(BeanPropertyBindingResult.class));
         //when

@@ -79,6 +79,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional
+    @Override
     public Trainee update(UserCredentialDto credential, TraineeDto traineeDto) {
         credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         validator.validate(traineeDto);
@@ -94,6 +95,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Trainee findById(int id) {
         Optional<Trainee> trainee = traineeRepository.findById(id);
         return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee id= %s not found", id)));
@@ -158,6 +160,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional()
+    @Override
     public Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive) {
         credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String userName = credential.getUserName();
@@ -169,6 +172,7 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Transactional
+    @Override
     public void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList) {
         credentialChecker.checkIfMatchCredentialsOrThrow(credential);
         String traineeUserName = credential.getUserName();
