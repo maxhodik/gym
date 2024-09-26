@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUserName(String userName) {
-        validateString(userName);
+        validateUserName(userName);
         User foundedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User  %s not found", userName)));
         log.info("Finding user by userName {}", userName);
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
                 () -> new EntityNotFoundException(String.format("User  with id= %s not found", id)));
     }
 
-    private void validateString(String value) {
+    private void validateUserName(String value) {
         if (value == null || value.isEmpty()) {
             throw new ValidationException("UserName can't be null or empty");
         }

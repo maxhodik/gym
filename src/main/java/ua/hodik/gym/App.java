@@ -30,30 +30,30 @@ public class App {
 
 //        trainerService.createTrainerProfile(trainerDto);
 
-        Trainer trainer = trainerService.findById(7);
-        Trainee trainee = traineeService.findById(1);
-        TrainingDto trainingDto = getTrainingDto(trainee, trainer);
+//        Trainer trainer = trainerService.findById(7);
+//        Trainee trainee = traineeService.findById(1);
+//        TrainingDto trainingDto = getTrainingDto(trainee, trainer);
 //       trainingService.createTraining(trainingDto);
-        UserCredentialDto credential = new UserCredentialDto("Jon.Ivanov1", "MlPyvxOSAw");
+//        UserCredentialDto credential = new UserCredentialDto("Jon.Ivanov1", "MlPyvxOSAw");
 //        traineeService.updateActiveStatus(credential, false);
-        traineeService.update(credential, traineeDto);
+//        traineeService.update(credential, traineeDto);
 //        traineeService.deleteTrainee(credential);
 //
 //        trainerService.updateActiveStatus(credential, true);
 //        trainerService.update(credential, trainerDto);
         FilterFormDto filterFormDto = FilterFormDto.builder()
-                .traineeName("Jon.Ivanov1")
+                .traineeName("Jon.Ivanov")
                 .trainerName("Yura.Vasil")
                 .trainingType("BOXING")
-                .dateFrom(LocalDate.of(2024, 9, 19))
-                .dateTo(LocalDate.of(2024, 9, 18))
+                .dateFrom(LocalDate.of(2024, 9, 6))
+                .dateTo(LocalDate.of(2024, 9, 25))
                 .build();
 //        System.out.println(filterFormDto);
         List<Training> allWithFilters = facade.getTraineeTrainingList(
                 filterFormDto);
 //        List<Training> trainerList=facade.getTrainerTrainingList(filterFormDto);
-        System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
-        facade.updateTrainersList(credential, List.of("Yura.Vasil4"));
+//        System.out.println(facade.getNotAssignedTrainers("Jon.Ivanov"));
+//        facade.updateTrainersList(credential, List.of("Yura.Vasil4"));
         System.out.println(allWithFilters);
 //        System.out.println(trainerList);
     }

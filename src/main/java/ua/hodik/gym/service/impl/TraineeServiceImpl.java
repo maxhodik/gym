@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.Trainee;
@@ -152,13 +151,6 @@ public class TraineeServiceImpl implements TraineeService {
         }
     }
 
-    private void checkIfUserNameAllowedToChange(String userNameFromDto, String userNameFromDB) {
-        if (!userNameFromDto.equals(userNameFromDB)) {
-            if (userRepository.findByUserName(userNameFromDto).isPresent()) {
-                throw new EntityAlreadyExistsException(String.format("User %s already exists", userNameFromDto));
-            }
-        }
-    }
 
     private void updateTrainee(TraineeDto traineeDto, Trainee traineeToUpdate) {
         Optional.ofNullable(traineeDto.getDayOfBirth()).ifPresent(traineeToUpdate::setDayOfBirth);

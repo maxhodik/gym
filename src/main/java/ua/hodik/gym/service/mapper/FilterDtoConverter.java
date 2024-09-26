@@ -28,7 +28,7 @@ public class FilterDtoConverter {
         if (trainerName != null) {
             filters.put("trainer", new FilterDto<>("trainer", List.of(trainerName), Operation.IS));
         }
-        if (trainerName != null) {
+        if (traineeName != null) {
             filters.put("trainee", new FilterDto<>("trainee", List.of(traineeName), Operation.IS));
         }
         if (trainingType != null) {

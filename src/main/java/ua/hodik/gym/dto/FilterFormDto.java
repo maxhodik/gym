@@ -29,4 +29,9 @@ public class FilterFormDto {
     private String trainerName;
     @ValidTrainingTypeEnum(enumClass = TrainingType.class)
     private String trainingType;
+
+    public FilterFormDto(LocalDate dateFrom, LocalDate dateTo) {
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+    }
 }
