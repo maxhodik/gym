@@ -13,7 +13,7 @@ public interface TrainerService {
 
     List<Trainer> getAllTrainers();
 
-    Trainer createTrainerProfile(TrainerDto trainerDto);
+    UserCredentialDto createTrainerProfile(TrainerDto trainerDto);
 
     Trainer changePassword(UserCredentialDto credential, String newPassword);
 

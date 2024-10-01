@@ -1,6 +1,7 @@
 package ua.hodik.gym.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.*;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NotNull
 public class TraineeDto {
-
+    @Valid
     private UserDto userDto;
     private int traineeId;
     @DateTimeFormat(pattern = "dd-MM-yyyy")

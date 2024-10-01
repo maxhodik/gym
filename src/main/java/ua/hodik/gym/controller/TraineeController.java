@@ -22,7 +22,7 @@ public class TraineeController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TraineeDto traineeDto) {
+    public ResponseEntity<UserCredentialDto> registration(@Valid @RequestBody TraineeDto traineeDto) {
         UserCredentialDto userCredentialDto = traineeService.createTraineeProfile(traineeDto);
 //        ThreadLocal<UserCredentialDto> th = new ThreadLocal<>();
 //        th.set(userCredentialDto);

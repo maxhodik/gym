@@ -1,6 +1,6 @@
 package ua.hodik.gym.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import lombok.*;
 import ua.hodik.gym.model.TrainingType;
 
@@ -10,10 +10,9 @@ import ua.hodik.gym.model.TrainingType;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TrainerDto {
-
+    @Valid
     private UserDto userDto;
     private int trainerId;
-    @NotBlank(message = "Can't be null or empty")
 
     private TrainingType specialization;
 

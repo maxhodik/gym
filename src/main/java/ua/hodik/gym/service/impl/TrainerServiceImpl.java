@@ -53,15 +53,17 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-    public Trainer createTrainerProfile(TrainerDto trainerDto) {
+    public UserCredentialDto createTrainerProfile(TrainerDto trainerDto) {
         Objects.requireNonNull(trainerDto, "Trainer can't be null");
         validator.validate(trainerDto);
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
         setGeneratedPassword(trainer);
         trainer = trainerRepository.save(trainer);
-        log.info("Trainer {} saved in DB", trainer.getUser().getUserName());
-        return trainer;
+        User user = trainer.getUser();
+        UserCredentialDto credentialDto = new UserCredentialDto(user.getUserName(), user.getPassword());
+        log.info("Trainer {} saved in DB", user.getUserName());
+        return credentialDto;
     }
 
     @Transactional
