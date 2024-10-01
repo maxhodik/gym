@@ -67,15 +67,16 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
-    public Trainee createTraineeProfile(TraineeDto traineeDto) {
+    public UserCredentialDto createTraineeProfile(TraineeDto traineeDto) {
         Objects.requireNonNull(traineeDto, "Trainee can't be null");
         validator.validate(traineeDto);
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
         setGeneratedUserName(trainee);
         setGeneratedPassword(trainee);
         trainee = traineeRepository.save(trainee);
+        UserCredentialDto credentialDto = new UserCredentialDto(trainee.getUser().getUserName(), trainee.getUser().getPassword());
         log.info("Trainee {} saved in DB", trainee.getUser().getUserName());
-        return trainee;
+        return credentialDto;
     }
 
     @Transactional

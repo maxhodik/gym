@@ -25,6 +25,6 @@ public class UserDto {
     private String userName;
 
     private String password;
-    @NotBlank(message = "Can't be empty")
+//    @NotBlank(message = "Can't be empty")
     private boolean isActive;
 }

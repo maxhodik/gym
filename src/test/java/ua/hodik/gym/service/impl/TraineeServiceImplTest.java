@@ -49,7 +49,7 @@ class TraineeServiceImplTest {
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     private final Trainee traineeWithId = TestUtils.readFromFile(traineeWithIdPath, Trainee.class);
-    private final UserCredentialDto userCredentialDto = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
+    private final UserCredentialDto expectedUserCredentialDto = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
 
     private final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
     private final Trainer trainerWithUserName = TestUtils.readFromFile(trainerUserName, Trainer.class);
@@ -96,13 +96,13 @@ class TraineeServiceImplTest {
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
         when(traineeRepository.save(traineeWithoutUserName)).thenReturn(expectedTrainee);
         //when
-        Trainee savedTrainee = traineeService.createTraineeProfile(traineeDtoWithoutUserName);
+        UserCredentialDto credentialDto = traineeService.createTraineeProfile(traineeDtoWithoutUserName);
         //then
         verify(validator).validate(traineeDtoWithoutUserName);
         verify(userNameGenerator).generateUserName(FIRST_NAME, LAST_NAME);
         verify(passwordGenerator).generatePassword();
         verify(traineeRepository).save(expectedTrainee);
-        assertEquals(expectedTrainee, savedTrainee);
+        assertEquals(expectedUserCredentialDto, credentialDto);
     }
 
     @Test
@@ -135,7 +135,7 @@ class TraineeServiceImplTest {
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         doThrow(new ValidationException("Value can't be null")).when(validator).validate(any(TraineeDto.class));
         //when
-        assertThrows(ValidationException.class, () -> traineeService.update(userCredentialDto, traineeDtoWithoutUserName));
+        assertThrows(ValidationException.class, () -> traineeService.update(expectedUserCredentialDto, traineeDtoWithoutUserName));
     }
 
     @Test
@@ -146,9 +146,9 @@ class TraineeServiceImplTest {
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainee));
         when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         //when
-        Trainee updatedTrainee = traineeService.update(userCredentialDto, traineeDtoWithUserName);
+        Trainee updatedTrainee = traineeService.update(expectedUserCredentialDto, traineeDtoWithUserName);
         //then
-        verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
+        verify(credentialChecker).checkIfMatchCredentialsOrThrow(expectedUserCredentialDto);
         verify(validator).validate(traineeDtoWithUserName);
         verify(traineeRepository).findById(ID);
         assertEquals(expectedTrainee, updatedTrainee);
@@ -162,9 +162,9 @@ class TraineeServiceImplTest {
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(traineeWithId));
         when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         //when
-        Trainee updatedTrainee = traineeService.update(userCredentialDto, traineeDtoWithUserName);
+        Trainee updatedTrainee = traineeService.update(expectedUserCredentialDto, traineeDtoWithUserName);
         //then
-        verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
+        verify(credentialChecker).checkIfMatchCredentialsOrThrow(expectedUserCredentialDto);
         verify(validator).validate(traineeDtoWithUserName);
         verify(traineeRepository).findById(ID);
         verify(userService).update(0, traineeDtoWithUserName.getUserDto());
@@ -181,9 +181,9 @@ class TraineeServiceImplTest {
                 new EntityAlreadyExistsException("User Sam.Jonson already exists"));
         //when
         EntityAlreadyExistsException exception = assertThrows(EntityAlreadyExistsException.class,
-                () -> traineeService.update(userCredentialDto, traineeDtoWithUserName));
+                () -> traineeService.update(expectedUserCredentialDto, traineeDtoWithUserName));
         //then
-        verify(credentialChecker).checkIfMatchCredentialsOrThrow(userCredentialDto);
+        verify(credentialChecker).checkIfMatchCredentialsOrThrow(expectedUserCredentialDto);
         verify(validator).validate(traineeDtoWithUserName);
         verify(traineeRepository).findById(ID);
         verify(userService).update(0, traineeDtoWithUserName.getUserDto());
@@ -205,9 +205,9 @@ class TraineeServiceImplTest {
         //given
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         //when
-        traineeService.deleteTrainee(userCredentialDto);
+        traineeService.deleteTrainee(expectedUserCredentialDto);
         //then
-        verify(traineeRepository).deleteByUserUserName(userCredentialDto.getUserName());
+        verify(traineeRepository).deleteByUserUserName(expectedUserCredentialDto.getUserName());
     }
 
     @Test
@@ -216,9 +216,9 @@ class TraineeServiceImplTest {
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
         //when
-        Trainee trainee = traineeService.updateActiveStatus(userCredentialDto, false);
+        Trainee trainee = traineeService.updateActiveStatus(expectedUserCredentialDto, false);
         //then
-        verify(traineeRepository).findByUserUserName(userCredentialDto.getUserName());
+        verify(traineeRepository).findByUserUserName(expectedUserCredentialDto.getUserName());
         assertFalse(trainee.getUser().isActive());
     }
 
@@ -228,9 +228,9 @@ class TraineeServiceImplTest {
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
         //when
-        Trainee trainee = traineeService.updateActiveStatus(userCredentialDto, true);
+        Trainee trainee = traineeService.updateActiveStatus(expectedUserCredentialDto, true);
         //then
-        verify(traineeRepository).findByUserUserName(userCredentialDto.getUserName());
+        verify(traineeRepository).findByUserUserName(expectedUserCredentialDto.getUserName());
         assertTrue(trainee.getUser().isActive());
     }
 
@@ -285,7 +285,7 @@ class TraineeServiceImplTest {
         doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
         //when
-        Trainee trainee = traineeService.changePassword(userCredentialDto, NEW_PASSWORD);
+        Trainee trainee = traineeService.changePassword(expectedUserCredentialDto, NEW_PASSWORD);
         //then
         assertEquals(NEW_PASSWORD, trainee.getUser().getPassword());
     }
@@ -294,7 +294,7 @@ class TraineeServiceImplTest {
     void changePassword_WrongPassword_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> traineeService.changePassword(userCredentialDto, null));
+                () -> traineeService.changePassword(expectedUserCredentialDto, null));
         //then
         assertEquals("Password can't be null or empty", exception.getMessage());
     }
@@ -303,7 +303,7 @@ class TraineeServiceImplTest {
     void changePassword_EmptyPassword_ThrowException() {
         //when
         ValidationException exception = assertThrows(ValidationException.class,
-                () -> traineeService.changePassword(userCredentialDto, ""));
+                () -> traineeService.changePassword(expectedUserCredentialDto, ""));
         //then
         assertEquals("Password can't be null or empty", exception.getMessage());
     }
@@ -328,9 +328,9 @@ class TraineeServiceImplTest {
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainee));
         when(trainerService.findByUserName(anyString())).thenReturn(trainerWithUserName);
         //when
-        traineeService.updateTrainersList(userCredentialDto, TRAINER_NAME_LIST);
+        traineeService.updateTrainersList(expectedUserCredentialDto, TRAINER_NAME_LIST);
         //then
-        verify(traineeRepository).findByUserUserName(userCredentialDto.getUserName());
+        verify(traineeRepository).findByUserUserName(expectedUserCredentialDto.getUserName());
         verify(trainerService).findByUserName(USER_NAME);
     }
 
@@ -341,9 +341,9 @@ class TraineeServiceImplTest {
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
         //when
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                traineeService.updateTrainersList(userCredentialDto, TRAINER_NAME_LIST));
+                traineeService.updateTrainersList(expectedUserCredentialDto, TRAINER_NAME_LIST));
         //then
-        verify(traineeRepository).findByUserUserName(userCredentialDto.getUserName());
+        verify(traineeRepository).findByUserUserName(expectedUserCredentialDto.getUserName());
         assertEquals("Trainee Sam.Jonson not found", exception.getMessage());
     }
 }

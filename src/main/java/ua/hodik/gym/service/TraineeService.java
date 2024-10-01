@@ -17,7 +17,7 @@ public interface TraineeService {
 
     List<Trainee> getAllTrainees();
 
-    Trainee createTraineeProfile(TraineeDto traineeDto);
+    UserCredentialDto createTraineeProfile(TraineeDto traineeDto);
 
     Trainee changePassword(UserCredentialDto credential, String newPassword);
 
