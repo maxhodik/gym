@@ -1,11 +1,11 @@
 package ua.hodik.gym;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.hodik.gym.config.HibernateConfig;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class App {
     public static void main(String[] args) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(HibernateConfig.class);
+        SpringApplication.run(App.class, args);
     }
 }

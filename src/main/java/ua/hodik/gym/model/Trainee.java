@@ -17,6 +17,8 @@ import java.util.List;
 @ToString(exclude = {"trainers", "trainings"})
 @Entity
 @Table(name = "Trainee")
+@NamedEntityGraph(name = "Trainee.withUser", attributeNodes = @NamedAttributeNode("user"))
+
 public class Trainee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

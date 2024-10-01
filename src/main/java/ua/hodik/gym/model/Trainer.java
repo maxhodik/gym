@@ -13,6 +13,8 @@ import java.util.List;
 @ToString(exclude = "trainees")
 @Entity
 @Table(name = "Trainer")
+@NamedEntityGraph(name = "Trainer.withUser", attributeNodes = @NamedAttributeNode("user"))
+
 
 public class Trainer {
     @Id

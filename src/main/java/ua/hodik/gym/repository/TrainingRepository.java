@@ -9,5 +9,7 @@ import java.util.List;
 
 @Repository
 public interface TrainingRepository extends JpaRepository<Training, Integer> {
+//    @EntityGraph(value ="Trainee.withUser")
+
     List<Training> findAll(Specification specification);
 }
