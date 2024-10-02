@@ -59,6 +59,7 @@ public class TrainerServiceImpl implements TrainerService {
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
         setGeneratedPassword(trainer);
+        trainer.getUser().setActive(true);
         trainer = trainerRepository.save(trainer);
         User user = trainer.getUser();
         UserCredentialDto credentialDto = new UserCredentialDto(user.getUserName(), user.getPassword());

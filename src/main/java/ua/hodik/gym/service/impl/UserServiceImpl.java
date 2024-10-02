@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityAlreadyExistsException;
 import ua.hodik.gym.exception.ValidationException;
@@ -37,6 +38,15 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
         log.info("Finding all users");
         return users;
+    }
+
+    @Transactional
+    @Override
+    public void changePassword(int id, PasswordDto newPassword) {
+        User userForUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User  with id = %s not found", id)));
+        userForUpdate.setPassword(newPassword.getPassword());
+        log.info("User's password updated. Id= {}", id);
     }
 
     @Override

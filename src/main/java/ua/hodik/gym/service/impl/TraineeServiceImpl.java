@@ -73,6 +73,7 @@ public class TraineeServiceImpl implements TraineeService {
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
         setGeneratedUserName(trainee);
         setGeneratedPassword(trainee);
+        trainee.getUser().setActive(true);
         trainee = traineeRepository.save(trainee);
         UserCredentialDto credentialDto = new UserCredentialDto(trainee.getUser().getUserName(), trainee.getUser().getPassword());
         log.info("Trainee {} saved in DB", trainee.getUser().getUserName());

@@ -10,22 +10,28 @@ import org.springframework.web.bind.annotation.RestController;
 import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.service.TraineeService;
+import ua.hodik.gym.util.CredentialChecker;
 
 @RestController
 @RequestMapping("/trainees")
 @Log4j2
 public class TraineeController {
     private final TraineeService traineeService;
+    private final CredentialChecker credentialChecker;
 
-    public TraineeController(TraineeService traineeService) {
+    public TraineeController(TraineeService traineeService, CredentialChecker credentialChecker) {
         this.traineeService = traineeService;
+        this.credentialChecker = credentialChecker;
     }
 
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@Valid @RequestBody TraineeDto traineeDto) {
         UserCredentialDto userCredentialDto = traineeService.createTraineeProfile(traineeDto);
-        return ResponseEntity.ok(userCredentialDto);
+        return ResponseEntity.status(201).body(userCredentialDto);
     }
 
 
+
 }
+
+

@@ -22,6 +22,6 @@ public class TrainerController {
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TrainerDto trainerDto) {
         UserCredentialDto credentialDto = trainerService.createTrainerProfile(trainerDto);
-        return ResponseEntity.ok(credentialDto);
+        return ResponseEntity.status(201).body(credentialDto);
     }
 }
