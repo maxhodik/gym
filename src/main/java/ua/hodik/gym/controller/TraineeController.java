@@ -24,8 +24,6 @@ public class TraineeController {
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@Valid @RequestBody TraineeDto traineeDto) {
         UserCredentialDto userCredentialDto = traineeService.createTraineeProfile(traineeDto);
-//        ThreadLocal<UserCredentialDto> th = new ThreadLocal<>();
-//        th.set(userCredentialDto);
         return ResponseEntity.ok(userCredentialDto);
     }
 

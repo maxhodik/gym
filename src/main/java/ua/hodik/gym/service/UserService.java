@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserService {
     List<User> getAllUsers();
 
-    User findByUserName(String userNameDto);
+    UserDto findByUserName(String userNameDto);
 
     User update(int id, UserDto userDto);
 }

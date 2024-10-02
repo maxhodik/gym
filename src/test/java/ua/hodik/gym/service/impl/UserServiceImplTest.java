@@ -6,9 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
+import ua.hodik.gym.service.mapper.UserMapper;
 import ua.hodik.gym.tets.util.TestUtils;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,10 +29,14 @@ class UserServiceImplTest {
     public static final String USER_NAME = "Sam.Jonson";
     public static final String WRONG_USER_NAME = "WrongUserName";
     private final String userPath = "user.json";
+    private final String userDtoPath = "user.dto.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final List<User> expectedUserList = List.of(expectedUser);
+    private final UserDto expectedUserDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private UserMapper userMapper;
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -45,13 +52,15 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByUserName_ReturnUser() {
+    void findByUserName_ReturnUserDto() {
         //given
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
+        when(userMapper.convertToUserDto(any(User.class))).thenReturn(expectedUserDto);
         //when
-        User byUserName = userService.findByUserName(USER_NAME);
+        UserDto byUserName = userService.findByUserName(USER_NAME);
         //then
-        assertEquals(expectedUser, byUserName);
+        assertEquals(expectedUserDto, byUserName);
+        verify(userMapper).convertToUserDto(expectedUser);
         verify(userRepository).findByUserName(USER_NAME);
     }
 

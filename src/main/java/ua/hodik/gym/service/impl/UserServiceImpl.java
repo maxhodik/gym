@@ -11,6 +11,7 @@ import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.UserService;
+import ua.hodik.gym.service.mapper.UserMapper;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
@@ -22,11 +23,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final MyValidator validator;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, MyValidator validator) {
+    public UserServiceImpl(UserRepository userRepository, MyValidator validator, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.validator = validator;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -38,12 +41,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User findByUserName(String userName) {
+    public UserDto findByUserName(String userName) {
         validateUserName(userName);
         User foundedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User  %s not found", userName)));
         log.info("Finding user by userName {}", userName);
-        return foundedUser;
+        return userMapper.convertToUserDto(foundedUser);
     }
 
     @Override
