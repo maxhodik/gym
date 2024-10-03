@@ -1,0 +1,9 @@
+{
+  "userUpdateDto": {
+    "firstName": "Sam",
+    "lastName": "Jonson",
+    "userName": "Sam.Jonson",
+    "isActive": "true"
+  },
+  "specialization": "ZUMA"
+}

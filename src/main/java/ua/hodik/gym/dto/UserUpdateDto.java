@@ -23,7 +23,6 @@ public class UserUpdateDto {
     private String lastName;
     @NotBlank(message = "Can't be null or empty")
     private String userName;
-    //    @NotBlank(message = "Can't be null or empty"
     @NotNull
     private Boolean isActive;
 

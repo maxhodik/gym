@@ -7,9 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.exception.MyEntityAlreadyExistsException;
+import ua.hodik.gym.dto.UserUpdateDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainer;
@@ -44,6 +44,7 @@ class TrainerServiceImplTest {
     private final String trainerDtoPathWithoutUserName = "trainer.dto.without.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
+    private final String trainerUpdateDtoPath = "trainer.update.dto.json";
     private final String userPath = "user.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
 
@@ -53,6 +54,7 @@ class TrainerServiceImplTest {
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
+    private final TrainerUpdateDto trainerUpdateDto = TestUtils.readFromFile(trainerUpdateDtoPath, TrainerUpdateDto.class);
     private final UserCredentialDto expectedUserCredentialDto = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
     private static final String USER_NAME = "Sam.Jonson";
 
@@ -115,76 +117,34 @@ class TrainerServiceImplTest {
         verify(trainerRepository, times(0)).save(expectedTrainer);
     }
 
-    @Test
-    void update_CredentialIsNull_ThrowException() {
-        //given
-        doThrow(new NullPointerException("Credential can't be null")).when(credentialChecker).checkIfMatchCredentialsOrThrow(null);
-        //when
-        NullPointerException exception = assertThrows(NullPointerException.class,
-                () -> trainerService.update(, null, trainerDtoWithoutUserName));
-        //then
-        assertEquals("Credential can't be null", exception.getMessage());
-    }
 
-    @Test
-    void update_TrainerDtoIsInvalid_ThrowException() {
-        //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        doThrow(new MyValidationException("Value can't be null")).when(validator).validate(any(TrainerDto.class));
-        //when
-        assertThrows(MyValidationException.class, () -> trainerService.update(, expectedUserCredentialDto, trainerDtoWithoutUserName));
-    }
 
     @Test
     void update_EqualsUserName_Update() {
         //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        doNothing().when(validator).validate(any(TrainerDto.class));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
+//        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainer));
+        when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
+        when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);
         //when
-        Trainer updatedTrainer = trainerService.update(, expectedUserCredentialDto, trainerDtoWithUserName);
+        TrainerDto updatedTrainer = trainerService.update(ID, trainerUpdateDto);
         //then
-        verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
-        assertEquals(expectedTrainer, updatedTrainer);
+        assertEquals(trainerDtoWithUserName, updatedTrainer);
     }
 
     @Test
     void update_DifferentUserName_ReturnTrainer() {
         //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        doNothing().when(validator).validate(any(TrainerDto.class));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
-        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
+        when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
+        when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);
         //when
-        Trainer updatedTrainer = trainerService.update(, expectedUserCredentialDto, trainerDtoWithUserName);
+        TrainerDto updatedTrainer = trainerService.update(ID, trainerUpdateDto);
         //then
-        verify(credentialChecker).checkIfMatchCredentialsOrThrow(expectedUserCredentialDto);
-        verify(validator).validate(trainerDtoWithUserName);
         verify(trainerRepository).findById(ID);
-        verify(userService).update(0, trainerDtoWithUserName.getUserDto());
-        assertEquals(expectedTrainer, updatedTrainer);
-    }
-
-    @Test
-    void update_DoubleUserName_ThrowException() {
-        //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        doNothing().when(validator).validate(any(TrainerDto.class));
-        when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
-        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
-        when(userService.update(anyInt(), any(UserDto.class))).thenThrow(
-                new MyEntityAlreadyExistsException("User Sam.Jonson already exists"));        //when
-        MyEntityAlreadyExistsException exception = assertThrows(MyEntityAlreadyExistsException.class,
-                () -> trainerService.update(, expectedUserCredentialDto, trainerDtoWithUserName));
-        //then
-        verify(credentialChecker).checkIfMatchCredentialsOrThrow(expectedUserCredentialDto);
-        verify(validator).validate(trainerDtoWithUserName);
-        verify(trainerRepository).findById(ID);
-        verify(userService).update(0, trainerDtoWithUserName.getUserDto());
-        assertEquals("User Sam.Jonson already exists", exception.getMessage());
+        verify(userService).update(0, trainerUpdateDto.getUserUpdateDto());
+        assertEquals(trainerDtoWithUserName, updatedTrainer);
     }
 
     @Test

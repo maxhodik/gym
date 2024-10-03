@@ -1,0 +1,10 @@
+{
+  "userUpdateDto": {
+    "firstName": "Sam",
+    "lastName": "Jonson",
+    "userName": "Sam.Jonson",
+    "isActive": "true"
+  },
+  "dayOfBirth": "10-02-1995",
+  "address": "Chicago"
+}

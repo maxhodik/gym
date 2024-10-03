@@ -3,6 +3,7 @@ package ua.hodik.gym.dto;
 import jakarta.validation.Valid;
 import lombok.*;
 import ua.hodik.gym.model.TrainingType;
+import ua.hodik.gym.util.impl.validation.ValidTrainingTypeEnum;
 
 @Data
 @Builder
@@ -12,7 +13,6 @@ import ua.hodik.gym.model.TrainingType;
 public class TrainerUpdateDto {
     @Valid
     private UserUpdateDto userUpdateDto;
-
-    private TrainingType specialization;
-
+    @ValidTrainingTypeEnum(enumClass = TrainingType.class)
+    private String specialization;
 }

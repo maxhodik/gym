@@ -20,7 +20,7 @@ public class TraineeMapper {
     }
 
     public Trainee convertToTrainee(TraineeDto traineeDto) {
-        return modelMapper.map(traineeDto, Trainee.class);
+                return modelMapper.map(traineeDto, Trainee.class);
     }
 
     public TraineeDto convertToTraineeDto(Trainee trainee) {

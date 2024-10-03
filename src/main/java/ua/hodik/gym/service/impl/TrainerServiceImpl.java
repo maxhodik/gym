@@ -10,6 +10,7 @@ import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
@@ -160,6 +161,6 @@ public class TrainerServiceImpl implements TrainerService {
 
 
     private void updateTrainer(TrainerUpdateDto trainerDto, Trainer trainerToUpdate) {
-        Optional.ofNullable(trainerDto.getSpecialization()).ifPresent(trainerToUpdate::setSpecialization);
+        trainerToUpdate.setSpecialization(TrainingType.valueOf(trainerDto.getSpecialization()));
     }
 }
