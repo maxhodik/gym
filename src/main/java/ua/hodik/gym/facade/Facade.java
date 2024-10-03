@@ -33,9 +33,6 @@ public class Facade {
         return traineeService.update(credential, trainee);
     }
 
-    public void deleteTrainee(UserCredentialDto credential) {
-        traineeService.deleteTrainee(credential);
-    }
 
     public Trainee findTraineeById(int id) {
         return traineeService.findById(id);
