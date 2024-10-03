@@ -1,10 +1,8 @@
 {
-  "trainerId": 1,
   "userDto": {
     "firstName": "Sam",
     "lastName": "Jonson",
     "userName": "Sam.Jonson",
-    "password": "ABCDEFJxyz",
     "active": "true"
   },
   "specialization": "ZUMA"

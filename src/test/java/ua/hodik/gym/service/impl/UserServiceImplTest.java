@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.exception.ValidationException;
+import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.mapper.UserMapper;
@@ -18,7 +18,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,22 +51,20 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByUserName_ReturnUserDto() {
+    void findByUserName_ReturnUser() {
         //given
         when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
-        when(userMapper.convertToUserDto(any(User.class))).thenReturn(expectedUserDto);
         //when
-        UserDto byUserName = userService.findByUserName(USER_NAME);
+        User byUserName = userService.findByUserName(USER_NAME);
         //then
-        assertEquals(expectedUserDto, byUserName);
-        verify(userMapper).convertToUserDto(expectedUser);
+        assertEquals(expectedUser, byUserName);
         verify(userRepository).findByUserName(USER_NAME);
     }
 
     @Test
     void findByUserName_UserNameIsNull_ThrowException() {
         //when
-        ValidationException exception = assertThrows(ValidationException.class, () -> userService.findByUserName(null));
+        MyValidationException exception = assertThrows(MyValidationException.class, () -> userService.findByUserName(null));
         //then
         assertEquals("UserName can't be null or empty", exception.getMessage());
     }
@@ -75,7 +72,7 @@ class UserServiceImplTest {
     @Test
     void findByUserName_EmptyUserName_ThrowException() {
         //when
-        ValidationException exception = assertThrows(ValidationException.class, () -> userService.findByUserName(""));
+        MyValidationException exception = assertThrows(MyValidationException.class, () -> userService.findByUserName(""));
         //then
         assertEquals("UserName can't be null or empty", exception.getMessage());
     }

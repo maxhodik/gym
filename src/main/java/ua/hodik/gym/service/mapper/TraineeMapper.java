@@ -8,19 +8,26 @@ import ua.hodik.gym.model.Trainee;
 
 @Component
 public class TraineeMapper {
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+    private final UserMapper userMapper;
+    private final TrainerMapper trainerMapper;
 
     @Autowired
-    public TraineeMapper(ModelMapper modelMapper) {
+    public TraineeMapper(ModelMapper modelMapper, UserMapper userMapper, TrainerMapper trainerMapper) {
         this.modelMapper = modelMapper;
+        this.userMapper = userMapper;
+        this.trainerMapper = trainerMapper;
     }
-
 
     public Trainee convertToTrainee(TraineeDto traineeDto) {
         return modelMapper.map(traineeDto, Trainee.class);
     }
 
     public TraineeDto convertToTraineeDto(Trainee trainee) {
-        return modelMapper.map(trainee, TraineeDto.class);
+        TraineeDto traineeDto = modelMapper.map(trainee, TraineeDto.class);
+        traineeDto.setUserDto(userMapper.convertToUserDto(trainee.getUser()));
+        traineeDto.setTrainerDtoList(trainee.getTrainers().stream()
+                .map(trainerMapper::convertToTrainerDto).toList());
+        return traineeDto;
     }
 }

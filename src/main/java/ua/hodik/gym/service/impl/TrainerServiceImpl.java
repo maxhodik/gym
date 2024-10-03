@@ -5,9 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.exception.EntityNotFoundException;
-import ua.hodik.gym.exception.ValidationException;
+import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
@@ -69,17 +70,13 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Transactional
     @Override
-    public Trainer update(UserCredentialDto credential, TrainerDto trainerDto) {
-        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
-        validator.validate(trainerDto);
-        int trainerId = trainerDto.getTrainerId();
-        String userNameFromDto = trainerDto.getUserDto().getUserName();
+    public TrainerDto update(int trainerId, TrainerUpdateDto trainerDto) {
         Trainer trainerToUpdate = findTrainerToUpdate(trainerId);
-        User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserDto());
+        User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserUpdateDto());
         trainerToUpdate.setUser(updatedUser);
         updateTrainer(trainerDto, trainerToUpdate);
-        log.info("{} trainer updated", userNameFromDto);
-        return trainerToUpdate;
+        log.info("Trainer id={} updated", trainerId);
+        return trainerMapper.convertToTrainerDto(trainerToUpdate);
     }
 
     @Override
@@ -87,14 +84,14 @@ public class TrainerServiceImpl implements TrainerService {
     public Trainer findById(int id) {
         Optional<Trainer> trainer = trainerRepository.findById(id);
         log.info("Finding trainer by id={}", id);
-        return trainer.orElseThrow(() -> new EntityNotFoundException(String.format("Trainer id= %s not found", id)));
+        return trainer.orElseThrow(() -> new MyEntityNotFoundException(String.format("Trainer id= %s not found", id)));
     }
 
     @Override
     public Trainer findByUserName(String trainerUserName) {
         log.info("Finding trainer by userName {}", trainerUserName);
         return trainerRepository.findByUserUserName(trainerUserName).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
+                new MyEntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
     }
 
 
@@ -120,16 +117,13 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Transactional
     @Override
-    public Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive) {
-        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
-        String userName = credential.getUserName();
-        Trainer trainerToUpdate = findByUserName(credential.getUserName());
+    public void updateActiveStatus(String userName, boolean isActive) {
+        Trainer trainerToUpdate = findByUserName(userName);
         User user = trainerToUpdate.getUser();
         if (!user.isActive() == isActive) {
             user.setActive(isActive);
             log.info("Trainer {} active status updated", userName);
         }
-        return trainerToUpdate;
     }
 
     @Override
@@ -140,7 +134,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     private Trainer findTrainerToUpdate(int trainerId) {
         if (trainerId == 0) {
-            throw new EntityNotFoundException("Trainer with id = 0 cant be found");
+            throw new MyEntityNotFoundException("Trainer with id = 0 cant be found");
         }
         return findById(trainerId);
     }
@@ -160,12 +154,12 @@ public class TrainerServiceImpl implements TrainerService {
 
     private void validatePassword(String newPassword) {
         if (newPassword == null || newPassword.isEmpty()) {
-            throw new ValidationException("Password can't be null or empty");
+            throw new MyValidationException("Password can't be null or empty");
         }
     }
 
 
-    private void updateTrainer(TrainerDto trainerDto, Trainer trainerToUpdate) {
+    private void updateTrainer(TrainerUpdateDto trainerDto, Trainer trainerToUpdate) {
         Optional.ofNullable(trainerDto.getSpecialization()).ifPresent(trainerToUpdate::setSpecialization);
     }
 }

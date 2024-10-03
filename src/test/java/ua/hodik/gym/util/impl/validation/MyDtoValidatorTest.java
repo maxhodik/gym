@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
-import ua.hodik.gym.exception.ValidationException;
+import ua.hodik.gym.exception.MyValidationException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +68,7 @@ class MyDtoValidatorTest {
     @Test
     void validate_InputIsNull_ThrowException() {
         //when
-        ValidationException exception = assertThrows(ValidationException.class, () -> myDtoValidator.validate(null));
+        MyValidationException exception = assertThrows(MyValidationException.class, () -> myDtoValidator.validate(null));
         //then
         assertEquals("Value can't be null", exception.getMessage());
     }
@@ -83,7 +83,7 @@ class MyDtoValidatorTest {
             return null;
         }).when(validator).validate(any(), any(BeanPropertyBindingResult.class));
         //when
-        assertThrows(ValidationException.class, () -> myDtoValidator.validate(invalidDto));
+        assertThrows(MyValidationException.class, () -> myDtoValidator.validate(invalidDto));
         //then
         verify(validator).validate(any(), any(BeanPropertyBindingResult.class));
     }

@@ -1,14 +1,14 @@
 package ua.hodik.gym.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TraineeDto;
+import ua.hodik.gym.dto.TraineeUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainee;
 
 import java.util.List;
 
 public interface TraineeService {
-
-
 
 
     Trainee findById(int id);
@@ -19,13 +19,17 @@ public interface TraineeService {
 
     UserCredentialDto createTraineeProfile(TraineeDto traineeDto);
 
+    TraineeDto findTraineeDtoByUserName(String username);
+
     Trainee changePassword(UserCredentialDto credential, String newPassword);
 
-    Trainee update(UserCredentialDto credential, TraineeDto traineeDto);
+    TraineeDto update(int id, TraineeUpdateDto traineeDto);
 
-    void deleteTrainee(UserCredentialDto credentialDto);
+    void deleteTrainee(String userName);
 
-    Trainee updateActiveStatus(UserCredentialDto credential, boolean isActive);
+
+    @Transactional()
+    void updateActiveStatus(String userName, boolean isActive);
 
     void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList);
 }

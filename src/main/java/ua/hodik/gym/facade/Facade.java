@@ -3,7 +3,6 @@ package ua.hodik.gym.facade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.FilterFormDto;
-import ua.hodik.gym.dto.TraineeDto;
 import ua.hodik.gym.dto.TrainingDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainee;
@@ -29,9 +28,6 @@ public class Facade {
     }
 
 
-    public Trainee updateTrainee(UserCredentialDto credential, TraineeDto trainee) {
-        return traineeService.update(credential, trainee);
-    }
 
 
     public Trainee findTraineeById(int id) {

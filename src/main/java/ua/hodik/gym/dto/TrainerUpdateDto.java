@@ -9,9 +9,9 @@ import ua.hodik.gym.model.TrainingType;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrainerDto {
+public class TrainerUpdateDto {
     @Valid
-    private UserDto userDto;
+    private UserUpdateDto userUpdateDto;
 
     private TrainingType specialization;
 

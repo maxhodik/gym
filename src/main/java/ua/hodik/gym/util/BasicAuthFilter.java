@@ -29,7 +29,11 @@ public class BasicAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        String path = request.getRequestURI();
+        if (path.contains("/registration") || path.contains("/auth/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Basic ")) {
@@ -52,13 +56,9 @@ public class BasicAuthFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        String path = request.getRequestURI();
-        if (path.contains("/registration") || path.contains("/auth/login")) {
-            filterChain.doFilter(request, response);
-        } else {
-            sendUnauthorizedResponse(response);
-        }
+        sendUnauthorizedResponse(response);
     }
+
 
     private static void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());

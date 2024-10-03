@@ -8,7 +8,6 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
@@ -16,14 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @NotNull
-public class TraineeDto {
+public class TraineeUpdateDto {
     @Valid
-    private UserDto userDto;
+    private UserUpdateDto userUpdateDto;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Past(message = "You haven't been born yet")
     private LocalDate dayOfBirth;
 
     private String address;
-    private List<TrainerDto> trainerDtoList;
 }

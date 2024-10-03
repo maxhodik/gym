@@ -8,11 +8,13 @@ import ua.hodik.gym.model.Trainer;
 
 @Component
 public class TrainerMapper {
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
+    private final UserMapper userMapper;
 
     @Autowired
-    public TrainerMapper(ModelMapper modelMapper) {
+    public TrainerMapper(ModelMapper modelMapper, UserMapper userMapper) {
         this.modelMapper = modelMapper;
+        this.userMapper = userMapper;
     }
 
 
@@ -21,6 +23,8 @@ public class TrainerMapper {
     }
 
     public TrainerDto convertToTrainerDto(Trainer trainer) {
-        return modelMapper.map(trainer, TrainerDto.class);
+        TrainerDto trainerDto = modelMapper.map(trainer, TrainerDto.class);
+        trainerDto.setUserDto(userMapper.convertToUserDto(trainer.getUser()));
+        return trainerDto;
     }
 }

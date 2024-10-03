@@ -1,6 +1,7 @@
 package ua.hodik.gym.service;
 
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainer;
 
@@ -17,9 +18,9 @@ public interface TrainerService {
 
     Trainer changePassword(UserCredentialDto credential, String newPassword);
 
-    Trainer update(UserCredentialDto credential, TrainerDto trainerDto);
+    TrainerDto update(int id, TrainerUpdateDto trainerDto);
 
-    Trainer updateActiveStatus(UserCredentialDto credential, boolean isActive);
+    void updateActiveStatus(String userName, boolean isActive);
 
     List<Trainer> getNotAssignedTrainers(String traineeName);
 

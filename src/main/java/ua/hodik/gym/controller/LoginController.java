@@ -8,13 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.exception.InvalidCredentialException;
+import ua.hodik.gym.model.User;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.util.CredentialChecker;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 @Log4j2
 @RestController
@@ -33,8 +29,8 @@ public class LoginController {
     public ResponseEntity<String> login(@RequestBody @Valid UserCredentialDto credentials) {
         String username = credentials.getUserName();
         String password = credentials.getPassword();
-        UserDto userFromDB = userService.findByUserName(username);
-        if (userFromDB.getUserName().equals(username) && userFromDB.getPassword().equals(password)) {
+        User user = userService.findByUserName(username);
+        if (user.getUserName().equals(username) && user.getPassword().equals(password)) {
             log.info("User {} login successful", username);
             return ResponseEntity.ok("Login successful");
         } else {
@@ -47,23 +43,8 @@ public class LoginController {
     public ResponseEntity<String> changeLogin(@PathVariable int id,
                                               @RequestBody @Valid PasswordDto newPassword,
                                               HttpServletRequest request) {
-        credentialChecker.checkIfMatchCredentialsOrThrow(getCredential(request));
         userService.changePassword(id, newPassword);
         return ResponseEntity.ok("Password successfully changed");
 
-    }
-
-    protected UserCredentialDto getCredential(HttpServletRequest request) {
-
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Basic ")) {
-            String base64Credentials = authHeader.substring(6);
-            byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
-            String credentials = new String(credDecoded, StandardCharsets.UTF_8);
-            String[] values = credentials.split(":", 2);
-            return new UserCredentialDto(values[0], values[1]);
-
-        } else throw new InvalidCredentialException("Incorrect credentials");
     }
 }

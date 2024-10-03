@@ -10,8 +10,8 @@ import ua.hodik.gym.dao.TrainingSpecification;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
-import ua.hodik.gym.exception.EntityNotFoundException;
-import ua.hodik.gym.exception.ValidationException;
+import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -86,9 +86,9 @@ class TrainingServiceImplTest {
     @Test
     void create_TrainingDtoNull_ThrowException() {
         //given
-        doThrow(new ValidationException()).when(validator).validate(null);
+        doThrow(new MyValidationException()).when(validator).validate(null);
         //when
-        ValidationException exception = assertThrows(ValidationException.class,
+        MyValidationException exception = assertThrows(MyValidationException.class,
                 () -> trainingService.createTraining(null));
 
     }
@@ -96,9 +96,9 @@ class TrainingServiceImplTest {
     @Test
     void create_InvalidTrainingDto_ThrowException() {
         //given
-        doThrow(new ValidationException()).when(validator).validate(any());
+        doThrow(new MyValidationException()).when(validator).validate(any());
         //when
-        assertThrows(ValidationException.class,
+        assertThrows(MyValidationException.class,
                 () -> trainingService.createTraining(invalidTrainingDto));
 
     }
@@ -123,7 +123,7 @@ class TrainingServiceImplTest {
         //give
         when(trainingRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> trainingService.findById(ID));
+        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class, () -> trainingService.findById(ID));
         //then
         verify(trainingRepository).findById(ID);
         assertEquals("Training with id= 1 not found", exception.getMessage());
@@ -168,10 +168,10 @@ class TrainingServiceImplTest {
     void findAllWithFilters_ValidationFails_ThrowException() {
 
         //given
-        doThrow(new ValidationException())
+        doThrow(new MyValidationException())
                 .when(validator).validate(any(FilterFormDto.class));
         //when
-        assertThrows(ValidationException.class, () ->
+        assertThrows(MyValidationException.class, () ->
                 trainingService.findAllWithFilters(filterFormDto));
         //then
         verify(validator).validate(filterFormDto);
