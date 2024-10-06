@@ -3,6 +3,7 @@ package ua.hodik.gym.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -46,9 +47,10 @@ public class ExceptionHandlingController {
                 .body(e.getMessage());
     }
 
-    @ExceptionHandler(MyEntityNotFoundException.class)
+    @ExceptionHandler({MyEntityNotFoundException.class, HttpMessageNotReadableException.class})
     private ResponseEntity<String> exceptionHandler(Exception e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
 }

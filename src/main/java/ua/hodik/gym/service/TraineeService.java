@@ -1,9 +1,7 @@
 package ua.hodik.gym.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ua.hodik.gym.dto.TraineeDto;
-import ua.hodik.gym.dto.TraineeUpdateDto;
-import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.model.Trainee;
 
 import java.util.List;
@@ -31,5 +29,5 @@ public interface TraineeService {
     @Transactional()
     void updateActiveStatus(String userName, boolean isActive);
 
-    void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList);
+    List<TrainerDto> updateTrainersList(int traineeId, List<UserNameDto> trainerNameList);
 }

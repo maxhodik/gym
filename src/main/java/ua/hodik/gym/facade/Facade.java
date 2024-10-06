@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
-import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -56,13 +55,6 @@ public class Facade {
         return trainingService.findAllWithFilters(filterFormDto);
     }
 
-    public List<Trainer> getNotAssignedTrainers(String traineeName) {
-        return trainerService.getNotAssignedTrainers(traineeName);
-    }
-
-    public void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList) {
-        traineeService.updateTrainersList(credential, trainerNameList);
-    }
 
     public Trainer getTrainerByUserName(String userName) {
         return trainerService.findByUserName(userName);

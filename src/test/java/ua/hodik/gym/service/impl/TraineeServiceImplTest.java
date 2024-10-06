@@ -5,10 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ua.hodik.gym.dto.TraineeDto;
-import ua.hodik.gym.dto.TraineeUpdateDto;
-import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserUpdateDto;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainee;
@@ -18,8 +15,8 @@ import ua.hodik.gym.repository.TraineeRepository;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TraineeMapper;
+import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.tets.util.TestUtils;
-import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
@@ -41,23 +38,29 @@ class TraineeServiceImplTest {
     private final String traineeDtoPath = "trainee.dto.same.without.user.name.json";
     private final String traineeDtoWithUserNamePath = "trainee.dto.with.user.name.json";
     private final String traineeUpdateDtoPath = "trainee.update.dto.json";
+    private final String expectedTrainerPath = "trainer.same.user.name.json";
 
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String traineeWithIdPath = "trainee.with.id.json";
     private final String trainerUserName = "trainer.same.user.name.json";
+    private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String userPath = "user.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
     private final TraineeDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
     private final TraineeUpdateDto traineeUpdateDto = TestUtils.readFromFile(traineeUpdateDtoPath, TraineeUpdateDto.class);
+    private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     private final Trainee traineeWithId = TestUtils.readFromFile(traineeWithIdPath, Trainee.class);
     private final UserCredentialDto expectedUserCredentialDto = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
 
     private final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
     private final Trainer trainerWithUserName = TestUtils.readFromFile(trainerUserName, Trainer.class);
-    private static final List<String> TRAINER_NAME_LIST = List.of("Sam.Jonson");
+    private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
+    private static final List<UserNameDto> TRAINER_NAME_LIST = List.of(new UserNameDto("Sam.Jonson"));
+    private List<Trainer> expectedTrainers = List.of(expectedTrainer);
+    private List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName);
 
 
     public static final String PASSWORD = "ABCDEFJxyz";
@@ -79,7 +82,7 @@ class TraineeServiceImplTest {
     @Mock
     private TraineeMapper traineeMapper;
     @Mock
-    private CredentialChecker credentialChecker;
+    private TrainerMapper trainerMapper;
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
@@ -121,8 +124,6 @@ class TraineeServiceImplTest {
         verify(passwordGenerator, times(0)).generatePassword();
         verify(traineeRepository, times(0)).save(expectedTrainee);
     }
-
-
 
 
     @Test
@@ -227,34 +228,7 @@ class TraineeServiceImplTest {
         assertEquals("Trainee Sam.Jonson not found", exception.getMessage());
     }
 
-    @Test
-    void changePassword_ValidCredential_ChangePassword() {
-        //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.of(expectedTrainee));
-        //when
-        Trainee trainee = traineeService.changePassword(expectedUserCredentialDto, NEW_PASSWORD);
-        //then
-        assertEquals(NEW_PASSWORD, trainee.getUser().getPassword());
-    }
 
-    @Test
-    void changePassword_WrongPassword_ThrowException() {
-        //when
-        MyValidationException exception = assertThrows(MyValidationException.class,
-                () -> traineeService.changePassword(expectedUserCredentialDto, null));
-        //then
-        assertEquals("Password can't be null or empty", exception.getMessage());
-    }
-
-    @Test
-    void changePassword_EmptyPassword_ThrowException() {
-        //when
-        MyValidationException exception = assertThrows(MyValidationException.class,
-                () -> traineeService.changePassword(expectedUserCredentialDto, ""));
-        //then
-        assertEquals("Password can't be null or empty", exception.getMessage());
-    }
 
     @Test
     void getAllTrainees_Pass() {
@@ -272,26 +246,26 @@ class TraineeServiceImplTest {
     void updateTrainersList_ValidCredential_UpdateList() {
 
         //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainee));
+        when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainee));
         when(trainerService.findByUserName(anyString())).thenReturn(trainerWithUserName);
+        when(trainerMapper.convertToTrainerDto(trainerWithUserName)).thenReturn(trainerDtoWithUserName);
         //when
-        traineeService.updateTrainersList(expectedUserCredentialDto, TRAINER_NAME_LIST);
+        List<TrainerDto> trainerDtoList = traineeService.updateTrainersList(ID, TRAINER_NAME_LIST);
         //then
-        verify(traineeRepository).findByUserUserName(expectedUserCredentialDto.getUserName());
+        verify(traineeRepository).findById(ID);
         verify(trainerService).findByUserName(USER_NAME);
+        assertEquals(expectedTrainerDtoList, trainerDtoList);
     }
 
     @Test
     void updateTrainersList_TraineeNotExists_ThrowEntityNotFoundException() {
         //given
-        doNothing().when(credentialChecker).checkIfMatchCredentialsOrThrow(any(UserCredentialDto.class));
-        when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
+        when(traineeRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
         MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class, () ->
-                traineeService.updateTrainersList(expectedUserCredentialDto, TRAINER_NAME_LIST));
+                traineeService.updateTrainersList(ID, TRAINER_NAME_LIST));
         //then
-        verify(traineeRepository).findByUserUserName(expectedUserCredentialDto.getUserName());
-        assertEquals("Trainee Sam.Jonson not found", exception.getMessage());
+        verify(traineeRepository).findById(ID);
+        assertEquals("Trainee id= 1 not found", exception.getMessage());
     }
 }

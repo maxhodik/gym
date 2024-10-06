@@ -5,11 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.hodik.gym.dto.TraineeDto;
-import ua.hodik.gym.dto.TraineeUpdateDto;
-import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserNameDto;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.service.TraineeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/trainees")
@@ -49,12 +48,22 @@ public class TraineeController {
         return ResponseEntity.ok(String.format("Trainee %s deleted successfully", userName));
     }
 
-    @PatchMapping()
-    public ResponseEntity<String> updateTraineeActivityStatus(@Valid @RequestBody UserNameDto userNameDto,
-                                                              @NotBlank(message = "Can't be null or empty") boolean isActive) {
-        traineeService.updateActiveStatus(userNameDto.getUserName(), isActive);
-        return ResponseEntity.ok(String.format("Trainee %s active status updated", userNameDto.getUserName()));
+    @PatchMapping("/{username}")
+    public ResponseEntity<String> updateTraineeActivityStatus(@PathVariable @NotBlank(message = "UserName can't be null or empty") String username,
+                                                              @RequestBody Boolean isActive) {
+        {
+            traineeService.updateActiveStatus(username, isActive);
+            return ResponseEntity.ok(String.format("Trainee %s active status updated", username));
+        }
+    }
+
+    @PutMapping("/update-trainers/{id:\\d+}")
+    public ResponseEntity<List<TrainerDto>> updateTraineeTrainersList(@PathVariable int id,
+                                                                      @RequestBody @Valid List<UserNameDto> trainerNames) {
+        List<TrainerDto> trainerDtoList = traineeService.updateTrainersList(id, trainerNames);
+        return ResponseEntity.ok(trainerDtoList);
     }
 }
+
 
 

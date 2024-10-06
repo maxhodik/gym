@@ -12,17 +12,18 @@ public interface TrainerService {
 
     Trainer findById(int id);
 
+    TrainerDto findTrainerDtoByUserName(String trainerUserName);
+
     List<Trainer> getAllTrainers();
 
     UserCredentialDto createTrainerProfile(TrainerDto trainerDto);
 
-    Trainer changePassword(UserCredentialDto credential, String newPassword);
 
     TrainerDto update(int id, TrainerUpdateDto trainerDto);
 
     void updateActiveStatus(String userName, boolean isActive);
 
-    List<Trainer> getNotAssignedTrainers(String traineeName);
+    List<TrainerDto> getNotAssignedTrainers(String traineeName);
 
     Trainer findByUserName(String trainerUserName);
 }

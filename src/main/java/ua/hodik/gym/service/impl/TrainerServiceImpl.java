@@ -95,6 +95,10 @@ public class TrainerServiceImpl implements TrainerService {
                 new MyEntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
     }
 
+    @Override
+    public TrainerDto findTrainerDtoByUserName(String trainerUserName) {
+        return trainerMapper.convertToTrainerDto(findByUserName(trainerUserName));
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -104,17 +108,7 @@ public class TrainerServiceImpl implements TrainerService {
         return allTrainers;
     }
 
-    @Transactional
-    @Override
-    public Trainer changePassword(UserCredentialDto credential, String newPassword) {
-        validatePassword(newPassword);
-        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
-        String userName = credential.getUserName();
-        Trainer trainerToUpdate = findByUserName(userName);
-        trainerToUpdate.getUser().setPassword(newPassword);
-        log.info("{} password updated", userName);
-        return trainerToUpdate;
-    }
+
 
     @Transactional
     @Override
@@ -128,8 +122,11 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public List<Trainer> getNotAssignedTrainers(String traineeName) {
-        return trainerRepository.findAllNotAssignedTrainers(traineeName);
+    public List<TrainerDto> getNotAssignedTrainers(String traineeName) {
+        // todo check if Trainee exists ???
+        return trainerRepository.findAllNotAssignedTrainers(traineeName).stream()
+                .map(trainerMapper::convertToTrainerDto)
+                .toList();
     }
 
 

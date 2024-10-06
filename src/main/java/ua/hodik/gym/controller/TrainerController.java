@@ -1,6 +1,5 @@
 package ua.hodik.gym.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,8 @@ import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserNameDto;
 import ua.hodik.gym.service.TrainerService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/trainers")
@@ -29,18 +30,17 @@ public class TrainerController {
         return ResponseEntity.status(201).body(credentialDto);
     }
 
-    @PatchMapping()
-    public ResponseEntity<String> updateTrainerActivityStatus(@Valid @RequestBody UserNameDto userNameDto,
-                                                              @NotBlank(message = "Can't be null or empty") boolean isActive,
-                                                              HttpServletRequest request) {
-        trainerService.updateActiveStatus(userNameDto.getUserName(), isActive);
-        return ResponseEntity.ok(String.format("Trainer %s active status updated", userNameDto.getUserName()));
+    @PatchMapping("/{username}")
+    public ResponseEntity<String> updateTrainerActivityStatus(@PathVariable @NotBlank(message = "UserName can't be null or empty") String username,
+                                                              @RequestBody boolean isActive) {
+        trainerService.updateActiveStatus(username, isActive);
+        return ResponseEntity.ok(String.format("Trainer %s active status updated", username));
     }
 
     @GetMapping
-    public ResponseEntity<TrainerDto> getTrainer(@Valid @RequestBody UserNameDto userNameDto, HttpServletRequest request) {
-        //todo
-        return ResponseEntity.ok(new TrainerDto());
+    public ResponseEntity<TrainerDto> getTrainer(@Valid @RequestBody UserNameDto userNameDto) {
+        TrainerDto trainerDto = trainerService.findTrainerDtoByUserName(userNameDto.getUserName());
+        return ResponseEntity.ok(trainerDto);
     }
 
     @PutMapping("/{id:\\d+}")
@@ -48,5 +48,12 @@ public class TrainerController {
         TrainerDto trainer = trainerService.update(id, trainerDto);
         return ResponseEntity.ok(trainer);
 
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<List<TrainerDto>> getNotAssignedTrainers(@PathVariable @NotBlank(message = "UserName can't be null or empty") String username) {
+
+        List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(username);
+        return ResponseEntity.ok(notAssignedTrainers);
     }
 }

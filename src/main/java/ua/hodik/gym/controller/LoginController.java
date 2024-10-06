@@ -1,6 +1,5 @@
 package ua.hodik.gym.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -41,8 +40,7 @@ public class LoginController {
 
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<String> changeLogin(@PathVariable int id,
-                                              @RequestBody @Valid PasswordDto newPassword,
-                                              HttpServletRequest request) {
+                                              @RequestBody @Valid PasswordDto newPassword) {
         userService.changePassword(id, newPassword);
         return ResponseEntity.ok("Password successfully changed");
 

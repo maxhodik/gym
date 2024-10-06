@@ -6,9 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.hodik.gym.dto.TraineeDto;
-import ua.hodik.gym.dto.TraineeUpdateDto;
-import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainee;
@@ -20,6 +18,7 @@ import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TraineeMapper;
+import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
@@ -38,6 +37,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     private final PasswordGenerator passwordGenerator;
     private final TraineeMapper traineeMapper;
+    private final TrainerMapper trainerMapper;
 
     private final TraineeRepository traineeRepository;
     private final TrainerService trainerService;
@@ -52,11 +52,12 @@ public class TraineeServiceImpl implements TraineeService {
     @Autowired
     public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TraineeMapper traineeMapper,
-                              TraineeRepository traineeRepository,
+                              TrainerMapper trainerMapper, TraineeRepository traineeRepository,
                               TrainerService trainerService, UserRepository userRepository, UserService userService, CredentialChecker credentialChecker, MyValidator validator) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.traineeMapper = traineeMapper;
+        this.trainerMapper = trainerMapper;
         this.traineeRepository = traineeRepository;
         this.trainerService = trainerService;
         this.userRepository = userRepository;
@@ -159,7 +160,7 @@ public class TraineeServiceImpl implements TraineeService {
         traineeToUpdate.setAddress(traineeDto.getAddress());
     }
 
-    @Transactional()
+    @Transactional
     @Override
     public void updateActiveStatus(String userName, boolean isActive) {
         Trainee traineeToUpdate = findByUserName(userName);
@@ -170,17 +171,18 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Transactional
     @Override
-    public void updateTrainersList(UserCredentialDto credential, List<String> trainerNameList) {
-        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
-        String traineeUserName = credential.getUserName();
-        Trainee trainee = traineeRepository.findByUserUserName(traineeUserName).orElseThrow(() ->
-                new MyEntityNotFoundException(String.format("Trainee %s not found", traineeUserName)));
+    public List<TrainerDto> updateTrainersList(int traineeId, List<UserNameDto> trainerNameList) {
+
+        Trainee trainee = findById(traineeId);
         List<Trainer> trainerList = new ArrayList<>();
         trainerNameList.stream()
+                .map(UserNameDto::getUserName)
                 .map(trainerService::findByUserName)
                 .forEach(trainerList::add);
         trainee.addTrainersList(trainerList);
-        log.info("Updating {} trainersList", traineeUserName);
+        log.info("Updating trainee's with id= {} trainersList", traineeId);
+        return trainerList.stream()
+                .map(trainerMapper::convertToTrainerDto).toList();
     }
 
 }
