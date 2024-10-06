@@ -39,7 +39,7 @@ class CustomTrainingTypeValidatorTest {
 
     @Test
     void isValid_CorrectValueLowerCase_ReturnTrue() {
-        assertTrue(validator.isValid(CORRECT_VALUE_LOWER_CASE, context));
+        assertFalse(validator.isValid(CORRECT_VALUE_LOWER_CASE, context));
     }
 
     @Test

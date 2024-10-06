@@ -3,6 +3,7 @@ package ua.hodik.gym.service.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,9 +109,13 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public TraineeDto findTraineeDtoByUserName(String username) {
+        log.warn("jbbafk.hkjlavhdf");
+        log.error("jbvafkhjl");
+        log.trace("jbvafkhjl");
+        log.fatal("jbvafkhjl");
+        log.debug("[TraineeService] Finding trainee by username {}, TransactionId {}", username, MDC.get("transactionId"));
         return traineeMapper.convertToTraineeDto(findByUserName(username));
     }
-
     @Transactional
     public Trainee changePassword(UserCredentialDto credential, String newPassword) {
         validatePassword(newPassword);

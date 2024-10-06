@@ -23,7 +23,7 @@ public class CustomTrainingTypeValidator implements ConstraintValidator<ValidTra
         if (value == null) {
             return true;
         }
-        return valueList.contains(value.toUpperCase());
+        return valueList.contains(value);
     }
 
     protected void setValueList(List<String> valueList) {

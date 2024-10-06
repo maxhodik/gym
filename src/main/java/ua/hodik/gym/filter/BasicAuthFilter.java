@@ -1,4 +1,4 @@
-package ua.hodik.gym.util;
+package ua.hodik.gym.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

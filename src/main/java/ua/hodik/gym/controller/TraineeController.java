@@ -3,6 +3,7 @@ package ua.hodik.gym.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.*;
@@ -31,8 +32,8 @@ public class TraineeController {
 
     @GetMapping
     public ResponseEntity<TraineeDto> getTrainee(@Valid @RequestBody UserNameDto userName) {
-
         TraineeDto traineeDto = traineeService.findTraineeDtoByUserName(userName.getUserName());
+        log.debug("[TraineeController] Finding trainee by username {}, TransactionId {}", userName, MDC.get("transactionId"));
         return ResponseEntity.ok(traineeDto);
     }
 

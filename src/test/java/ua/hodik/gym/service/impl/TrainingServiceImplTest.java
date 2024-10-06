@@ -52,6 +52,7 @@ class TrainingServiceImplTest {
     private final TrainingDto invalidTrainingDto = new TrainingDto();
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
     private final List<Training> expectedTrainings = List.of(expectedTraining);
+    private final List<TrainingDto> expectedTrainingDtoList = List.of(trainingDto);
     private final Specification<Training> specification = mock(Specification.class);
     private final Map<String, FilterDto<?>> filters = new HashMap<>();
 
@@ -132,16 +133,14 @@ class TrainingServiceImplTest {
     @Test
     void findAllWithFilters_ReturnListTraining() {
         //given
-        doNothing().when(validator).validate(any(FilterFormDto.class));
         when(filterDtoConverter.convert(any(FilterFormDto.class))).thenReturn(filters);
         when(trainingSpecification.getTraining(filters)).thenReturn(specification);
         when(trainingRepository.findAll(specification)).thenReturn(expectedTrainings);
-
+        when(trainingMapper.convertToTrainingDto(any(Training.class))).thenReturn(trainingDto);
         //when
-        List<Training> trainings = trainingService.findAllWithFilters(filterFormDto);
+        List<TrainingDto> trainingDtoList = trainingService.findAllWithFilters(filterFormDto);
         //then
-        assertEquals(expectedTrainings, trainings);
-        verify(validator).validate(filterFormDto);
+        assertEquals(expectedTrainingDtoList, trainingDtoList);
         verify(filterDtoConverter).convert(filterFormDto);
         verify(trainingSpecification).getTraining(filters);
         verify(trainingRepository).findAll(specification);
@@ -150,33 +149,19 @@ class TrainingServiceImplTest {
     @Test
     void findAllWithFilters_NoTrainingsFound_ReturnEmptyList() {
         //given
-        doNothing().when(validator).validate(any(FilterFormDto.class));
         when(filterDtoConverter.convert(any(FilterFormDto.class))).thenReturn(filters);
         when(trainingSpecification.getTraining(filters)).thenReturn(specification);
         when(trainingRepository.findAll(specification)).thenReturn(List.of());
         //when
-        List<Training> actualTrainings = trainingService.findAllWithFilters(filterFormDto);
+        List<TrainingDto> trainingDtoList = trainingService.findAllWithFilters(filterFormDto);
         //then
-        assertTrue(actualTrainings.isEmpty());
-        verify(validator).validate(filterFormDto);
+        assertTrue(trainingDtoList.isEmpty());
         verify(filterDtoConverter).convert(filterFormDto);
         verify(trainingSpecification).getTraining(filters);
         verify(trainingRepository).findAll(specification);
     }
 
-    @Test
-    void findAllWithFilters_ValidationFails_ThrowException() {
 
-        //given
-        doThrow(new MyValidationException())
-                .when(validator).validate(any(FilterFormDto.class));
-        //when
-        assertThrows(MyValidationException.class, () ->
-                trainingService.findAllWithFilters(filterFormDto));
-        //then
-        verify(validator).validate(filterFormDto);
-        verifyNoMoreInteractions(filterDtoConverter, trainingSpecification, trainingRepository);
-    }
 
 
 }

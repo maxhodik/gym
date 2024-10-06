@@ -1,9 +1,6 @@
 package ua.hodik.gym.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +29,7 @@ public class TrainingDto {
     private String trainingType;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     @FutureOrPresent(message = "Should be today or latter")
+    @NotNull(message = "Can't be null")
     private LocalDate date;
     @Min(value = 10, message = "It's too short training")
     @Max(value = 120, message = "It's too long training")

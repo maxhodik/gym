@@ -53,7 +53,9 @@ public class TrainerController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<List<TrainerDto>> getNotAssignedTrainers(@PathVariable @NotBlank(message = "UserName can't be null or empty") String username) {
+    public ResponseEntity<List<TrainerDto>> getNotAssignedTrainers(@PathVariable
+                                                                   @NotBlank(message = "UserName can't be null or empty")
+                                                                   String username) {
 
         List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(username);
         return ResponseEntity.ok(notAssignedTrainers);
