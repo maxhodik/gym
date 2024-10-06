@@ -1,5 +1,6 @@
 package ua.hodik.gym.service.mapper;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
@@ -25,10 +26,10 @@ public class FilterDtoConverter {
         if (dateFrom != null && dateTo != null) {
             filters.put("date", new FilterDto<>("Training_Date", List.of(dateFrom, dateTo), Operation.BETWEEN));
         }
-        if (trainerName != null) {
+        if (Strings.isNotBlank(trainerName)) {
             filters.put("trainer", new FilterDto<>("trainer", List.of(trainerName), Operation.IS));
         }
-        if (traineeName != null) {
+        if (Strings.isNotBlank(traineeName)) {
             filters.put("trainee", new FilterDto<>("trainee", List.of(traineeName), Operation.IS));
         }
         if (trainingType != null) {

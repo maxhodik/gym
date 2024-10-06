@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.service.TraineeService;
+import ua.hodik.gym.service.TrainingService;
 
 import java.util.List;
 
@@ -15,9 +16,11 @@ import java.util.List;
 @Log4j2
 public class TraineeController {
     private final TraineeService traineeService;
+    private final TrainingService trainingService;
 
-    public TraineeController(TraineeService traineeService) {
+    public TraineeController(TraineeService traineeService, TrainingService trainingService) {
         this.traineeService = traineeService;
+        this.trainingService = trainingService;
     }
 
     @PostMapping("/registration")
@@ -53,6 +56,7 @@ public class TraineeController {
                                                               @RequestBody Boolean isActive) {
         {
             traineeService.updateActiveStatus(username, isActive);
+            log.info("Trainee {} active status updated", username);
             return ResponseEntity.ok(String.format("Trainee %s active status updated", username));
         }
     }
@@ -61,7 +65,17 @@ public class TraineeController {
     public ResponseEntity<List<TrainerDto>> updateTraineeTrainersList(@PathVariable int id,
                                                                       @RequestBody @Valid List<UserNameDto> trainerNames) {
         List<TrainerDto> trainerDtoList = traineeService.updateTrainersList(id, trainerNames);
+        log.info("Trainee with id = {} Trainer's list updated", id);
         return ResponseEntity.ok(trainerDtoList);
+    }
+
+    @GetMapping("/training-list/{usernameDto}")
+    public ResponseEntity<List<TrainingDto>> getTraineeTrainingList(@PathVariable UserNameDto usernameDto,
+                                                                    @RequestBody @Valid FilterFormDto filterFormDto) {
+        filterFormDto.setTraineeName(usernameDto.getUserName());
+        List<TrainingDto> allWithFilters = trainingService.findAllWithFilters(filterFormDto);
+        log.info("Finding Trainee's {} training list", usernameDto.getUserName());
+        return ResponseEntity.ok(allWithFilters);
     }
 }
 

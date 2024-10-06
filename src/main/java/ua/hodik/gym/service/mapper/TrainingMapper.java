@@ -16,7 +16,10 @@ public class TrainingMapper {
     }
 
     public TrainingDto convertToTrainingDto(Training training) {
-        return modelMapper.map(training, TrainingDto.class);
+        TrainingDto trainingDto = modelMapper.map(training, TrainingDto.class);
+        trainingDto.setTraineeName(training.getTrainee().getUser().getUserName());
+        trainingDto.setTrainerName(training.getTrainer().getUser().getUserName());
+        return trainingDto;
     }
 
     public Training convertToTraining(TrainingDto trainingDto) {

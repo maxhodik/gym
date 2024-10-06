@@ -71,10 +71,13 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Training> findAllWithFilters(FilterFormDto filterFormDto) {
-        validator.validate(filterFormDto);
+    public List<TrainingDto> findAllWithFilters(FilterFormDto filterFormDto) {
         Map<String, FilterDto<?>> filters = filterDtoConverter.convert(filterFormDto);
         Specification<Training> specification = trainingSpecification.getTraining(filters);
-        return trainingRepository.findAll(specification);
+        List<Training> trainings = trainingRepository.findAll(specification);
+        return trainings.stream()
+                .map(trainingMapper::convertToTrainingDto)
+                .toList();
+
     }
 }

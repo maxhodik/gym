@@ -13,5 +13,5 @@ public interface TrainingService {
 
   Training createTraining(TrainingDto trainingDto);
 
-  List<Training> findAllWithFilters(FilterFormDto filterFormDto);
+  List<TrainingDto> findAllWithFilters(FilterFormDto filterFormDto);
 }

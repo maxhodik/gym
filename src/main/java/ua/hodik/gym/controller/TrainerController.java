@@ -2,25 +2,27 @@ package ua.hodik.gym.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua.hodik.gym.dto.TrainerDto;
-import ua.hodik.gym.dto.TrainerUpdateDto;
-import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserNameDto;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.service.TrainerService;
+import ua.hodik.gym.service.TrainingService;
 
 import java.util.List;
 
+@Log4j2
 @RestController
 @RequestMapping("/trainers")
 public class TrainerController {
     private final TrainerService trainerService;
+    private final TrainingService trainingService;
 
     @Autowired
-    public TrainerController(TrainerService trainerService) {
+    public TrainerController(TrainerService trainerService, TrainingService trainingService) {
         this.trainerService = trainerService;
+        this.trainingService = trainingService;
     }
 
 
@@ -55,5 +57,14 @@ public class TrainerController {
 
         List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(username);
         return ResponseEntity.ok(notAssignedTrainers);
+    }
+
+    @GetMapping("/training-list/{usernameDto}")
+    public ResponseEntity<List<TrainingDto>> getTraineeTrainingList(@PathVariable UserNameDto usernameDto,
+                                                                    @RequestBody @Valid FilterFormDto filterFormDto) {
+        filterFormDto.setTrainerName(usernameDto.getUserName());
+        List<TrainingDto> allWithFilters = trainingService.findAllWithFilters(filterFormDto);
+        log.info("Finding Trainer's {} training list", usernameDto.getUserName());
+        return ResponseEntity.ok(allWithFilters);
     }
 }

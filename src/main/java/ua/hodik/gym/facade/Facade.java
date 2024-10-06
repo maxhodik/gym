@@ -2,7 +2,6 @@ package ua.hodik.gym.facade;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
@@ -10,8 +9,6 @@ import ua.hodik.gym.model.Training;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
-
-import java.util.List;
 
 @Component
 public class Facade {
@@ -46,14 +43,14 @@ public class Facade {
         return trainingService.findById(id);
     }
 
-    public List<Training> getTraineeTrainingList(FilterFormDto filterFormDto) {
-        return trainingService.findAllWithFilters(filterFormDto);
-    }
-
-    public List<Training> getTrainerTrainingList(FilterFormDto filterFormDto) {
-        filterFormDto.setTrainingType(null);
-        return trainingService.findAllWithFilters(filterFormDto);
-    }
+//    public List<Training> getTraineeTrainingList(FilterFormDto filterFormDto) {
+//        return trainingService.findAllWithFilters(filterFormDto);
+//    }
+//
+//    public List<Training> getTrainerTrainingList(FilterFormDto filterFormDto) {
+//        filterFormDto.setTrainingType(null);
+//        return trainingService.findAllWithFilters(filterFormDto);
+//    }
 
 
     public Trainer getTrainerByUserName(String userName) {
