@@ -9,18 +9,22 @@ import ua.hodik.gym.dao.TrainingSpecification;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
+import ua.hodik.gym.dto.TrainingTypeDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
+import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.repository.TrainingRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 import ua.hodik.gym.service.mapper.FilterDtoConverter;
 import ua.hodik.gym.service.mapper.TrainingMapper;
+import ua.hodik.gym.service.mapper.TrainingTypeMapper;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +34,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
+    private final TrainingTypeMapper trainingTypeMapper;
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final FilterDtoConverter filterDtoConverter;
@@ -37,9 +42,10 @@ public class TrainingServiceImpl implements TrainingService {
     private final MyValidator validator;
 
     @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TraineeService traineeService, TrainerService trainerService, FilterDtoConverter filterDtoConverter, TrainingSpecification trainingSpecification, MyValidator validator) {
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TrainingTypeMapper trainingTypeMapper, TraineeService traineeService, TrainerService trainerService, FilterDtoConverter filterDtoConverter, TrainingSpecification trainingSpecification, MyValidator validator) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
+        this.trainingTypeMapper = trainingTypeMapper;
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.filterDtoConverter = filterDtoConverter;
@@ -80,4 +86,12 @@ public class TrainingServiceImpl implements TrainingService {
                 .toList();
 
     }
+
+    @Override
+    public List<TrainingTypeDto> getTrainingType() {
+        return Arrays.stream(TrainingType.values())
+                .map(trainingTypeMapper::convertToTrainingTypeDto)
+                .toList();
+    }
 }
+

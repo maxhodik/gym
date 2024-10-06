@@ -67,4 +67,6 @@ public class TrainerController {
         log.info("Finding Trainer's {} training list", usernameDto.getUserName());
         return ResponseEntity.ok(allWithFilters);
     }
+
+
 }

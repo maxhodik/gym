@@ -26,4 +26,6 @@ public interface TrainerService {
     List<TrainerDto> getNotAssignedTrainers(String traineeName);
 
     Trainer findByUserName(String trainerUserName);
+
+
 }

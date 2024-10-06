@@ -95,6 +95,7 @@ public class TrainerServiceImpl implements TrainerService {
                 new MyEntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
     }
 
+
     @Override
     public TrainerDto findTrainerDtoByUserName(String trainerUserName) {
         return trainerMapper.convertToTrainerDto(findByUserName(trainerUserName));
