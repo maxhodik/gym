@@ -9,7 +9,6 @@ import ua.hodik.gym.dto.TrainingTypeDto;
 import ua.hodik.gym.service.TrainingService;
 
 import java.util.List;
-
 @Log4j2
 @RestController
 @RequestMapping("/trainings")

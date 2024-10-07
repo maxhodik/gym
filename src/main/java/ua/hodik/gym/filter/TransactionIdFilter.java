@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.UUID;
-
 @Log4j2
 @Component
 public class TransactionIdFilter implements Filter {

@@ -109,10 +109,6 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public TraineeDto findTraineeDtoByUserName(String username) {
-        log.warn("jbbafk.hkjlavhdf");
-        log.error("jbvafkhjl");
-        log.trace("jbvafkhjl");
-        log.fatal("jbvafkhjl");
         log.debug("[TraineeService] Finding trainee by username {}, TransactionId {}", username, MDC.get("transactionId"));
         return traineeMapper.convertToTraineeDto(findByUserName(username));
     }
