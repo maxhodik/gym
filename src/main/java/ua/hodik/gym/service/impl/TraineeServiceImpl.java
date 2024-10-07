@@ -23,7 +23,6 @@ import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
-import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,7 @@ import java.util.Optional;
 @Log4j2
 public class TraineeServiceImpl implements TraineeService {
 
+    public static final String TRANSACTION_ID = "transactionId";
     private final UserNameGenerator userNameGenerator;
 
     private final PasswordGenerator passwordGenerator;
@@ -51,7 +51,7 @@ public class TraineeServiceImpl implements TraineeService {
     public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TraineeMapper traineeMapper,
                               TrainerMapper trainerMapper, TraineeRepository traineeRepository,
-                              TrainerService trainerService, UserRepository userRepository, UserService userService, CredentialChecker credentialChecker, MyValidator validator) {
+                              TrainerService trainerService, UserRepository userRepository, UserService userService, CredentialChecker credentialChecker) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.traineeMapper = traineeMapper;
@@ -73,7 +73,7 @@ public class TraineeServiceImpl implements TraineeService {
         trainee.getUser().setActive(true);
         trainee = traineeRepository.save(trainee);
         UserCredentialDto credentialDto = new UserCredentialDto(trainee.getUser().getUserName(), trainee.getUser().getPassword());
-        log.debug("[TraineeService] Registration trainee  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get("transactionId"));
+        log.debug("[TraineeService] Registration trainee  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get(TRANSACTION_ID));
         return credentialDto;
     }
 
@@ -84,7 +84,7 @@ public class TraineeServiceImpl implements TraineeService {
         User updatedUser = userService.update(traineeToUpdate.getUser().getId(), traineeDto.getUserUpdateDto());
         traineeToUpdate.setUser(updatedUser);
         updateTrainee(traineeDto, traineeToUpdate);
-        log.debug("[TraineeService] Updating  by id= {}, TransactionId {}", id, MDC.get("transactionId"));
+        log.debug("[TraineeService] Updating  by id= {}, TransactionId {}", id, MDC.get(TRANSACTION_ID));
         return traineeMapper.convertToTraineeDto(traineeToUpdate);
     }
 
@@ -103,7 +103,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     public TraineeDto findTraineeDtoByUserName(String username) {
-        log.debug("[TraineeService] Finding trainee by username {}, TransactionId {}", username, MDC.get("transactionId"));
+        log.debug("[TraineeService] Finding trainee by username {}, TransactionId {}", username, MDC.get(TRANSACTION_ID));
         return traineeMapper.convertToTraineeDto(findByUserName(username));
     }
     @Transactional
@@ -121,7 +121,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Transactional
     public void deleteTrainee(String userName) {
         traineeRepository.deleteByUserUserName(userName);
-        log.debug("[TraineeService] Deleting trainee by username {}, TransactionId {}", userName, MDC.get("transactionId"));
+        log.debug("[TraineeService] Deleting trainee by username {}, TransactionId {}", userName, MDC.get(TRANSACTION_ID));
 
     }
 
@@ -163,7 +163,7 @@ public class TraineeServiceImpl implements TraineeService {
         Trainee traineeToUpdate = findByUserName(userName);
         User user = traineeToUpdate.getUser();
         user.setActive(isActive);
-        log.debug("[TraineeService] Updating trainee's active status  by username {}, TransactionId {}", userName, MDC.get("transactionId"));
+        log.debug("[TraineeService] Updating trainee's active status  by username {}, TransactionId {}", userName, MDC.get(TRANSACTION_ID));
 
     }
 
@@ -178,7 +178,7 @@ public class TraineeServiceImpl implements TraineeService {
                 .map(trainerService::findByUserName)
                 .forEach(trainerList::add);
         trainee.addTrainersList(trainerList);
-        log.debug("[TraineeService] Updating trainee's trainersList.Trainee id= {} , TransactionId {}", traineeId, MDC.get("transactionId"));
+        log.debug("[TraineeService] Updating trainee's trainersList.Trainee id= {} , TransactionId {}", traineeId, MDC.get(TRANSACTION_ID));
         return trainerList.stream()
                 .map(trainerMapper::convertToTrainerDto).toList();
     }

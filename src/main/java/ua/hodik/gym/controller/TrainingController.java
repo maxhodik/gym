@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/trainings")
 public class TrainingController {
+    public static final String TRANSACTION_ID = "transactionId";
     private final TrainingService trainingService;
 
     public TrainingController(TrainingService trainingService) {
@@ -23,14 +24,14 @@ public class TrainingController {
     @PostMapping
     public ResponseEntity<String> addTraining(@RequestBody @Valid TrainingDto trainingDto) {
         trainingService.createTraining(trainingDto);
-        log.debug("[TrainingController] Adding training. Training name {}, TransactionId {}", trainingDto.getName(), MDC.get("transactionId"));
+        log.debug("[TrainingController] Adding training. Training name {}, TransactionId {}", trainingDto.getName(), MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok("Training added successfully");
     }
 
     @GetMapping
     public ResponseEntity<List<TrainingTypeDto>> getTrainingType() {
         List<TrainingTypeDto> trainingTypeDtoList = trainingService.getTrainingType();
-        log.debug("[TrainingController] Getting trainingType. TransactionId {}", MDC.get("transactionId"));
+        log.debug("[TrainingController] Getting trainingType. TransactionId {}", MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok(trainingTypeDtoList);
     }
 }

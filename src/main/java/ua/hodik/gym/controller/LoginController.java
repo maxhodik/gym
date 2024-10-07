@@ -16,6 +16,7 @@ import ua.hodik.gym.util.CredentialChecker;
 @RestController
 @RequestMapping("/auth")
 public class LoginController {
+    public static final String TRANSACTION_ID = "transactionId";
     private final UserService userService;
     private final CredentialChecker credentialChecker;
 
@@ -34,7 +35,7 @@ public class LoginController {
             log.info("User {} login successful", username);
             return ResponseEntity.ok("Login successful");
         } else {
-            log.error("Invalid credentials. User {} unauthorized", username);
+            log.error("Invalid credentials. User {} unauthorized. TransactionId {}", username, MDC.get(TRANSACTION_ID));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
@@ -43,7 +44,7 @@ public class LoginController {
     public ResponseEntity<String> changeLogin(@PathVariable int id,
                                               @RequestBody @Valid PasswordDto newPassword) {
         userService.changePassword(id, newPassword);
-        log.debug("[LoginController] Changing password. TransactionId {}", MDC.get("transactionId"));
+        log.debug("[LoginController] Changing password. TransactionId {}", MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok("Password successfully changed");
 
     }

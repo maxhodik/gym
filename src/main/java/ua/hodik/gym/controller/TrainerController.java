@@ -18,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/trainers")
 public class TrainerController {
+    public static final String TRANSACTION_ID = "transactionId";
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final TraineeService traineeService;
@@ -33,7 +34,7 @@ public class TrainerController {
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TrainerDto trainerDto) {
         UserCredentialDto credentialDto = trainerService.createTrainerProfile(trainerDto);
-        log.debug("[TrainerController] Registration trainer  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get("transactionId"));
+        log.debug("[TrainerController] Registration trainer  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get(TRANSACTION_ID));
         return ResponseEntity.status(201).body(credentialDto);
     }
 
@@ -41,7 +42,7 @@ public class TrainerController {
     public ResponseEntity<String> updateTrainerActivityStatus(@PathVariable @NotBlank(message = "UserName can't be null or empty") String username,
                                                               @RequestBody boolean isActive) {
         trainerService.updateActiveStatus(username, isActive);
-        log.debug("[TrainerController] Updating trainer  username {}, TransactionId {}", username, MDC.get("transactionId"));
+        log.debug("[TrainerController] Updating trainer  username {}, TransactionId {}", username, MDC.get(TRANSACTION_ID));
 
         return ResponseEntity.ok(String.format("Trainer %s active status updated", username));
     }
@@ -50,14 +51,14 @@ public class TrainerController {
     public ResponseEntity<TrainerDto> getTrainer(@Valid @RequestBody UserNameDto userNameDto) {
         String userName = userNameDto.getUserName();
         TrainerDto trainerDto = trainerService.findTrainerDtoByUserName(userName);
-        log.debug("[TrainerController] Finding trainer  username {}, TransactionId {}", userName, MDC.get("transactionId"));
+        log.debug("[TrainerController] Finding trainer  username {}, TransactionId {}", userName, MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok(trainerDto);
     }
 
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<TrainerDto> updateTrainer(@PathVariable int id, @Valid @RequestBody TrainerUpdateDto trainerDto) {
         TrainerDto trainer = trainerService.update(id, trainerDto);
-        log.debug("[TrainerController] Updating trainer  id= {}, TransactionId {}", id, MDC.get("transactionId"));
+        log.debug("[TrainerController] Updating trainer  id= {}, TransactionId {}", id, MDC.get(TRANSACTION_ID));
 
         return ResponseEntity.ok(trainer);
 
@@ -69,7 +70,7 @@ public class TrainerController {
                                                                    String TraineeUsername) {
         trainerService.findByUserName(TraineeUsername);
         List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(TraineeUsername);
-        log.debug("[TrainerController] Finding not assigned trainers. Trainee username {}, TransactionId {}", TraineeUsername, MDC.get("transactionId"));
+        log.debug("[TrainerController] Finding not assigned trainers. Trainee username {}, TransactionId {}", TraineeUsername, MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok(notAssignedTrainers);
     }
 
@@ -80,7 +81,7 @@ public class TrainerController {
         trainerService.findByUserName(userName);
         filterFormDto.setTrainerName(userName);
         List<TrainingDto> allWithFilters = trainingService.findAllWithFilters(filterFormDto);
-        log.debug("[TrainerController] Getting trainee's training list. Trainee username {}, TransactionId {}", userName, MDC.get("transactionId"));
+        log.debug("[TrainerController] Getting trainee's training list. Trainee username {}, TransactionId {}", userName, MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok(allWithFilters);
     }
 

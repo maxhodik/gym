@@ -20,6 +20,7 @@ import java.util.List;
 @Log4j2
 public class UserServiceImpl implements UserService {
 
+    public static final String TRANSACTION_ID = "transactionId";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
         User userForUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new MyEntityNotFoundException(String.format("User  with id = %s not found", id)));
         userForUpdate.setPassword(newPassword.getPassword());
-        log.debug("[LoginService] User's password updated. Id= {}. TransactionId {}", id, MDC.get("transactionId"));
+        log.debug("[LoginService] User's password updated. Id= {}. TransactionId {}", id, MDC.get(TRANSACTION_ID));
     }
 
     @Override
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
     public User findByUserName(String userName) {
         User foundedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new MyEntityNotFoundException(String.format("User  %s not found", userName)));
-        log.debug("[LoginService] Found usr by userName {}. TransactionId {}", userName, MDC.get("transactionId"));
+        log.debug("[LoginService] Found usr by userName {}. TransactionId {}", userName, MDC.get(TRANSACTION_ID));
         return foundedUser;
     }
 
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
     private User findById(int id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new MyEntityNotFoundException(String.format("User  with id= %s not found", id)));
-        log.debug("[LoginService] Found user by id={}. TransactionId {}", id, MDC.get("transactionId"));
+        log.debug("[LoginService] Found user by id={}. TransactionId {}", id, MDC.get(TRANSACTION_ID));
         return user;
     }
 }

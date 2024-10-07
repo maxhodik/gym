@@ -21,7 +21,6 @@ import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
-import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +28,7 @@ import java.util.Optional;
 @Service
 @Log4j2
 public class TrainerServiceImpl implements TrainerService {
+    public static final String TRANSACTION_ID = "TransactionId";
     private final UserNameGenerator userNameGenerator;
     private final PasswordGenerator passwordGenerator;
     private final TrainerRepository trainerRepository;
@@ -41,7 +41,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
                               TrainerRepository trainerRepository, UserRepository userRepository, UserService userService, TrainerMapper trainerMapper,
-                              CredentialChecker credentialChecker, MyValidator validator) {
+                              CredentialChecker credentialChecker) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
@@ -61,7 +61,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainer = trainerRepository.save(trainer);
         User user = trainer.getUser();
         UserCredentialDto credentialDto = new UserCredentialDto(user.getUserName(), user.getPassword());
-        log.debug("[TrainerService] Registration trainer  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get("transactionId"));
+        log.debug("[TrainerService] Registration trainer  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get(TRANSACTION_ID));
         return credentialDto;
     }
 
@@ -72,7 +72,7 @@ public class TrainerServiceImpl implements TrainerService {
         User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserUpdateDto());
         trainerToUpdate.setUser(updatedUser);
         updateTrainer(trainerDto, trainerToUpdate);
-        log.debug("[TrainerController] Trainer id={} updated, TransactionId {}", trainerId, MDC.get("transactionId"));
+        log.debug("[TrainerController] Trainer id={} updated, TransactionId {}", trainerId, MDC.get(TRANSACTION_ID));
         return trainerMapper.convertToTrainerDto(trainerToUpdate);
     }
 
@@ -94,7 +94,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerDto findTrainerDtoByUserName(String trainerUserName) {
-        log.debug("[TrainerService] Finding trainer  username {}, TransactionId {}", trainerUserName, MDC.get("transactionId"));
+        log.debug("[TrainerService] Finding trainer  username {}, TransactionId {}", trainerUserName, MDC.get(TRANSACTION_ID));
         return trainerMapper.convertToTrainerDto(findByUserName(trainerUserName));
     }
 
@@ -115,7 +115,7 @@ public class TrainerServiceImpl implements TrainerService {
         User user = trainerToUpdate.getUser();
         if (!user.isActive() == isActive) {
             user.setActive(isActive);
-            log.debug("[TrainerController] Trainer {} active status updated, TransactionId {}", userName, MDC.get("transactionId"));
+            log.debug("[TrainerController] Trainer {} active status updated, TransactionId {}", userName, MDC.get(TRANSACTION_ID));
         }
     }
 
@@ -124,7 +124,7 @@ public class TrainerServiceImpl implements TrainerService {
         List<TrainerDto> trainerDtos = trainerRepository.findAllNotAssignedTrainers(traineeName).stream()
                 .map(trainerMapper::convertToTrainerDto)
                 .toList();
-        log.debug("[TrainerService] List not assigned trainers found. Trainee username {}, TransactionId {}", traineeName, MDC.get("transactionId"));
+        log.debug("[TrainerService] List not assigned trainers found. Trainee username {}, TransactionId {}", traineeName, MDC.get(TRANSACTION_ID));
         return trainerDtos;
     }
 
