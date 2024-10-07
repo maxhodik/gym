@@ -1,6 +1,7 @@
 package ua.hodik.gym.service.impl;
 
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,6 @@ import ua.hodik.gym.util.UserNameGenerator;
 import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,7 +36,6 @@ public class TrainerServiceImpl implements TrainerService {
     private final UserService userService;
     private final TrainerMapper trainerMapper;
     private final CredentialChecker credentialChecker;
-    private final MyValidator validator;
 
 
     @Autowired
@@ -50,14 +49,11 @@ public class TrainerServiceImpl implements TrainerService {
         this.userService = userService;
         this.trainerMapper = trainerMapper;
         this.credentialChecker = credentialChecker;
-        this.validator = validator;
     }
 
     @Override
     @Transactional
     public UserCredentialDto createTrainerProfile(TrainerDto trainerDto) {
-        Objects.requireNonNull(trainerDto, "Trainer can't be null");
-        validator.validate(trainerDto);
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
         setGeneratedPassword(trainer);
@@ -65,7 +61,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainer = trainerRepository.save(trainer);
         User user = trainer.getUser();
         UserCredentialDto credentialDto = new UserCredentialDto(user.getUserName(), user.getPassword());
-        log.info("Trainer {} saved in DB", user.getUserName());
+        log.debug("[TrainerService] Registration trainer  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get("transactionId"));
         return credentialDto;
     }
 
@@ -76,7 +72,7 @@ public class TrainerServiceImpl implements TrainerService {
         User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserUpdateDto());
         trainerToUpdate.setUser(updatedUser);
         updateTrainer(trainerDto, trainerToUpdate);
-        log.info("Trainer id={} updated", trainerId);
+        log.debug("[TrainerController] Trainer id={} updated, TransactionId {}", trainerId, MDC.get("transactionId"));
         return trainerMapper.convertToTrainerDto(trainerToUpdate);
     }
 
@@ -98,6 +94,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public TrainerDto findTrainerDtoByUserName(String trainerUserName) {
+        log.debug("[TrainerService] Finding trainer  username {}, TransactionId {}", trainerUserName, MDC.get("transactionId"));
         return trainerMapper.convertToTrainerDto(findByUserName(trainerUserName));
     }
 
@@ -118,16 +115,17 @@ public class TrainerServiceImpl implements TrainerService {
         User user = trainerToUpdate.getUser();
         if (!user.isActive() == isActive) {
             user.setActive(isActive);
-            log.info("Trainer {} active status updated", userName);
+            log.debug("[TrainerController] Trainer {} active status updated, TransactionId {}", userName, MDC.get("transactionId"));
         }
     }
 
     @Override
     public List<TrainerDto> getNotAssignedTrainers(String traineeName) {
-        // todo check if Trainee exists ???
-        return trainerRepository.findAllNotAssignedTrainers(traineeName).stream()
+        List<TrainerDto> trainerDtos = trainerRepository.findAllNotAssignedTrainers(traineeName).stream()
                 .map(trainerMapper::convertToTrainerDto)
                 .toList();
+        log.debug("[TrainerService] List not assigned trainers found. Trainee username {}, TransactionId {}", traineeName, MDC.get("transactionId"));
+        return trainerDtos;
     }
 
 

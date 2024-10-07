@@ -1,6 +1,7 @@
 package ua.hodik.gym.service.impl;
 
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,6 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainerService trainerService;
     private final FilterDtoConverter filterDtoConverter;
     private final TrainingSpecification trainingSpecification;
-    private final MyValidator validator;
 
     @Autowired
     public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, TrainingTypeMapper trainingTypeMapper, TraineeService traineeService, TrainerService trainerService, FilterDtoConverter filterDtoConverter, TrainingSpecification trainingSpecification, MyValidator validator) {
@@ -50,7 +50,6 @@ public class TrainingServiceImpl implements TrainingService {
         this.trainerService = trainerService;
         this.filterDtoConverter = filterDtoConverter;
         this.trainingSpecification = trainingSpecification;
-        this.validator = validator;
     }
 
 
@@ -63,7 +62,6 @@ public class TrainingServiceImpl implements TrainingService {
     @Transactional
     @Override
     public Training createTraining(TrainingDto trainingDto) {
-        validator.validate(trainingDto);
         Training training = trainingMapper.convertToTraining(trainingDto);
         Trainee trainee = traineeService.findByUserName(trainingDto.getTraineeName());
         Trainer trainer = trainerService.findByUserName(trainingDto.getTrainerName());
@@ -71,7 +69,7 @@ public class TrainingServiceImpl implements TrainingService {
         training.setTrainee(trainee);
         training.setTrainer(trainer);
         training = trainingRepository.save(training);
-        log.info("Training id= {} saved in DB", training.getTrainingId());
+        log.debug("[TrainingController] Training id= {} saved in DB, TransactionId {}", training.getTrainingId(), MDC.get("transactionId"));
         return training;
     }
 
@@ -81,6 +79,7 @@ public class TrainingServiceImpl implements TrainingService {
         Map<String, FilterDto<?>> filters = filterDtoConverter.convert(filterFormDto);
         Specification<Training> specification = trainingSpecification.getTraining(filters);
         List<Training> trainings = trainingRepository.findAll(specification);
+        log.debug("[TrainingService] Finding training list with filters, TransactionId {}", MDC.get("transactionId"));
         return trainings.stream()
                 .map(trainingMapper::convertToTrainingDto)
                 .toList();
@@ -89,9 +88,11 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public List<TrainingTypeDto> getTrainingType() {
-        return Arrays.stream(TrainingType.values())
+        List<TrainingTypeDto> trainingTypeDtoList = Arrays.stream(TrainingType.values())
                 .map(trainingTypeMapper::convertToTrainingTypeDto)
                 .toList();
+        log.debug("[TrainingService] Get trainingType. TransactionId {}", MDC.get("transactionId"));
+        return trainingTypeDtoList;
     }
 }
 

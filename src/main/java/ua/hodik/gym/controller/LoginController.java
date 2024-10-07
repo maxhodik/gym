@@ -2,6 +2,7 @@ package ua.hodik.gym.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,7 @@ public class LoginController {
     public ResponseEntity<String> changeLogin(@PathVariable int id,
                                               @RequestBody @Valid PasswordDto newPassword) {
         userService.changePassword(id, newPassword);
+        log.debug("[LoginController] Changing password. TransactionId {}", MDC.get("transactionId"));
         return ResponseEntity.ok("Password successfully changed");
 
     }

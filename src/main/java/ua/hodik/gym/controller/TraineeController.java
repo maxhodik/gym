@@ -27,6 +27,7 @@ public class TraineeController {
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@Valid @RequestBody TraineeDto traineeDto) {
         UserCredentialDto userCredentialDto = traineeService.createTraineeProfile(traineeDto);
+        log.debug("[TraineeController] Registration trainee  username {}, TransactionId {}", userCredentialDto.getUserName(), MDC.get("transactionId"));
         return ResponseEntity.status(201).body(userCredentialDto);
     }
 
@@ -41,6 +42,7 @@ public class TraineeController {
     public ResponseEntity<TraineeDto> updateTrainee(@PathVariable int id,
                                                     @Valid @RequestBody TraineeUpdateDto traineeDto) {
         TraineeDto updatedTrainee = traineeService.update(id, traineeDto);
+        log.debug("[TraineeController] Updating trainee by id= {}, TransactionId {}", id, MDC.get("transactionId"));
         return ResponseEntity.ok(updatedTrainee);
     }
 
@@ -48,7 +50,7 @@ public class TraineeController {
     @DeleteMapping
     public ResponseEntity<String> deleteTrainee(@Valid @RequestBody UserNameDto userName) {
         traineeService.deleteTrainee(userName.getUserName());
-        log.info("Trainee {} deleted successfully", userName);
+        log.debug("[TraineeController] Deleting trainee by username {}, TransactionId {}", userName, MDC.get("transactionId"));
         return ResponseEntity.ok(String.format("Trainee %s deleted successfully", userName));
     }
 
@@ -57,7 +59,7 @@ public class TraineeController {
                                                               @RequestBody Boolean isActive) {
         {
             traineeService.updateActiveStatus(username, isActive);
-            log.info("Trainee {} active status updated", username);
+            log.debug("[TraineeController] Updating trainee's active status  by username {}, TransactionId {}", username, MDC.get("transactionId"));
             return ResponseEntity.ok(String.format("Trainee %s active status updated", username));
         }
     }
@@ -66,17 +68,21 @@ public class TraineeController {
     public ResponseEntity<List<TrainerDto>> updateTraineeTrainersList(@PathVariable int id,
                                                                       @RequestBody @Valid List<UserNameDto> trainerNames) {
         List<TrainerDto> trainerDtoList = traineeService.updateTrainersList(id, trainerNames);
-        log.info("Trainee with id = {} Trainer's list updated", id);
+        log.debug("[TraineeController] Updating trainee's trainersList.Trainee id= {} , TransactionId {}", id, MDC.get("transactionId"));
+
         return ResponseEntity.ok(trainerDtoList);
     }
 
     @GetMapping("/training-list/{usernameDto}")
     public ResponseEntity<List<TrainingDto>> getTraineeTrainingList(@PathVariable UserNameDto usernameDto,
                                                                     @RequestBody @Valid FilterFormDto filterFormDto) {
-        filterFormDto.setTraineeName(usernameDto.getUserName());
+        String userName = usernameDto.getUserName();
+        traineeService.findByUserName(userName);
+        filterFormDto.setTraineeName(userName);
         List<TrainingDto> allWithFilters = trainingService.findAllWithFilters(filterFormDto);
-        log.info("Finding Trainee's {} training list", usernameDto.getUserName());
+        log.debug("[TraineeController] Finding Trainee's {} training list , TransactionId {}", userName, MDC.get("transactionId"));
         return ResponseEntity.ok(allWithFilters);
+
     }
 }
 

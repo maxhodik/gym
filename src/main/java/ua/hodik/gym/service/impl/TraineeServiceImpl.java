@@ -27,7 +27,6 @@ import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -47,8 +46,6 @@ public class TraineeServiceImpl implements TraineeService {
 
     private final CredentialChecker credentialChecker;
 
-    private final MyValidator validator;
-
 
     @Autowired
     public TraineeServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
@@ -64,22 +61,19 @@ public class TraineeServiceImpl implements TraineeService {
         this.userRepository = userRepository;
         this.userService = userService;
         this.credentialChecker = credentialChecker;
-        this.validator = validator;
     }
 
 
     @Override
     @Transactional
     public UserCredentialDto createTraineeProfile(TraineeDto traineeDto) {
-        Objects.requireNonNull(traineeDto, "Trainee can't be null");
-        validator.validate(traineeDto);
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
         setGeneratedUserName(trainee);
         setGeneratedPassword(trainee);
         trainee.getUser().setActive(true);
         trainee = traineeRepository.save(trainee);
         UserCredentialDto credentialDto = new UserCredentialDto(trainee.getUser().getUserName(), trainee.getUser().getPassword());
-        log.info("Trainee {} saved in DB", trainee.getUser().getUserName());
+        log.debug("[TraineeService] Registration trainee  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get("transactionId"));
         return credentialDto;
     }
 
@@ -90,7 +84,7 @@ public class TraineeServiceImpl implements TraineeService {
         User updatedUser = userService.update(traineeToUpdate.getUser().getId(), traineeDto.getUserUpdateDto());
         traineeToUpdate.setUser(updatedUser);
         updateTrainee(traineeDto, traineeToUpdate);
-        log.info(" Trainee id= {} updated", id);
+        log.debug("[TraineeService] Updating  by id= {}, TransactionId {}", id, MDC.get("transactionId"));
         return traineeMapper.convertToTraineeDto(traineeToUpdate);
     }
 
@@ -127,7 +121,8 @@ public class TraineeServiceImpl implements TraineeService {
     @Transactional
     public void deleteTrainee(String userName) {
         traineeRepository.deleteByUserUserName(userName);
-        log.info("{} trainee  deleted", userName);
+        log.debug("[TraineeService] Deleting trainee by username {}, TransactionId {}", userName, MDC.get("transactionId"));
+
     }
 
     @Override
@@ -159,6 +154,7 @@ public class TraineeServiceImpl implements TraineeService {
     private void updateTrainee(TraineeUpdateDto traineeDto, Trainee traineeToUpdate) {
         traineeToUpdate.setDayOfBirth(traineeDto.getDayOfBirth());
         traineeToUpdate.setAddress(traineeDto.getAddress());
+
     }
 
     @Transactional
@@ -167,7 +163,8 @@ public class TraineeServiceImpl implements TraineeService {
         Trainee traineeToUpdate = findByUserName(userName);
         User user = traineeToUpdate.getUser();
         user.setActive(isActive);
-        log.info("Trainee {} active status updated", userName);
+        log.debug("[TraineeService] Updating trainee's active status  by username {}, TransactionId {}", userName, MDC.get("transactionId"));
+
     }
 
     @Transactional
@@ -181,7 +178,7 @@ public class TraineeServiceImpl implements TraineeService {
                 .map(trainerService::findByUserName)
                 .forEach(trainerList::add);
         trainee.addTrainersList(trainerList);
-        log.info("Updating trainee's with id= {} trainersList", traineeId);
+        log.debug("[TraineeService] Updating trainee's trainersList.Trainee id= {} , TransactionId {}", traineeId, MDC.get("transactionId"));
         return trainerList.stream()
                 .map(trainerMapper::convertToTrainerDto).toList();
     }
