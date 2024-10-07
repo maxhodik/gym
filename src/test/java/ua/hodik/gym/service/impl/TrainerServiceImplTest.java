@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
-import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
@@ -30,7 +29,6 @@ import static org.mockito.Mockito.*;
 class TrainerServiceImplTest {
     private static final int ID = 1;
     public static final String PASSWORD = "ABCDEFJxyz";
-    private static final String NEW_PASSWORD = "AAAAAAAA";
     private static final String FIRST_NAME = "Sam";
     private static final String LAST_NAME = "Jonson";
     public static final String VALID_TRAINEE = "validTrainee";
@@ -46,7 +44,7 @@ class TrainerServiceImplTest {
 
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
 
-
+    private final UserCredentialDto expectedCredential = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
     private final Trainer trainerWithoutUserName = TestUtils.readFromFile(trainerPath, Trainer.class);
     private final Trainer trainerAnotherUserName = TestUtils.readFromFile(trainerAnotherName, Trainer.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
@@ -75,18 +73,10 @@ class TrainerServiceImplTest {
     @InjectMocks
     private TrainerServiceImpl trainerService;
 
-    @Test
-    void create_TrainerIsNull_ThrowException() {
-        //when
-        NullPointerException exception = assertThrows(NullPointerException.class, () -> trainerService.createTrainerProfile(null));
-        //then
-        assertEquals("Trainer can't be null", exception.getMessage());
-    }
 
     @Test
     void create_TrainerValid_CreateTrainer() {
         //given
-        doNothing().when(validator).validate(trainerDtoWithoutUserName);
         when(trainerMapper.convertToTrainer(any(TrainerDto.class))).thenReturn(trainerWithoutUserName);
         when(userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME)).thenReturn(FIRST_NAME + "." + LAST_NAME);
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
@@ -94,31 +84,17 @@ class TrainerServiceImplTest {
         //when
         UserCredentialDto credential = trainerService.createTrainerProfile(trainerDtoWithoutUserName);
         //then
-        verify(validator).validate(trainerDtoWithoutUserName);
         verify(userNameGenerator).generateUserName(FIRST_NAME, LAST_NAME);
         verify(passwordGenerator).generatePassword();
         verify(trainerRepository).save(expectedTrainer);
+        assertEquals(expectedCredential, credential);
 
-    }
-
-    @Test
-    void create_InvalidTrainer_ThrowValidationException() {
-        //given
-        doThrow(new MyValidationException("Invalid TrainerDto")).when(validator).validate(any(TrainerDto.class));
-        //when
-        assertThrows(MyValidationException.class, () -> trainerService.createTrainerProfile(trainerDtoWithoutUserName));
-        //then
-        verify(validator).validate(trainerDtoWithoutUserName);
-        verify(userNameGenerator, times(0)).generateUserName(FIRST_NAME, LAST_NAME);
-        verify(passwordGenerator, times(0)).generatePassword();
-        verify(trainerRepository, times(0)).save(expectedTrainer);
     }
 
 
     @Test
     void update_EqualsUserName_Update() {
         //given
-//        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainer));
         when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
         when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
-import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -19,7 +18,6 @@ import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.tets.util.TestUtils;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
-import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,26 +76,16 @@ class TraineeServiceImplTest {
     @Mock
     private UserService userService;
     @Mock
-    private MyValidator validator;
-    @Mock
     private TraineeMapper traineeMapper;
     @Mock
     private TrainerMapper trainerMapper;
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
-    @Test
-    void create_TraineeIsNull_ThrowException() {
-        //when
-        NullPointerException exception = assertThrows(NullPointerException.class, () -> traineeService.createTraineeProfile(null));
-        //then
-        assertEquals("Trainee can't be null", exception.getMessage());
-    }
 
     @Test
-    void create_Pass() {
+    void create_ReturnUserCredentialDto() {
         //given
-        doNothing().when(validator).validate(traineeDtoWithoutUserName);
         when(traineeMapper.convertToTrainee(any(TraineeDto.class))).thenReturn(traineeWithoutUserName);
         when(userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME)).thenReturn(FIRST_NAME + "." + LAST_NAME);
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
@@ -105,26 +93,11 @@ class TraineeServiceImplTest {
         //when
         UserCredentialDto credentialDto = traineeService.createTraineeProfile(traineeDtoWithoutUserName);
         //then
-        verify(validator).validate(traineeDtoWithoutUserName);
         verify(userNameGenerator).generateUserName(FIRST_NAME, LAST_NAME);
         verify(passwordGenerator).generatePassword();
         verify(traineeRepository).save(expectedTrainee);
         assertEquals(expectedUserCredentialDto, credentialDto);
     }
-
-    @Test
-    void create_InvalidTrainee_ThrowValidationException() {
-        //given
-        doThrow(new MyValidationException("Invalid TraineeDto")).when(validator).validate(any(TraineeDto.class));
-        //when
-        assertThrows(MyValidationException.class, () -> traineeService.createTraineeProfile(traineeDtoWithoutUserName));
-        //then
-        verify(validator).validate(traineeDtoWithoutUserName);
-        verify(userNameGenerator, times(0)).generateUserName(FIRST_NAME, LAST_NAME);
-        verify(passwordGenerator, times(0)).generatePassword();
-        verify(traineeRepository, times(0)).save(expectedTrainee);
-    }
-
 
     @Test
     void update_EqualsUserName_Pass() {

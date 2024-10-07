@@ -11,7 +11,6 @@ import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
-import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -21,7 +20,6 @@ import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.mapper.FilterDtoConverter;
 import ua.hodik.gym.service.mapper.TrainingMapper;
 import ua.hodik.gym.tets.util.TestUtils;
-import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +47,6 @@ class TrainingServiceImplTest {
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private final TrainingDto trainingDto = TestUtils.readFromFile(trainingDtoPath, TrainingDto.class);
-    private final TrainingDto invalidTrainingDto = new TrainingDto();
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
     private final List<Training> expectedTrainings = List.of(expectedTraining);
     private final List<TrainingDto> expectedTrainingDtoList = List.of(trainingDto);
@@ -64,8 +61,6 @@ class TrainingServiceImplTest {
     private TrainerService trainerService;
     @Mock
     private TrainingMapper trainingMapper;
-    @Mock
-    private MyValidator validator;
     @Mock
     private FilterDtoConverter filterDtoConverter;
     @Mock
@@ -84,30 +79,11 @@ class TrainingServiceImplTest {
         assertEquals(expectedTraining, trainingById);
     }
 
-    @Test
-    void create_TrainingDtoNull_ThrowException() {
-        //given
-        doThrow(new MyValidationException()).when(validator).validate(null);
-        //when
-        MyValidationException exception = assertThrows(MyValidationException.class,
-                () -> trainingService.createTraining(null));
 
-    }
-
-    @Test
-    void create_InvalidTrainingDto_ThrowException() {
-        //given
-        doThrow(new MyValidationException()).when(validator).validate(any());
-        //when
-        assertThrows(MyValidationException.class,
-                () -> trainingService.createTraining(invalidTrainingDto));
-
-    }
 
     @Test
     void create_ValidTrainingDto_CreateTraining() {
         //given
-        doNothing().when(validator).validate(any(TrainingDto.class));
         when(trainingMapper.convertToTraining(any(TrainingDto.class))).thenReturn(expectedTraining);
         when(traineeService.findByUserName(anyString())).thenReturn(expectedTrainee);
         when(trainerService.findByUserName(anyString())).thenReturn(expectedTrainer);

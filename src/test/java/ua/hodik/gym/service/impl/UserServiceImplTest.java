@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
-import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.mapper.UserMapper;
@@ -66,21 +65,6 @@ class UserServiceImplTest {
         verify(userRepository).findByUserName(USER_NAME);
     }
 
-    @Test
-    void findByUserName_UserNameIsNull_ThrowException() {
-        //when
-        MyValidationException exception = assertThrows(MyValidationException.class, () -> userService.findByUserName(null));
-        //then
-        assertEquals("UserName can't be null or empty", exception.getMessage());
-    }
-
-    @Test
-    void findByUserName_EmptyUserName_ThrowException() {
-        //when
-        MyValidationException exception = assertThrows(MyValidationException.class, () -> userService.findByUserName(""));
-        //then
-        assertEquals("UserName can't be null or empty", exception.getMessage());
-    }
 
     @Test
     void findByUserName_WrongUserName_ThrowException() {

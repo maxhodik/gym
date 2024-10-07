@@ -1,6 +1,7 @@
 package ua.hodik.gym.controller;
 
 import lombok.extern.log4j.Log4j2;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -20,6 +21,7 @@ import java.util.List;
 @Log4j2
 public class ExceptionHandlingController {
 
+    public static final String TRANSACTION_ID = "transactionId";
     private final ValidationService validationService;
 
     public ExceptionHandlingController(ValidationService validationService) {
@@ -32,25 +34,32 @@ public class ExceptionHandlingController {
     public ResponseEntity<ValidationErrorResponse> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         ValidationErrorResponse validationErrorResponse = validationService.mapErrors(fieldErrors);
-        log.error("[VALIDATION] Fields contain validation errors {}", validationErrorResponse.getErrors());
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        log.error("[VALIDATION] Fields contain validation errors {}, Response status: {}, TransactionId: {}",
+                validationErrorResponse.getErrors(), badRequest, MDC.get(TRANSACTION_ID));
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(badRequest)
                 .body(validationErrorResponse);
     }
 
     @ExceptionHandler(InvalidCredentialException.class)
     @ResponseBody
     public ResponseEntity<String> onInvalidCredentialException(InvalidCredentialException e) {
-        log.error("[Authentication] invalid credentials");
+        HttpStatus request = HttpStatus.UNAUTHORIZED;
+        log.error("[Authentication] invalid credentials, Response status: {}, TransactionId: {}",
+                request, MDC.get(TRANSACTION_ID));
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(request)
                 .body(e.getMessage());
     }
 
     @ExceptionHandler({MyEntityNotFoundException.class, HttpMessageNotReadableException.class})
     private ResponseEntity<String> exceptionHandler(Exception e) {
-        log.error(e.getMessage(), e);
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        HttpStatus request = HttpStatus.BAD_REQUEST;
+        log.error("{}, {}, Response status: {}, TransactionId: {}",
+                e.getMessage(), e,
+                request, MDC.get(TRANSACTION_ID));
+        return new ResponseEntity<>(e.getMessage(), request);
     }
 
 }
