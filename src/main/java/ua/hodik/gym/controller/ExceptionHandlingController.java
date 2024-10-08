@@ -77,5 +77,4 @@ public class ExceptionHandlingController {
                 request, MDC.get(TRANSACTION_ID));
         return new ResponseEntity<>(e.getMessage(), request);
     }
-
 }

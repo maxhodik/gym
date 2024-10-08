@@ -1,5 +1,10 @@
 package ua.hodik.gym.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
@@ -8,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.dto.ValidationErrorResponse;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.util.CredentialChecker;
@@ -25,7 +31,15 @@ public class LoginController {
         this.credentialChecker = credentialChecker;
     }
 
-
+    @Operation(summary = "Login user by its credentials")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User login",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid parameter",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "Not found",
+                    content = @Content)})
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid UserCredentialDto credentials) {
         String username = credentials.getUserName();
@@ -40,6 +54,15 @@ public class LoginController {
         }
     }
 
+    @Operation(summary = "Change password by user id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The password changed",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid parameter",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content)})
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<String> changeLogin(@PathVariable int id,
                                               @RequestBody @Valid PasswordDto newPassword) {

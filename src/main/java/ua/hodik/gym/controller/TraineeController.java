@@ -138,7 +138,6 @@ public class TraineeController {
         filterFormDto.setTraineeName(userName);
         List<TrainingDto> allWithFilters = trainingService.findAllWithFilters(filterFormDto);
         return ResponseEntity.ok(allWithFilters);
-
     }
 }
 
