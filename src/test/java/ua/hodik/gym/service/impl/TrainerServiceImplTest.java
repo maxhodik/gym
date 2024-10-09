@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 import ua.hodik.gym.dto.*;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
@@ -16,7 +16,6 @@ import ua.hodik.gym.service.mapper.TrainerMapper;
 import ua.hodik.gym.tets.util.TestUtils;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
-import ua.hodik.gym.util.impl.validation.MyValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,9 +40,7 @@ class TrainerServiceImplTest {
     private final String trainerUpdateDtoPath = "trainer.update.dto.json";
     private final String userPath = "user.json";
     private final String userNameDtoPath = "username.dto.json";
-
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
-
     private final UserCredentialDto expectedCredential = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
     private final Trainer trainerWithoutUserName = TestUtils.readFromFile(trainerPath, Trainer.class);
     private final Trainer trainerAnotherUserName = TestUtils.readFromFile(trainerAnotherName, Trainer.class);
@@ -52,11 +49,9 @@ class TrainerServiceImplTest {
     private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
     private final TrainerUpdateDto trainerUpdateDto = TestUtils.readFromFile(trainerUpdateDtoPath, TrainerUpdateDto.class);
     private final UserNameDto userNameDto = TestUtils.readFromFile(userNameDtoPath, UserNameDto.class);
-
     private static final String USER_NAME = "Sam.Jonson";
-    private List<Trainer> expectedTrainers = List.of(expectedTrainer, expectedTrainer);
-    private List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName, trainerDtoWithUserName);
-
+    private final List<Trainer> expectedTrainers = List.of(expectedTrainer, expectedTrainer);
+    private final List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName, trainerDtoWithUserName);
     public final List<Trainer> expectedTrainerList = List.of(expectedTrainer);
     @Mock
     private PasswordGenerator passwordGenerator;
@@ -66,8 +61,6 @@ class TrainerServiceImplTest {
     private TrainerRepository trainerRepository;
     @Mock
     private UserService userService;
-    @Mock
-    private MyValidator validator;
     @Mock
     private TrainerMapper trainerMapper;
     @InjectMocks
@@ -88,9 +81,7 @@ class TrainerServiceImplTest {
         verify(passwordGenerator).generatePassword();
         verify(trainerRepository).save(expectedTrainer);
         assertEquals(expectedCredential, credential);
-
     }
-
 
     @Test
     void update_EqualsUserName_Update() {
@@ -155,7 +146,7 @@ class TrainerServiceImplTest {
         //give
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class, () -> trainerService.findById(ID));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> trainerService.findById(ID));
         //then
         verify(trainerRepository).findById(ID);
         assertEquals("Trainer id= 1 not found", exception.getMessage());
@@ -177,13 +168,12 @@ class TrainerServiceImplTest {
         //give
         when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> trainerService.findByUserName(USER_NAME));
         //then
         verify(trainerRepository).findByUserUserName(USER_NAME);
         assertEquals("Trainer Sam.Jonson not found", exception.getMessage());
     }
-
 
     @Test
     void getAllTrainers_Pass() {
@@ -193,9 +183,7 @@ class TrainerServiceImplTest {
         List<Trainer> allTrainers = trainerService.getAllTrainers();
         //then
         assertEquals(expectedTrainerList, allTrainers);
-
     }
-
 
     @Test
     void getNotAssignedTrainers_ValidTraineeName_ReturnTrainersList() {

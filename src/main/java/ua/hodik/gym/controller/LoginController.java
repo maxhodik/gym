@@ -24,11 +24,9 @@ import ua.hodik.gym.util.CredentialChecker;
 public class LoginController {
     public static final String TRANSACTION_ID = "transactionId";
     private final UserService userService;
-    private final CredentialChecker credentialChecker;
 
     public LoginController(UserService userService, CredentialChecker credentialChecker) {
         this.userService = userService;
-        this.credentialChecker = credentialChecker;
     }
 
     @Operation(summary = "Login user by its credentials")

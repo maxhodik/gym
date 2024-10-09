@@ -1,6 +1,5 @@
 package ua.hodik.gym.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.dto.UserUpdateDto;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.mapper.UserMapper;
@@ -29,7 +28,6 @@ class UserServiceImplTest {
     public static final String USER_NAME = "Sam.Jonson";
     public static final String WRONG_USER_NAME = "WrongUserName";
     public static final int ID = 1;
-    public static final String PASSWORD = "ABCDEFJxyz";
     private static final PasswordDto NEW_PASSWORD = new PasswordDto("AAAAAAAA");
     public static final int WRONG_ID = 0;
     private final String userPath = "user.json";
@@ -69,13 +67,12 @@ class UserServiceImplTest {
         verify(userRepository).findByUserName(USER_NAME);
     }
 
-
     @Test
     void findByUserName_WrongUserName_ThrowException() {
         //given
-        when(userRepository.findByUserName(anyString())).thenThrow(new EntityNotFoundException(String.format("User  %s not found", WRONG_USER_NAME)));
+        when(userRepository.findByUserName(anyString())).thenThrow(new jakarta.persistence.EntityNotFoundException(String.format("User  %s not found", WRONG_USER_NAME)));
         //when
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> userService.findByUserName(WRONG_USER_NAME));
+        jakarta.persistence.EntityNotFoundException exception = assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> userService.findByUserName(WRONG_USER_NAME));
         //then
         assertEquals("User  WrongUserName not found", exception.getMessage());
     }
@@ -89,7 +86,6 @@ class UserServiceImplTest {
         //then
         verify(userRepository).findById(ID);
         assertEquals(NEW_PASSWORD.getPassword(), expectedUser.getPassword());
-
     }
 
     @Test
@@ -97,7 +93,7 @@ class UserServiceImplTest {
         //given
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> userService.changePassword(WRONG_ID, NEW_PASSWORD));
         //then
         verify(userRepository).findById(WRONG_ID);
@@ -128,13 +124,12 @@ class UserServiceImplTest {
         verify(userRepository).findById(ID);
     }
 
-
     @Test
     void update_WrongUserName_ThrowException() {
         //given
-        when(userRepository.findById(anyInt())).thenThrow(new EntityNotFoundException(String.format("User  with id= %s not found", WRONG_ID)));
+        when(userRepository.findById(anyInt())).thenThrow(new jakarta.persistence.EntityNotFoundException(String.format("User  with id= %s not found", WRONG_ID)));
         //when
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> userService.update(WRONG_ID, expectedUserUpdateDto));
+        jakarta.persistence.EntityNotFoundException exception = assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> userService.update(WRONG_ID, expectedUserUpdateDto));
         //then
         assertEquals("User  with id= 0 not found", exception.getMessage());
     }

@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.exception.InvalidCredentialException;
-import ua.hodik.gym.exception.MyValidationException;
+import ua.hodik.gym.exception.ValidationException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.tets.util.TestUtils;
@@ -73,9 +73,9 @@ class CredentialCheckerTest {
     @Test
     void matchCredential_NoValidCredential_ThrowException() {
         //given
-        doThrow(new MyValidationException()).when(validator).validate(any(UserCredentialDto.class));
+        doThrow(new ValidationException()).when(validator).validate(any(UserCredentialDto.class));
         //when
-        assertThrows(MyValidationException.class, () -> credentialChecker.matchCredential(userCredentialDto));
+        assertThrows(ValidationException.class, () -> credentialChecker.matchCredential(userCredentialDto));
         //then
         verify(userRepository, never()).findByUserName(USER_NAME);
     }

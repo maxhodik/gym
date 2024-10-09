@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.model.User;
@@ -80,14 +80,14 @@ public class TrainerServiceImpl implements TrainerService {
     public Trainer findById(int id) {
         Optional<Trainer> trainer = trainerRepository.findById(id);
         log.info("Finding trainer by id={}", id);
-        return trainer.orElseThrow(() -> new MyEntityNotFoundException(String.format("Trainer id= %s not found", id)));
+        return trainer.orElseThrow(() -> new EntityNotFoundException(String.format("Trainer id= %s not found", id)));
     }
 
     @Override
     public Trainer findByUserName(String trainerUserName) {
         log.info("Finding trainer by userName {}", trainerUserName);
         return trainerRepository.findByUserUserName(trainerUserName).orElseThrow(() ->
-                new MyEntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
+                new EntityNotFoundException(String.format("Trainer %s not found", trainerUserName)));
     }
 
 

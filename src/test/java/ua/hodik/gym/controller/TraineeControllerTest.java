@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ua.hodik.gym.dto.*;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainingService;
@@ -143,9 +143,9 @@ class TraineeControllerTest {
     @Test
     void getTraineeTrainingList_NotExistUserName_TrowException() {
         //given
-        when(traineeService.findByUserName(anyString())).thenThrow(MyEntityNotFoundException.class);
+        when(traineeService.findByUserName(anyString())).thenThrow(EntityNotFoundException.class);
         //when
-        assertThrows(MyEntityNotFoundException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> traineeController.getTraineeTrainingList(userNameDto, filterFormDto));
         //then
         verify(traineeService).findByUserName(USER_NAME);

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ua.hodik.gym.dto.ValidationErrorResponse;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.InvalidCredentialException;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.service.ValidationService;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class ExceptionHandlingController {
                 .body(e.getMessage());
     }
 
-    @ExceptionHandler(MyEntityNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private ResponseEntity<String> exceptionHandler(Exception e) {
         HttpStatus request = HttpStatus.NOT_FOUND;

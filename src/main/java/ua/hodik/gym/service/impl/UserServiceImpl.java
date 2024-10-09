@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.dto.UserUpdateDto;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.UserService;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(int id, PasswordDto newPassword) {
         User userForUpdate = userRepository.findById(id)
-                .orElseThrow(() -> new MyEntityNotFoundException(String.format("User  with id = %s not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User  with id = %s not found", id)));
         userForUpdate.setPassword(newPassword.getPassword());
         log.debug("[LoginService] User's password updated. Id= {}. TransactionId {}", id, MDC.get(TRANSACTION_ID));
     }
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User findByUserName(String userName) {
         User foundedUser = userRepository.findByUserName(userName)
-                .orElseThrow(() -> new MyEntityNotFoundException(String.format("User  %s not found", userName)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User  %s not found", userName)));
         log.debug("[LoginService] Found usr by userName {}. TransactionId {}", userName, MDC.get(TRANSACTION_ID));
         return foundedUser;
     }
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
     private User findById(int id) {
         User user = userRepository.findById(id).orElseThrow(
-                () -> new MyEntityNotFoundException(String.format("User  with id= %s not found", id)));
+                () -> new EntityNotFoundException(String.format("User  with id= %s not found", id)));
         log.debug("[LoginService] Found user by id={}. TransactionId {}", id, MDC.get(TRANSACTION_ID));
         return user;
     }

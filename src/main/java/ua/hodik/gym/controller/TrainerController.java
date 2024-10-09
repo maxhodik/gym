@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/trainers")
 public class TrainerController {
-    public static final String TRANSACTION_ID = "transactionId";
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final TraineeService traineeService;

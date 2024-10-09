@@ -11,7 +11,7 @@ import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
 import ua.hodik.gym.dto.TrainingTypeDto;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -35,8 +35,6 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TrainingServiceImplTest {
-
-
     public static final int ID = 1;
     private final String trainingPath = "training.with.id.json";
     private final String expectedTrainingPath = "expected.training.json";
@@ -44,8 +42,6 @@ class TrainingServiceImplTest {
     private final String expectedTrainerPath = "trainer.json";
     private final String trainingDtoPath = "training.dto.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
-    private TrainingType trainingType;
-
     private final Training training = TestUtils.readFromFile(trainingPath, Training.class);
     private final Training expectedTraining = TestUtils.readFromFile(expectedTrainingPath, Training.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
@@ -85,7 +81,6 @@ class TrainingServiceImplTest {
         assertEquals(expectedTraining, trainingById);
     }
 
-
     @Test
     void create_ValidTrainingDto_CreateTraining() {
         //given
@@ -93,7 +88,7 @@ class TrainingServiceImplTest {
         when(traineeService.findByUserName(anyString())).thenReturn(expectedTrainee);
         when(trainerService.findByUserName(anyString())).thenReturn(expectedTrainer);
         when(trainingRepository.save(any())).thenReturn(expectedTraining);
-//        //when
+        //when
         Training savedTraining = trainingService.createTraining(trainingDto);
         //then
         verify(trainingRepository).save(training);
@@ -105,7 +100,7 @@ class TrainingServiceImplTest {
         //give
         when(trainingRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class, () -> trainingService.findById(ID));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> trainingService.findById(ID));
         //then
         verify(trainingRepository).findById(ID);
         assertEquals("Training with id= 1 not found", exception.getMessage());

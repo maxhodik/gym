@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.service.UserService;
 
@@ -48,7 +48,7 @@ public class BasicAuthFilter extends OncePerRequestFilter {
             User user;
             try {
                 user = userService.findByUserName(username);
-            } catch (MyEntityNotFoundException e) {
+            } catch (EntityNotFoundException e) {
                 sendUnauthorizedResponse(response);
                 return;
             }

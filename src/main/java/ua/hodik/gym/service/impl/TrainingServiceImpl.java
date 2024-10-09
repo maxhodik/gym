@@ -11,7 +11,7 @@ import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
 import ua.hodik.gym.dto.TrainingTypeDto;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
@@ -56,7 +56,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public Training findById(int id) {
         return trainingRepository.findById(id)
-                .orElseThrow(() -> new MyEntityNotFoundException(String.format("Training with id= %s not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Training with id= %s not found", id)));
     }
 
     @Transactional

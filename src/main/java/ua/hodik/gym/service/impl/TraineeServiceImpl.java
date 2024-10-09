@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.*;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -90,13 +90,13 @@ public class TraineeServiceImpl implements TraineeService {
     @Transactional(readOnly = true)
     public Trainee findById(int id) {
         Optional<Trainee> trainee = traineeRepository.findById(id);
-        return trainee.orElseThrow(() -> new MyEntityNotFoundException(String.format("Trainee id= %s not found", id)));
+        return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee id= %s not found", id)));
     }
 
     @Override
     public Trainee findByUserName(String userName) {
         Optional<Trainee> trainee = traineeRepository.findByUserUserName(userName);
-        return trainee.orElseThrow(() -> new MyEntityNotFoundException(String.format("Trainee %s not found", userName)));
+        return trainee.orElseThrow(() -> new EntityNotFoundException(String.format("Trainee %s not found", userName)));
     }
 
     @Override

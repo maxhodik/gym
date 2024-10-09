@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.*;
-import ua.hodik.gym.exception.MyEntityNotFoundException;
+import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -30,14 +30,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TraineeServiceImplTest {
     private static final int ID = 1;
-    private static final String NEW_PASSWORD = "AAAAAAAA";
     private final String traineePath = "trainee.without.user.name.json";
     private final String expectedTraineePath = "trainee.same.user.name.json";
     private final String traineeDtoPath = "trainee.dto.same.without.user.name.json";
     private final String traineeDtoWithUserNamePath = "trainee.dto.with.user.name.json";
     private final String traineeUpdateDtoPath = "trainee.update.dto.json";
-    private final String expectedTrainerPath = "trainer.same.user.name.json";
-
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String traineeWithIdPath = "trainee.with.id.json";
     private final String trainerUserName = "trainer.same.user.name.json";
@@ -55,10 +52,8 @@ class TraineeServiceImplTest {
 
     private final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
     private final Trainer trainerWithUserName = TestUtils.readFromFile(trainerUserName, Trainer.class);
-    private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private static final List<UserNameDto> TRAINER_NAME_LIST = List.of(new UserNameDto("Sam.Jonson"));
-    private List<Trainer> expectedTrainers = List.of(expectedTrainer);
-    private List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName);
+    private final List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName);
 
 
     public static final String PASSWORD = "ABCDEFJxyz";
@@ -105,7 +100,6 @@ class TraineeServiceImplTest {
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainee));
         when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
         when(traineeMapper.convertToTraineeDto(any(Trainee.class))).thenReturn(traineeDtoWithUserName);
-
         //when
         TraineeDto updatedTrainee = traineeService.update(ID, traineeUpdateDto);
         //then
@@ -126,7 +120,6 @@ class TraineeServiceImplTest {
         verify(userService).update(0, traineeUpdateDto.getUserUpdateDto());
         assertEquals(traineeDtoWithUserName, updatedTrainee);
     }
-
 
     @Test
     void deleteTrainee_ValidCredential_Pass() {
@@ -172,7 +165,7 @@ class TraineeServiceImplTest {
         //give
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class, () -> traineeService.findById(ID));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> traineeService.findById(ID));
         //then
         verify(traineeRepository).findById(ID);
         assertEquals("Trainee id= 1 not found", exception.getMessage());
@@ -194,14 +187,12 @@ class TraineeServiceImplTest {
         //give
         when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
                 () -> traineeService.findByUserName(USER_NAME));
         //then
         verify(traineeRepository).findByUserUserName(USER_NAME);
         assertEquals("Trainee Sam.Jonson not found", exception.getMessage());
     }
-
-
 
     @Test
     void getAllTrainees_Pass() {
@@ -211,13 +202,10 @@ class TraineeServiceImplTest {
         List<Trainee> allTrainees = traineeService.getAllTrainees();
         //then
         assertEquals(expectedTraineeList, allTrainees);
-
     }
-
 
     @Test
     void updateTrainersList_ValidCredential_UpdateList() {
-
         //given
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainee));
         when(trainerService.findByUserName(anyString())).thenReturn(trainerWithUserName);
@@ -235,7 +223,7 @@ class TraineeServiceImplTest {
         //given
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class, () ->
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
                 traineeService.updateTrainersList(ID, TRAINER_NAME_LIST));
         //then
         verify(traineeRepository).findById(ID);
@@ -253,6 +241,4 @@ class TraineeServiceImplTest {
         verify(traineeRepository).findByUserUserName(USER_NAME);
         assertEquals(traineeDtoWithUserName, traineeDto);
     }
-
-
 }
