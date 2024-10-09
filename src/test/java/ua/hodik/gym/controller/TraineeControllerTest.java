@@ -41,6 +41,7 @@ class TraineeControllerTest {
     private final String trainerUserName = "trainer.same.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
+    private final String trainingDtoPath = "training.dto.json";
     private final String userPath = "user.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
@@ -57,7 +58,6 @@ class TraineeControllerTest {
 
     private final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
     private final Trainer trainerWithUserName = TestUtils.readFromFile(trainerUserName, Trainer.class);
-    private final String trainingDtoPath = "training.dto.json";
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     public static final String USER_NAME = "Sam.Jonson";
     public static UserNameDto userNameDto = new UserNameDto(USER_NAME);
@@ -150,7 +150,7 @@ class TraineeControllerTest {
     void getTraineeTrainingList_Valid_ResponseOkReturnTrainingDtoList() {
         //given
         when(traineeService.findByUserName(anyString())).thenReturn(expectedTrainee);
-        when(trainingService.findAllWithFilters(filterFormDto)).thenReturn(trainingDtoList);
+        when(trainingService.findAllWithFilters(any(FilterFormDto.class))).thenReturn(trainingDtoList);
         //when
         ResponseEntity<List<TrainingDto>> response = traineeController.getTraineeTrainingList(userNameDto, filterFormDto);
         //then
