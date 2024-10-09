@@ -1,5 +1,6 @@
 package ua.hodik.gym.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class UserDto {
     private String lastName;
 
     private String userName;
-
+    @JsonProperty("active")
     private boolean isActive;
 
 }

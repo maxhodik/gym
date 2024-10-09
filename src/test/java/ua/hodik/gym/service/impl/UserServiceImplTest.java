@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
+import ua.hodik.gym.dto.UserUpdateDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
@@ -30,18 +31,21 @@ class UserServiceImplTest {
     public static final int ID = 1;
     public static final String PASSWORD = "ABCDEFJxyz";
     private static final PasswordDto NEW_PASSWORD = new PasswordDto("AAAAAAAA");
-    public static final int WWRONG_ID = 0;
+    public static final int WRONG_ID = 0;
     private final String userPath = "user.json";
     private final String userDtoPath = "user.dto.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final List<User> expectedUserList = List.of(expectedUser);
     private final UserDto expectedUserDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
+    private final UserUpdateDto expectedUserUpdateDto = TestUtils.readFromFile(userDtoPath, UserUpdateDto.class);
+
     @Mock
     private UserRepository userRepository;
     @Mock
     private UserMapper userMapper;
     @InjectMocks
     private UserServiceImpl userService;
+
 
     @Test
     void getAllUsers_ReturnUsersList() {
@@ -94,10 +98,44 @@ class UserServiceImplTest {
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
         //when
         MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
-                () -> userService.changePassword(WWRONG_ID, NEW_PASSWORD));
+                () -> userService.changePassword(WRONG_ID, NEW_PASSWORD));
         //then
-        verify(userRepository).findById(WWRONG_ID);
+        verify(userRepository).findById(WRONG_ID);
         assertEquals("User  with id = 0 not found", exception.getMessage());
     }
 
+    @Test
+    void findUserDtoByUserName_ReturnUserDto() {
+        //given
+        when(userRepository.findByUserName(anyString())).thenReturn(Optional.ofNullable(expectedUser));
+        when(userMapper.convertToUserDto(any(User.class))).thenReturn(expectedUserDto);
+        //when
+        UserDto userDto = userService.findUserDtoByUserName(USER_NAME);
+        //then
+        assertEquals(expectedUserDto, userDto);
+        verify(userRepository).findByUserName(USER_NAME);
+        verify(userMapper).convertToUserDto(expectedUser);
+    }
+
+    @Test
+    void update_ReturnUser() {
+        //given
+        when(userRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedUser));
+        //when
+        User user = userService.update(ID, expectedUserUpdateDto);
+        //then
+        assertEquals(expectedUser, user);
+        verify(userRepository).findById(ID);
+    }
+
+
+    @Test
+    void update_WrongUserName_ThrowException() {
+        //given
+        when(userRepository.findById(anyInt())).thenThrow(new EntityNotFoundException(String.format("User  with id= %s not found", WRONG_ID)));
+        //when
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> userService.update(WRONG_ID, expectedUserUpdateDto));
+        //then
+        assertEquals("User  with id= 0 not found", exception.getMessage());
+    }
 }

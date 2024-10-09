@@ -220,4 +220,16 @@ class TrainerServiceImplTest {
         assertTrue(actualTrainers.isEmpty());
         verify(trainerRepository).findAllNotAssignedTrainers(VALID_TRAINEE);
     }
+
+    @Test
+    void findTrainerDtoByUserName_ValidUserName_ReturnTrainerDto() {
+        //given
+        when(trainerRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainer));
+        when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);
+        //when
+        TrainerDto trainerDto = trainerService.findTrainerDtoByUserName(USER_NAME);
+        //then
+        verify(trainerRepository).findByUserUserName(USER_NAME);
+        assertEquals(trainerDtoWithUserName, trainerDto);
+    }
 }

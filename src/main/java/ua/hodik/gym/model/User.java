@@ -1,6 +1,7 @@
 package ua.hodik.gym.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,6 +26,7 @@ public class User {
     @Column(name = "Password", nullable = false)
     private String password;
     @Column(name = "isActive", nullable = false)
+    @JsonProperty("active")
     private boolean isActive;
     @OneToOne(mappedBy = "user")
     private Trainee trainee;

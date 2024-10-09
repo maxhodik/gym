@@ -10,15 +10,18 @@ import ua.hodik.gym.dao.TrainingSpecification;
 import ua.hodik.gym.dto.FilterDto;
 import ua.hodik.gym.dto.FilterFormDto;
 import ua.hodik.gym.dto.TrainingDto;
+import ua.hodik.gym.dto.TrainingTypeDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.Training;
+import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.repository.TrainingRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.mapper.FilterDtoConverter;
 import ua.hodik.gym.service.mapper.TrainingMapper;
+import ua.hodik.gym.service.mapper.TrainingTypeMapper;
 import ua.hodik.gym.tets.util.TestUtils;
 
 import java.util.HashMap;
@@ -41,6 +44,7 @@ class TrainingServiceImplTest {
     private final String expectedTrainerPath = "trainer.json";
     private final String trainingDtoPath = "training.dto.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
+    private TrainingType trainingType;
 
     private final Training training = TestUtils.readFromFile(trainingPath, Training.class);
     private final Training expectedTraining = TestUtils.readFromFile(expectedTrainingPath, Training.class);
@@ -62,6 +66,8 @@ class TrainingServiceImplTest {
     @Mock
     private TrainingMapper trainingMapper;
     @Mock
+    private TrainingTypeMapper trainingTypeMapper;
+    @Mock
     private FilterDtoConverter filterDtoConverter;
     @Mock
     private TrainingSpecification trainingSpecification;
@@ -78,7 +84,6 @@ class TrainingServiceImplTest {
         verify(trainingRepository).findById(ID);
         assertEquals(expectedTraining, trainingById);
     }
-
 
 
     @Test
@@ -137,7 +142,17 @@ class TrainingServiceImplTest {
         verify(trainingRepository).findAll(specification);
     }
 
-
-
-
+    @Test
+    void getTrainingType_NoParameters_TrainingTypeDtoList() {
+        //given
+        TrainingType value1 = TrainingType.values()[1];
+        TrainingTypeDto expectedTrainingTypeDto = new TrainingTypeDto(value1.name(), value1.getID());
+        when(trainingTypeMapper.convertToTrainingTypeDto(any(TrainingType.class))).thenCallRealMethod();
+        //when
+        List<TrainingTypeDto> trainingTypeList = trainingService.getTrainingType();
+        //then
+        assertNotNull(trainingTypeList);
+        assertEquals(trainingTypeList.size(), TrainingType.values().length);
+        assertEquals(expectedTrainingTypeDto, trainingTypeList.get(1));
+    }
 }

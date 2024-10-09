@@ -19,7 +19,6 @@ public interface TraineeService {
 
     TraineeDto findTraineeDtoByUserName(String username);
 
-    Trainee changePassword(UserCredentialDto credential, String newPassword);
 
     TraineeDto update(int id, TraineeUpdateDto traineeDto);
 

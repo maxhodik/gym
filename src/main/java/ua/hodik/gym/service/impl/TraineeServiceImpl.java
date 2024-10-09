@@ -2,14 +2,12 @@ package ua.hodik.gym.service.impl;
 
 
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
-import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -106,16 +104,6 @@ public class TraineeServiceImpl implements TraineeService {
         log.debug("[TraineeService] Finding trainee by username {}, TransactionId {}", username, MDC.get(TRANSACTION_ID));
         return traineeMapper.convertToTraineeDto(findByUserName(username));
     }
-    @Transactional
-    public Trainee changePassword(UserCredentialDto credential, String newPassword) {
-        validatePassword(newPassword);
-        credentialChecker.checkIfMatchCredentialsOrThrow(credential);
-        String userName = credential.getUserName();
-        Trainee traineeForUpdate = findByUserName(userName);
-        traineeForUpdate.getUser().setPassword(newPassword);
-        log.info("{} password updated", userName);
-        return traineeForUpdate;
-    }
 
     @Override
     @Transactional
@@ -144,17 +132,9 @@ public class TraineeServiceImpl implements TraineeService {
 
     }
 
-    private void validatePassword(String newPassword) {
-        if (StringUtils.isBlank(newPassword)) {
-            throw new MyValidationException("Password can't be null or empty");
-        }
-    }
-
-
     private void updateTrainee(TraineeUpdateDto traineeDto, Trainee traineeToUpdate) {
         traineeToUpdate.setDayOfBirth(traineeDto.getDayOfBirth());
         traineeToUpdate.setAddress(traineeDto.getAddress());
-
     }
 
     @Transactional

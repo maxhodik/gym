@@ -34,9 +34,7 @@ public class TraineeController {
                             schema = @Schema(implementation = UserCredentialDto.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid username or password",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Trainee not found",
-                    content = @Content)})
+                            schema = @Schema(implementation = ValidationErrorResponse.class))})})
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@Valid @RequestBody TraineeDto traineeDto) {
         UserCredentialDto userCredentialDto = traineeService.createTraineeProfile(traineeDto);
@@ -81,9 +79,9 @@ public class TraineeController {
             @ApiResponse(responseCode = "404", description = "Trainee not found",
                     content = @Content)})
     @DeleteMapping
-    public ResponseEntity<String> deleteTrainee(@Valid @RequestBody UserNameDto userName) {
-        traineeService.deleteTrainee(userName.getUserName());
-        return ResponseEntity.ok(String.format("Trainee %s deleted successfully", userName));
+    public ResponseEntity<String> deleteTrainee(@Valid @RequestBody UserNameDto userNameDto) {
+        traineeService.deleteTrainee(userNameDto.getUserName());
+        return ResponseEntity.ok(String.format("Trainee %s deleted successfully", userNameDto.getUserName()));
     }
 
     @Operation(summary = "Update a trainee active status by its username")

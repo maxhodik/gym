@@ -33,7 +33,6 @@ public class TrainerController {
         this.trainingService = trainingService;
         this.traineeService = traineeService;
     }
-
     @Operation(summary = "Registration a new trainer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registration the trainer",
@@ -41,15 +40,12 @@ public class TrainerController {
                             schema = @Schema(implementation = UserCredentialDto.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid username or password",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
-            @ApiResponse(responseCode = "404", description = "Trainer not found",
-                    content = @Content)})
+                            schema = @Schema(implementation = ValidationErrorResponse.class))})})
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TrainerDto trainerDto) {
         UserCredentialDto credentialDto = trainerService.createTrainerProfile(trainerDto);
         return ResponseEntity.status(201).body(credentialDto);
     }
-
     @Operation(summary = "Update a trainer's active status by its username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update the trainer",
@@ -66,7 +62,6 @@ public class TrainerController {
         trainerService.updateActiveStatus(username, isActive);
         return ResponseEntity.ok(String.format("Trainer %s active status updated", username));
     }
-
     @Operation(summary = "Update a trainer active status by its username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update the trainer",
@@ -82,7 +77,6 @@ public class TrainerController {
         TrainerDto trainerDto = trainerService.findTrainerDtoByUserName(userName);
         return ResponseEntity.ok(trainerDto);
     }
-
     @Operation(summary = "Update a trainer by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated the trainer",
@@ -96,7 +90,6 @@ public class TrainerController {
         return ResponseEntity.ok(trainer);
 
     }
-
     @Operation(summary = "Get not assigned trainers by trainee username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get trainers list",
@@ -114,7 +107,6 @@ public class TrainerController {
         List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(traineeUsername);
         return ResponseEntity.ok(notAssignedTrainers);
     }
-
     @Operation(summary = "Get training list by trainer username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get training list",

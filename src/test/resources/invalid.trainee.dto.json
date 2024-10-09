@@ -1,8 +1,7 @@
 {
-  "userUpdateDto": {
-    "firstName": "Sam",
+  "userDto": {
+    "firstName": "",
     "lastName": "Jonson",
-    "userName": "Sam.Jonson",
     "active": "true"
   },
   "dayOfBirth": "10-02-1995",

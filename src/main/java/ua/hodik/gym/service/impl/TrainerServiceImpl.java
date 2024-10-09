@@ -9,7 +9,6 @@ import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
-import ua.hodik.gym.exception.MyValidationException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.model.User;
@@ -68,7 +67,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Transactional
     @Override
     public TrainerDto update(int trainerId, TrainerUpdateDto trainerDto) {
-        Trainer trainerToUpdate = findTrainerToUpdate(trainerId);
+        Trainer trainerToUpdate = findById(trainerId);
         User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserUpdateDto());
         trainerToUpdate.setUser(updatedUser);
         updateTrainer(trainerDto, trainerToUpdate);
@@ -129,13 +128,6 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
 
-    private Trainer findTrainerToUpdate(int trainerId) {
-        if (trainerId == 0) {
-            throw new MyEntityNotFoundException("Trainer with id = 0 cant be found");
-        }
-        return findById(trainerId);
-    }
-
     private void setGeneratedPassword(Trainer trainer) {
         String password = passwordGenerator.generatePassword();
         trainer.getUser().setPassword(password);
@@ -147,14 +139,6 @@ public class TrainerServiceImpl implements TrainerService {
         String userName = userNameGenerator.generateUserName(firstName, lastName);
         trainer.getUser().setUserName(userName);
     }
-
-
-    private void validatePassword(String newPassword) {
-        if (newPassword == null || newPassword.isEmpty()) {
-            throw new MyValidationException("Password can't be null or empty");
-        }
-    }
-
 
     private void updateTrainer(TrainerUpdateDto trainerDto, Trainer trainerToUpdate) {
         trainerToUpdate.setSpecialization(TrainingType.valueOf(trainerDto.getSpecialization()));

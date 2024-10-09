@@ -241,4 +241,18 @@ class TraineeServiceImplTest {
         verify(traineeRepository).findById(ID);
         assertEquals("Trainee id= 1 not found", exception.getMessage());
     }
+
+    @Test
+    void findTraineeDtoByUserName_ValidUserName_ReturnTraineeDto() {
+        //given
+        when(traineeRepository.findByUserUserName(anyString())).thenReturn(Optional.ofNullable(expectedTrainee));
+        when(traineeMapper.convertToTraineeDto(any(Trainee.class))).thenReturn(traineeDtoWithUserName);
+        //when
+        TraineeDto traineeDto = traineeService.findTraineeDtoByUserName(USER_NAME);
+        //then
+        verify(traineeRepository).findByUserUserName(USER_NAME);
+        assertEquals(traineeDtoWithUserName, traineeDto);
+    }
+
+
 }
