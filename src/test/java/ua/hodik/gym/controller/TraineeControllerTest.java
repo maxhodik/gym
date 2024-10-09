@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
-import ua.hodik.gym.model.Trainer;
-import ua.hodik.gym.model.User;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainingService;
 import ua.hodik.gym.tets.util.TestUtils;
@@ -26,43 +24,25 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TraineeControllerTest {
     private static final int ID = 1;
-    private static final String NEW_PASSWORD = "AAAAAAAA";
-    private final String traineePath = "trainee.without.user.name.json";
     private final String expectedTraineePath = "trainee.same.user.name.json";
     private final String traineeDtoPath = "trainee.dto.same.without.user.name.json";
     private final String traineeDtoWithUserNamePath = "trainee.dto.with.user.name.json";
     private final String traineeUpdateDtoPath = "trainee.update.dto.json";
-    private final String expectedTrainerPath = "trainer.same.user.name.json";
-    private final String invalidTraineeDtoPath = "invalid.trainee.dto.json";
-
-
     private final String userCredentialDtoPath = "user.credential.dto.json";
-    private final String traineeWithIdPath = "trainee.with.id.json";
-    private final String trainerUserName = "trainer.same.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
     private final String trainingDtoPath = "training.dto.json";
-    private final String userPath = "user.json";
-    private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
-    private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
     private final TraineeDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
-    private final TraineeDto invalidTraineeDto = TestUtils.readFromFile(invalidTraineeDtoPath, TraineeDto.class);
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
 
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
     private final TraineeUpdateDto traineeUpdateDto = TestUtils.readFromFile(traineeUpdateDtoPath, TraineeUpdateDto.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
-    private final Trainee traineeWithId = TestUtils.readFromFile(traineeWithIdPath, Trainee.class);
     private final UserCredentialDto expectedUserCredentialDto = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
-
-    private final List<Trainee> expectedTraineeList = List.of(expectedTrainee);
-    private final Trainer trainerWithUserName = TestUtils.readFromFile(trainerUserName, Trainer.class);
-    private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     public static final String USER_NAME = "Sam.Jonson";
     public static UserNameDto userNameDto = new UserNameDto(USER_NAME);
     private static final List<UserNameDto> userNameDtoList = List.of(userNameDto);
-    private final List<Trainer> expectedTrainers = List.of(expectedTrainer);
     private final List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName);
     private final TrainingDto trainingDto = TestUtils.readFromFile(trainingDtoPath, TrainingDto.class);
     private final List<TrainingDto> trainingDtoList = List.of(trainingDto);
@@ -165,7 +145,7 @@ class TraineeControllerTest {
         //given
         when(traineeService.findByUserName(anyString())).thenThrow(MyEntityNotFoundException.class);
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
+        assertThrows(MyEntityNotFoundException.class,
                 () -> traineeController.getTraineeTrainingList(userNameDto, filterFormDto));
         //then
         verify(traineeService).findByUserName(USER_NAME);

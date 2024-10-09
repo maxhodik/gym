@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.MyEntityNotFoundException;
 import ua.hodik.gym.model.Trainer;
-import ua.hodik.gym.model.User;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 import ua.hodik.gym.tets.util.TestUtils;
@@ -26,30 +25,18 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TrainerControllerTest {
     private static final int ID = 1;
-    public static final String PASSWORD = "ABCDEFJxyz";
-    private static final String FIRST_NAME = "Sam";
-    private static final String LAST_NAME = "Jonson";
-    public static final String VALID_TRAINEE = "validTrainee";
-    private final String trainerAnotherName = "trainer.json";
-    private final String trainerPath = "trainer.without.user.name.json";
     private final String expectedTrainerPath = "trainer.same.user.name.json";
     private final String trainerDtoPathWithoutUserName = "trainer.dto.without.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
     private final String trainerUpdateDtoPath = "trainer.update.dto.json";
-    private final String userPath = "user.json";
     private final String userNameDtoPath = "username.dto.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String trainingDtoPath = "training.dto.json";
 
-    private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
-
     private final UserCredentialDto expectedCredential = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
-    private final Trainer trainerWithoutUserName = TestUtils.readFromFile(trainerPath, Trainer.class);
-    private final Trainer trainerAnotherUserName = TestUtils.readFromFile(trainerAnotherName, Trainer.class);
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
-
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
     private final TrainerUpdateDto trainerUpdateDto = TestUtils.readFromFile(trainerUpdateDtoPath, TrainerUpdateDto.class);
@@ -57,10 +44,8 @@ class TrainerControllerTest {
     private final TrainingDto trainingDto = TestUtils.readFromFile(trainingDtoPath, TrainingDto.class);
     private final List<TrainingDto> trainingDtoList = List.of(trainingDto);
     private static final String USER_NAME = "Sam.Jonson";
-    private List<Trainer> expectedTrainers = List.of(expectedTrainer, expectedTrainer);
-    private List<TrainerDto> expectedTrainerDtoList = List.of(trainerDtoWithUserName, trainerDtoWithUserName);
 
-    public final List<Trainer> expectedTrainerList = List.of(expectedTrainer);
+
     @Mock
     private TrainerService trainerService;
     @Mock
@@ -82,7 +67,7 @@ class TrainerControllerTest {
     }
 
     @Test
-    void updateTrainerActivityStatus() {
+    void updateTrainerActivityStatus_ResponseOk() {
         //given
         doNothing().when(trainerService).updateActiveStatus(anyString(), anyBoolean());
         //when
@@ -94,7 +79,7 @@ class TrainerControllerTest {
     }
 
     @Test
-    void getTrainer() {
+    void getTrainer_ReturnTrainerDtoResponseOk() {
         //given
         when(trainerService.findTrainerDtoByUserName(anyString())).thenReturn(trainerDtoWithUserName);
         //when
@@ -106,7 +91,7 @@ class TrainerControllerTest {
     }
 
     @Test
-    void updateTrainer() {
+    void updateTrainer_ReturnTrainerDtoResponseOk() {
         //given
         when(trainerService.update(anyInt(), any(TrainerUpdateDto.class))).thenReturn(trainerDtoWithUserName);
         //when
@@ -134,7 +119,7 @@ class TrainerControllerTest {
     void getNotAssignedTrainers_UserNameNotExists_ThrowException() {
         when(trainerService.findByUserName(anyString())).thenThrow(MyEntityNotFoundException.class);
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
+        assertThrows(MyEntityNotFoundException.class,
                 () -> trainerController.getNotAssignedTrainers(USER_NAME));
         //then
         verify(trainerService).findByUserName(USER_NAME);
@@ -142,7 +127,7 @@ class TrainerControllerTest {
     }
 
     @Test
-    void getTrainerTrainingList() {
+    void getTrainerTrainingLis_UserExists_ReturnTrainingDtoResponseOk() {
         //given
         when(trainerService.findByUserName(anyString())).thenReturn(expectedTrainer);
         when(trainingService.findAllWithFilters(any(FilterFormDto.class))).thenReturn(trainingDtoList);
@@ -160,7 +145,7 @@ class TrainerControllerTest {
         //given
         when(trainerService.findByUserName(anyString())).thenThrow(MyEntityNotFoundException.class);
         //when
-        MyEntityNotFoundException exception = assertThrows(MyEntityNotFoundException.class,
+        assertThrows(MyEntityNotFoundException.class,
                 () -> trainerController.getTrainerTrainingList(userNameDto, filterFormDto));
         //then
         verify(trainerService).findByUserName(USER_NAME);

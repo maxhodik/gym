@@ -68,6 +68,6 @@ public class LoginController {
                                               @RequestBody @Valid PasswordDto newPassword) {
         userService.changePassword(id, newPassword);
         log.debug("[LoginController] Changing password. TransactionId {}", MDC.get(TRANSACTION_ID));
-        return ResponseEntity.ok("Password successfully changed");
+        return ResponseEntity.ok("Password changed successfully");
     }
 }
