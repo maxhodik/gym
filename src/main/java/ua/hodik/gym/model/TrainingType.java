@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum TrainingType {
 
-    BOXING(1), ZUMA(2), STRETCHING(3);
+    BOXING(1), ZUMBA(2), STRETCHING(3);
 
     int ID;
 

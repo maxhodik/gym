@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class CustomTrainingTypeValidatorTest {
-    public static final String CORRECT_VALUE = "ZUMA";
+    public static final String CORRECT_VALUE = "ZUMBA";
     public static final String INCORRECT_VALUE = "Zum";
     public static final String CORRECT_VALUE_LOWER_CASE = "zuma";
     @Mock

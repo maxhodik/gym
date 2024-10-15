@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.EntityNotFoundException;
+import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
 import ua.hodik.gym.tets.util.TestUtils;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TrainerControllerTest {
     private static final int ID = 1;
+    public static final String TRAINEE_USERNAME = "Vasya.Lis";
     private final String expectedTrainerPath = "trainer.same.user.name.json";
     private final String trainerDtoPathWithoutUserName = "trainer.dto.without.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
@@ -33,6 +36,8 @@ class TrainerControllerTest {
     private final String userNameDtoPath = "username.dto.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String trainingDtoPath = "training.dto.json";
+    private final String traineeWithIdPath = "trainee.with.id.json";
+    private final Trainee traineeWithId = TestUtils.readFromFile(traineeWithIdPath, Trainee.class);
 
     private final UserCredentialDto expectedCredential = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
@@ -48,6 +53,8 @@ class TrainerControllerTest {
 
     @Mock
     private TrainerService trainerService;
+    @Mock
+    private TraineeService traineeService;
     @Mock
     private TrainingService trainingService;
 
@@ -104,25 +111,25 @@ class TrainerControllerTest {
 
     @Test
     void getNotAssignedTrainers_ValidUserName_ResponseOkReturnTrainerDtoList() {
-        when(trainerService.findByUserName(anyString())).thenReturn(expectedTrainer);
+        when(traineeService.findByUserName(anyString())).thenReturn(traineeWithId);
         when(trainerService.getNotAssignedTrainers(anyString())).thenReturn(List.of(trainerDtoWithUserName));
         //when
-        ResponseEntity<List<TrainerDto>> response = trainerController.getNotAssignedTrainers(USER_NAME);
+        ResponseEntity<List<TrainerDto>> response = trainerController.getNotAssignedTrainers(TRAINEE_USERNAME);
         //then
-        verify(trainerService).findByUserName(USER_NAME);
-        verify(trainerService).getNotAssignedTrainers(USER_NAME);
+        verify(traineeService).findByUserName(TRAINEE_USERNAME);
+        verify(trainerService).getNotAssignedTrainers(TRAINEE_USERNAME);
         assertEquals(List.of(trainerDtoWithUserName), response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     void getNotAssignedTrainers_UserNameNotExists_ThrowException() {
-        when(trainerService.findByUserName(anyString())).thenThrow(EntityNotFoundException.class);
+        when(traineeService.findByUserName(anyString())).thenThrow(EntityNotFoundException.class);
         //when
         assertThrows(EntityNotFoundException.class,
                 () -> trainerController.getNotAssignedTrainers(USER_NAME));
         //then
-        verify(trainerService).findByUserName(USER_NAME);
+        verify(traineeService).findByUserName(USER_NAME);
         verify(trainingService, times(0)).findAllWithFilters(filterFormDto);
     }
 

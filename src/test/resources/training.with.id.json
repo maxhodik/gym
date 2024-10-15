@@ -22,9 +22,9 @@
       "password": "ABCDEFJxyz",
       "active": "true"
     },
-    "specialization": "ZUMA"
+    "specialization": "ZUMBA"
   },
-  "name": "Zuma1",
-  "trainingType": "ZUMA",
+  "name": "Zumba1",
+  "trainingType": "ZUMBA",
   "durationMinutes": 40
 }

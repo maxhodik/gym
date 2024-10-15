@@ -45,7 +45,7 @@ public class TrainerController {
         UserCredentialDto credentialDto = trainerService.createTrainerProfile(trainerDto);
         return ResponseEntity.status(201).body(credentialDto);
     }
-    @Operation(summary = "Update a trainer's active status by its username")
+    @Operation(summary = "Update a trainer active status by its username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update the trainer",
                     content = {@Content(mediaType = "application/json",
@@ -61,7 +61,8 @@ public class TrainerController {
         trainerService.updateActiveStatus(username, isActive);
         return ResponseEntity.ok(String.format("Trainer %s active status updated", username));
     }
-    @Operation(summary = "Update a trainer active status by its username")
+
+    @Operation(summary = "Get trainer by its username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update the trainer",
                     content = @Content),
@@ -89,7 +90,8 @@ public class TrainerController {
         return ResponseEntity.ok(trainer);
 
     }
-    @Operation(summary = "Get not assigned trainers by trainee username")
+
+    @Operation(summary = "Get not assigned active trainers by trainee username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get trainers list",
                     content = @Content),
@@ -102,7 +104,7 @@ public class TrainerController {
     public ResponseEntity<List<TrainerDto>> getNotAssignedTrainers(@PathVariable
                                                                    @NotBlank(message = "UserName can't be null or empty")
                                                                    String traineeUsername) {
-        trainerService.findByUserName(traineeUsername);
+        traineeService.findByUserName(traineeUsername);
         List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(traineeUsername);
         return ResponseEntity.ok(notAssignedTrainers);
     }
