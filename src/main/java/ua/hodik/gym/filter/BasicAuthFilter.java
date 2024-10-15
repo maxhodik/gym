@@ -31,7 +31,7 @@ public class BasicAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String path = request.getRequestURI();
         if (path.contains("/registration") || path.contains("/auth/login") ||
-                path.contains("/swagger-ui") || path.contains("/v3/api-docs")) {
+                path.contains("/swagger-ui") || path.contains("/v3/api-docs") || path.contains("/actuator")) {
             filterChain.doFilter(request, response);
             return;
         }
