@@ -8,7 +8,8 @@ import lombok.*;
 @Data
 @ToString(exclude = {"trainee", "trainer"})
 @Entity
-@Table(name = "User")
+@Table(name = "\"User\"")
+
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
