@@ -19,6 +19,3 @@ public interface TrainerRepository extends JpaRepository<Trainer, Integer> {
             "AND t.user.isActive = true")
     List<Trainer> findAllNotAssignedTrainers(@Param("username") String username);
 }
-
-
-

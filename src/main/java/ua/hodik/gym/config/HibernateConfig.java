@@ -30,8 +30,6 @@ public class HibernateConfig {
     @Value("${hibernate.password}")
     private String password;
 
-    @Value("${hibernate.dialect}")
-    private String hibernateDialect;
 
     @Value("${hibernate.show_sql}")
     private String showSql;
@@ -60,7 +58,6 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties properties = new Properties();
-        properties.put("hibernate.dialect", hibernateDialect);
         properties.put("hibernate.show_sql", showSql);
         properties.put("hibernate.hbm2ddl.auto", ddl);
 
