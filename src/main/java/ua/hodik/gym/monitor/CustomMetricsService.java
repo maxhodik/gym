@@ -10,9 +10,8 @@ public class CustomMetricsService {
     private final Counter customMetricCounter;
 
     public CustomMetricsService(MeterRegistry meterRegistry) {
-        customMetricCounter = Counter.builder("custom_metric_name")
+        customMetricCounter = Counter.builder("custom_metric_api_get_trainer")
                 .description("Description of custom metric")
-                .tags("environment", "development")
                 .register(meterRegistry);
     }
 

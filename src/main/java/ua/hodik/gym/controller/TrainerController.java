@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.*;
+import ua.hodik.gym.monitor.CustomMetricsService;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
@@ -25,13 +26,16 @@ public class TrainerController {
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final TraineeService traineeService;
+    private final CustomMetricsService customMetricService;
 
     @Autowired
-    public TrainerController(TrainerService trainerService, TrainingService trainingService, TraineeService traineeService) {
+    public TrainerController(TrainerService trainerService, TrainingService trainingService, TraineeService traineeService, CustomMetricsService customMetricService) {
         this.trainerService = trainerService;
         this.trainingService = trainingService;
         this.traineeService = traineeService;
+        this.customMetricService = customMetricService;
     }
+
     @Operation(summary = "Registration a new trainer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registration the trainer",
@@ -104,6 +108,8 @@ public class TrainerController {
     public ResponseEntity<List<TrainerDto>> getNotAssignedTrainers(@PathVariable
                                                                    @NotBlank(message = "UserName can't be null or empty")
                                                                    String traineeUsername) {
+        customMetricService.incrementCustomMetric();
+
         traineeService.findByUserName(traineeUsername);
         List<TrainerDto> notAssignedTrainers = trainerService.getNotAssignedTrainers(traineeUsername);
         return ResponseEntity.ok(notAssignedTrainers);
