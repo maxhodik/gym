@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MemoryUsageHealthIndicator implements HealthIndicator {
 
-    private static final long MEMORY_THRESHOLD = 100 * 1024 * 1024; // 100MB
+    private static final long MEMORY_THRESHOLD = 100 * 1024 * 1024;
 
     @Override
     public Health health() {

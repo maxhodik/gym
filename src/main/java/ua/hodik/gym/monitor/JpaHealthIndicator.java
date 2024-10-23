@@ -15,7 +15,6 @@ public class JpaHealthIndicator implements HealthIndicator {
     @Override
     public Health health() {
         try {
-            // Simple query to check database connection
             Object result = entityManager.createQuery("SELECT 1").getSingleResult();
 
             if (result != null) {
