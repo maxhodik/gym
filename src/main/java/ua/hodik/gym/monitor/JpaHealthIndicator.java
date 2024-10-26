@@ -25,7 +25,6 @@ public class JpaHealthIndicator implements HealthIndicator {
             } else {
                 return Health.down()
                         .withDetail("database", "Available but query failed")
-                        .withDetail("queryResult", result)
                         .build();
             }
         } catch (Exception e) {
