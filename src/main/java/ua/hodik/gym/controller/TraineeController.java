@@ -67,7 +67,7 @@ public class TraineeController {
                     content = @Content)})
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<TraineeDto> updateTrainee(@PathVariable int id,
-                                                    @Valid @RequestBody TraineeUpdateDto traineeDto) {
+                                                    @Valid @RequestBody TraineeDto traineeDto) {
         TraineeDto updatedTrainee = traineeService.update(id, traineeDto);
         return ResponseEntity.ok(updatedTrainee);
     }

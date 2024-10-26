@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.dto.UserUpdateDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
@@ -62,16 +61,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User update(int id, UserUpdateDto userDto) {
+    public User update(int id, UserDto userDto) {
         User userToUpdate = findById(id);
         updateUser(userDto, userToUpdate);
         return userToUpdate;
     }
 
-    private void updateUser(UserUpdateDto userDto, User userToUpdate) {
+    private void updateUser(UserDto userDto, User userToUpdate) {
         userToUpdate.setFirstName(userDto.getFirstName());
         userToUpdate.setLastName(userDto.getLastName());
-        userToUpdate.setActive(userDto.getIsActive());
+        userToUpdate.setActive(userDto.isActive());
     }
 
 

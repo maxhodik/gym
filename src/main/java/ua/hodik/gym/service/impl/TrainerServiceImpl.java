@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TrainerDto;
-import ua.hodik.gym.dto.TrainerUpdateDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainer;
@@ -66,9 +65,9 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Transactional
     @Override
-    public TrainerDto update(int trainerId, TrainerUpdateDto trainerDto) {
+    public TrainerDto update(int trainerId, TrainerDto trainerDto) {
         Trainer trainerToUpdate = findById(trainerId);
-        User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerDto.getUserUpdateDto());
+        User updatedUser = userService.update(trainerToUpdate.getUser().getId(), trainerMapper.convertToUserDto(trainerDto));
         trainerToUpdate.setUser(updatedUser);
         updateTrainer(trainerDto, trainerToUpdate);
         log.debug("[TrainerController] Trainer id={} updated, TransactionId {}", trainerId, MDC.get(TRANSACTION_ID));
@@ -140,7 +139,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.getUser().setUserName(userName);
     }
 
-    private void updateTrainer(TrainerUpdateDto trainerDto, Trainer trainerToUpdate) {
+    private void updateTrainer(TrainerDto trainerDto, Trainer trainerToUpdate) {
         trainerToUpdate.setSpecialization(TrainingType.valueOf(trainerDto.getSpecialization()));
     }
 }

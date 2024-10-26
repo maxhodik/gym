@@ -81,6 +81,7 @@ public class TrainerController {
         TrainerDto trainerDto = trainerService.findTrainerDtoByUserName(userName);
         return ResponseEntity.ok(trainerDto);
     }
+
     @Operation(summary = "Update a trainer by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated the trainer",
@@ -89,7 +90,7 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Trainer not found",
                     content = @Content)})
     @PutMapping("/{id:\\d+}")
-    public ResponseEntity<TrainerDto> updateTrainer(@PathVariable int id, @Valid @RequestBody TrainerUpdateDto trainerDto) {
+    public ResponseEntity<TrainerDto> updateTrainer(@PathVariable int id, @Valid @RequestBody TrainerDto trainerDto) {
         TrainerDto trainer = trainerService.update(id, trainerDto);
         return ResponseEntity.ok(trainer);
 
