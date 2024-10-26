@@ -75,8 +75,8 @@ public class TrainerController {
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Trainer not found",
                     content = @Content)})
-    @GetMapping
-    public ResponseEntity<TrainerDto> getTrainer(@Valid @RequestBody UserNameDto userNameDto) {
+    @GetMapping("/{userNameDto}")
+    public ResponseEntity<TrainerDto> getTrainer(@Valid @PathVariable UserNameDto userNameDto) {
         String userName = userNameDto.getUserName();
         TrainerDto trainerDto = trainerService.findTrainerDtoByUserName(userName);
         return ResponseEntity.ok(trainerDto);
@@ -105,7 +105,7 @@ public class TrainerController {
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content)})
-    @GetMapping("/{traineeUsername}")
+    @GetMapping("/unassigned-trainers/{traineeUsername}")
     public ResponseEntity<List<TrainerDto>> getNotAssignedTrainers(@PathVariable
                                                                    @NotBlank(message = "UserName can't be null or empty")
                                                                    String traineeUsername) {
