@@ -18,4 +18,6 @@ public interface TrainerRepository extends JpaRepository<Trainer, Integer> {
             "JOIN tr.trainees trainee WHERE trainee.user.userName = :username)" +
             "AND t.user.isActive = true")
     List<Trainer> findAllNotAssignedTrainers(@Param("username") String username);
+
+    long count();
 }

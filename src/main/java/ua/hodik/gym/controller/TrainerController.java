@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.*;
-import ua.hodik.gym.monitor.CustomMetricsService;
+import ua.hodik.gym.monitor.UnassignedTrainerCounterService;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
@@ -26,10 +26,10 @@ public class TrainerController {
     private final TrainerService trainerService;
     private final TrainingService trainingService;
     private final TraineeService traineeService;
-    private final CustomMetricsService customMetricService;
+    private final UnassignedTrainerCounterService customMetricService;
 
     @Autowired
-    public TrainerController(TrainerService trainerService, TrainingService trainingService, TraineeService traineeService, CustomMetricsService customMetricService) {
+    public TrainerController(TrainerService trainerService, TrainingService trainingService, TraineeService traineeService, UnassignedTrainerCounterService customMetricService) {
         this.trainerService = trainerService;
         this.trainingService = trainingService;
         this.traineeService = traineeService;

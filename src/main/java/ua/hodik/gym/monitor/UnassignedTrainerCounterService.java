@@ -5,13 +5,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomMetricsService {
+public class UnassignedTrainerCounterService {
 
     private final Counter customMetricCounter;
 
-    public CustomMetricsService(MeterRegistry meterRegistry) {
+    public UnassignedTrainerCounterService(MeterRegistry meterRegistry) {
         customMetricCounter = Counter.builder("custom_metric_api_get_trainer")
-                .description("Description of custom metric")
+                .description("a number of requests to /gym/{traineeUsername} endpoint")
                 .register(meterRegistry);
     }
 
