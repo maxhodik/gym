@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.dto.UserUpdateDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
@@ -35,7 +34,6 @@ class UserServiceImplTest {
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final List<User> expectedUserList = List.of(expectedUser);
     private final UserDto expectedUserDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
-    private final UserUpdateDto expectedUserUpdateDto = TestUtils.readFromFile(userDtoPath, UserUpdateDto.class);
 
     @Mock
     private UserRepository userRepository;
@@ -118,7 +116,7 @@ class UserServiceImplTest {
         //given
         when(userRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedUser));
         //when
-        User user = userService.update(ID, expectedUserUpdateDto);
+        User user = userService.update(ID, expectedUserDto);
         //then
         assertEquals(expectedUser, user);
         verify(userRepository).findById(ID);
@@ -129,7 +127,7 @@ class UserServiceImplTest {
         //given
         when(userRepository.findById(anyInt())).thenThrow(new jakarta.persistence.EntityNotFoundException(String.format("User  with id= %s not found", WRONG_ID)));
         //when
-        jakarta.persistence.EntityNotFoundException exception = assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> userService.update(WRONG_ID, expectedUserUpdateDto));
+        jakarta.persistence.EntityNotFoundException exception = assertThrows(jakarta.persistence.EntityNotFoundException.class, () -> userService.update(WRONG_ID, expectedUserDto));
         //then
         assertEquals("User  with id= 0 not found", exception.getMessage());
     }

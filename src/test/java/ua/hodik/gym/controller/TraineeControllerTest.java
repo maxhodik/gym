@@ -27,7 +27,7 @@ class TraineeControllerTest {
     private final String expectedTraineePath = "trainee.same.user.name.json";
     private final String traineeDtoPath = "trainee.dto.same.without.user.name.json";
     private final String traineeDtoWithUserNamePath = "trainee.dto.with.user.name.json";
-    private final String traineeUpdateDtoPath = "trainee.update.dto.json";
+//    private final String traineeDtoPath = "trainee.update.dto.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
@@ -36,7 +36,7 @@ class TraineeControllerTest {
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
 
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
-    private final TraineeUpdateDto traineeUpdateDto = TestUtils.readFromFile(traineeUpdateDtoPath, TraineeUpdateDto.class);
+    //    private final TraineeDto traineeDto = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     private final UserCredentialDto expectedUserCredentialDto = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
@@ -79,13 +79,14 @@ class TraineeControllerTest {
 
 
     @Test
+
     void updateTrainee_ValidParams_ResponseOK() {
         //given
-        when(traineeService.update(anyInt(), any(TraineeUpdateDto.class))).thenReturn(traineeDtoWithUserName);
+        when(traineeService.update(anyInt(), any(TraineeDto.class))).thenReturn(traineeDtoWithUserName);
         //when
-        ResponseEntity<TraineeDto> trainee = traineeController.updateTrainee(ID, traineeUpdateDto);
+        ResponseEntity<TraineeDto> trainee = traineeController.updateTrainee(ID, traineeDtoWithUserName);
         //then
-        verify(traineeService).update(ID, traineeUpdateDto);
+        verify(traineeService).update(ID, traineeDtoWithUserName);
         assertEquals(traineeDtoWithUserName, trainee.getBody());
         assertEquals(HttpStatus.OK, trainee.getStatusCode());
     }

@@ -33,7 +33,7 @@ class TrainerControllerTest {
     private final String trainerDtoPathWithoutUserName = "trainer.dto.without.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
-    private final String trainerUpdateDtoPath = "trainer.update.dto.json";
+//    private final String trainerUpdateDtoPath = "trainer.update.dto.json";
     private final String userNameDtoPath = "username.dto.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String trainingDtoPath = "training.dto.json";
@@ -45,7 +45,6 @@ class TrainerControllerTest {
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
-    private final TrainerUpdateDto trainerUpdateDto = TestUtils.readFromFile(trainerUpdateDtoPath, TrainerUpdateDto.class);
     private final UserNameDto userNameDto = TestUtils.readFromFile(userNameDtoPath, UserNameDto.class);
     private final TrainingDto trainingDto = TestUtils.readFromFile(trainingDtoPath, TrainingDto.class);
     private final List<TrainingDto> trainingDtoList = List.of(trainingDto);
@@ -103,11 +102,11 @@ class TrainerControllerTest {
     @Test
     void updateTrainer_ReturnTrainerDtoResponseOk() {
         //given
-        when(trainerService.update(anyInt(), any(TrainerUpdateDto.class))).thenReturn(trainerDtoWithUserName);
+        when(trainerService.update(anyInt(), any(TrainerDto.class))).thenReturn(trainerDtoWithUserName);
         //when
-        ResponseEntity<TrainerDto> trainer = trainerController.updateTrainer(ID, trainerUpdateDto);
+        ResponseEntity<TrainerDto> trainer = trainerController.updateTrainer(ID, trainerDtoWithUserName);
         //then
-        verify(trainerService).update(ID, trainerUpdateDto);
+        verify(trainerService).update(ID, trainerDtoWithUserName);
         assertEquals(trainerDtoWithUserName, trainer.getBody());
         assertEquals(HttpStatus.OK, trainer.getStatusCode());
     }

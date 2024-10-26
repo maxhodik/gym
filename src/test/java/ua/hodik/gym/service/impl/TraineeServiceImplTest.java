@@ -34,17 +34,17 @@ class TraineeServiceImplTest {
     private final String expectedTraineePath = "trainee.same.user.name.json";
     private final String traineeDtoPath = "trainee.dto.same.without.user.name.json";
     private final String traineeDtoWithUserNamePath = "trainee.dto.with.user.name.json";
-    private final String traineeUpdateDtoPath = "trainee.update.dto.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
     private final String traineeWithIdPath = "trainee.with.id.json";
     private final String trainerUserName = "trainer.same.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String userPath = "user.json";
+    private final String userDtoPath = "user.dto.json";
+    private final UserDto userDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
     private final TraineeDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
-    private final TraineeUpdateDto traineeUpdateDto = TestUtils.readFromFile(traineeUpdateDtoPath, TraineeUpdateDto.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
     private final Trainee traineeWithId = TestUtils.readFromFile(traineeWithIdPath, Trainee.class);
@@ -98,10 +98,11 @@ class TraineeServiceImplTest {
     void update_EqualsUserName_Pass() {
         //given
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainee));
-        when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
+        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         when(traineeMapper.convertToTraineeDto(any(Trainee.class))).thenReturn(traineeDtoWithUserName);
+        when(traineeMapper.convertToUserDto(any(TraineeDto.class))).thenReturn(userDto);
         //when
-        TraineeDto updatedTrainee = traineeService.update(ID, traineeUpdateDto);
+        TraineeDto updatedTrainee = traineeService.update(ID, traineeDtoWithUserName);
         //then
         verify(traineeRepository).findById(ID);
         assertEquals(traineeDtoWithUserName, updatedTrainee);
@@ -111,13 +112,14 @@ class TraineeServiceImplTest {
     void update_DifferentUserName_ReturnTraineeDto() {
         //given
         when(traineeRepository.findById(anyInt())).thenReturn(Optional.ofNullable(traineeWithId));
-        when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
+        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         when(traineeMapper.convertToTraineeDto(any(Trainee.class))).thenReturn(traineeDtoWithUserName);
+        when(traineeMapper.convertToUserDto(any(TraineeDto.class))).thenReturn(userDto);
         //when
-        TraineeDto updatedTrainee = traineeService.update(ID, traineeUpdateDto);
+        TraineeDto updatedTrainee = traineeService.update(ID, traineeDtoWithUserName);
         //then
         verify(traineeRepository).findById(ID);
-        verify(userService).update(0, traineeUpdateDto.getUserUpdateDto());
+        verify(userService).update(0, userDto);
         assertEquals(traineeDtoWithUserName, updatedTrainee);
     }
 

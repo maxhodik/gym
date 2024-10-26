@@ -6,7 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
-import ua.hodik.gym.dto.*;
+import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.UserCredentialDto;
+import ua.hodik.gym.dto.UserDto;
+import ua.hodik.gym.dto.UserNameDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
@@ -37,17 +40,18 @@ class TrainerServiceImplTest {
     private final String trainerDtoPathWithoutUserName = "trainer.dto.without.user.name.json";
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String userCredentialDtoPath = "user.credential.dto.json";
-    private final String trainerUpdateDtoPath = "trainer.update.dto.json";
+    private final String userDtoPath = "user.dto.json";
     private final String userPath = "user.json";
     private final String userNameDtoPath = "username.dto.json";
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final UserCredentialDto expectedCredential = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
+    private final UserDto userDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
+
     private final Trainer trainerWithoutUserName = TestUtils.readFromFile(trainerPath, Trainer.class);
     private final Trainer trainerAnotherUserName = TestUtils.readFromFile(trainerAnotherName, Trainer.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
-    private final TrainerUpdateDto trainerUpdateDto = TestUtils.readFromFile(trainerUpdateDtoPath, TrainerUpdateDto.class);
     private final UserNameDto userNameDto = TestUtils.readFromFile(userNameDtoPath, UserNameDto.class);
     private static final String USER_NAME = "Sam.Jonson";
     private final List<Trainer> expectedTrainers = List.of(expectedTrainer, expectedTrainer);
@@ -87,10 +91,11 @@ class TrainerServiceImplTest {
     void update_EqualsUserName_Update() {
         //given
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedTrainer));
-        when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
+        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);
+        when(trainerMapper.convertToUserDto(any(TrainerDto.class))).thenReturn(userDto);
         //when
-        TrainerDto updatedTrainer = trainerService.update(ID, trainerUpdateDto);
+        TrainerDto updatedTrainer = trainerService.update(ID, trainerDtoWithUserName);
         //then
         verify(trainerRepository).findById(ID);
         assertEquals(trainerDtoWithUserName, updatedTrainer);
@@ -100,13 +105,14 @@ class TrainerServiceImplTest {
     void update_DifferentUserName_ReturnTrainer() {
         //given
         when(trainerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(trainerAnotherUserName));
-        when(userService.update(anyInt(), any(UserUpdateDto.class))).thenReturn(expectedUser);
+        when(userService.update(anyInt(), any(UserDto.class))).thenReturn(expectedUser);
         when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);
+        when(trainerMapper.convertToUserDto(any(TrainerDto.class))).thenReturn(userDto);
         //when
-        TrainerDto updatedTrainer = trainerService.update(ID, trainerUpdateDto);
+        TrainerDto updatedTrainer = trainerService.update(ID, trainerDtoWithUserName);
         //then
         verify(trainerRepository).findById(ID);
-        verify(userService).update(0, trainerUpdateDto.getUserUpdateDto());
+        verify(userService).update(0, userDto);
         assertEquals(trainerDtoWithUserName, updatedTrainer);
     }
 

@@ -1,8 +1,6 @@
 {
-  "userDto": {
-    "firstName": "Sam",
-    "lastName": "Jonson",
-    "active": "true"
-  },
+  "firstName": "Sam",
+  "lastName": "Jonson",
+  "active": "true",
   "specialization": "ZUMBA"
 }
