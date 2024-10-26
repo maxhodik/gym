@@ -11,6 +11,7 @@ import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.monitor.UnassignedTrainerCounterService;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.TrainingService;
@@ -57,6 +58,8 @@ class TrainerControllerTest {
     private TraineeService traineeService;
     @Mock
     private TrainingService trainingService;
+    @Mock
+    private UnassignedTrainerCounterService customMetricService;
 
     @InjectMocks
     private TrainerController trainerController;
@@ -111,6 +114,7 @@ class TrainerControllerTest {
 
     @Test
     void getNotAssignedTrainers_ValidUserName_ResponseOkReturnTrainerDtoList() {
+        doNothing().when(customMetricService).incrementCustomMetric();
         when(traineeService.findByUserName(anyString())).thenReturn(traineeWithId);
         when(trainerService.getNotAssignedTrainers(anyString())).thenReturn(List.of(trainerDtoWithUserName));
         //when
@@ -124,6 +128,7 @@ class TrainerControllerTest {
 
     @Test
     void getNotAssignedTrainers_UserNameNotExists_ThrowException() {
+        doNothing().when(customMetricService).incrementCustomMetric();
         when(traineeService.findByUserName(anyString())).thenThrow(EntityNotFoundException.class);
         //when
         assertThrows(EntityNotFoundException.class,
