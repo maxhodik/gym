@@ -52,8 +52,8 @@ public class TraineeController {
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
             @ApiResponse(responseCode = "404", description = "Trainee not found",
                     content = @Content)})
-    @GetMapping
-    public ResponseEntity<TraineeDto> getTrainee(@Valid @RequestBody UserNameDto userName) {
+    @GetMapping("/{userName}")
+    public ResponseEntity<TraineeDto> getTrainee(@Valid @PathVariable UserNameDto userName) {
         TraineeDto traineeDto = traineeService.findTraineeDtoByUserName(userName.getUserName());
         return ResponseEntity.ok(traineeDto);
     }
