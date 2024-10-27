@@ -13,11 +13,14 @@ import java.util.Optional;
 public interface TrainerRepository extends JpaRepository<Trainer, Integer> {
     Optional<Trainer> findByUserUserName(String userName);
 
-    @Query("SELECT t FROM Trainer t " +
-            "WHERE t.id NOT IN (SELECT tr.id FROM Trainer tr " +
-            "JOIN tr.trainees trainee WHERE trainee.user.userName = :username)" +
-            "AND t.user.isActive = true")
-    List<Trainer> findAllNotAssignedTrainers(@Param("username") String username);
+    @Query(value = "SELECT t.* " +
+            "FROM trainer t " +
+            "JOIN `user` u1 ON t.user_id = u1.id " +
+            "LEFT JOIN trainer_trainee tt ON t.id = tt.trainer_id AND tt.trainee_id = :traineeId " +
+            "WHERE tt.trainee_id IS NULL " +
+            "AND u1.isActive = 1",
+            nativeQuery = true)
+    List<Trainer> findAllNotAssignedTrainers(@Param("traineeId") int username);
 
     long count();
 }

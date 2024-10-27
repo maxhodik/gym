@@ -3,6 +3,7 @@ package ua.hodik.gym.service.impl;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TrainerDto;
@@ -13,6 +14,7 @@ import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
 import ua.hodik.gym.repository.UserRepository;
+import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TrainerMapper;
@@ -32,19 +34,22 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final TraineeService traineeService;
     private final TrainerMapper trainerMapper;
     private final CredentialChecker credentialChecker;
 
 
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
-                              TrainerRepository trainerRepository, UserRepository userRepository, UserService userService, TrainerMapper trainerMapper,
+                              TrainerRepository trainerRepository, UserRepository userRepository, UserService userService,
+                              @Lazy TraineeService traineeService, TrainerMapper trainerMapper,
                               CredentialChecker credentialChecker) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.traineeService = traineeService;
         this.trainerMapper = trainerMapper;
         this.credentialChecker = credentialChecker;
     }
@@ -105,7 +110,6 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
 
-
     @Transactional
     @Override
     public void updateActiveStatus(String userName, boolean isActive) {
@@ -119,7 +123,8 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     public List<TrainerDto> getNotAssignedTrainers(String traineeName) {
-        List<TrainerDto> trainerDtos = trainerRepository.findAllNotAssignedTrainers(traineeName).stream()
+        int traineeId = traineeService.findByUserName(traineeName).getTraineeId();
+        List<TrainerDto> trainerDtos = trainerRepository.findAllNotAssignedTrainers(traineeId).stream()
                 .map(trainerMapper::convertToTrainerDto)
                 .toList();
         log.debug("[TrainerService] List not assigned trainers found. Trainee username {}, TransactionId {}", traineeName, MDC.get(TRANSACTION_ID));

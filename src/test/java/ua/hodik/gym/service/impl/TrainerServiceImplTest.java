@@ -11,6 +11,7 @@ import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.dto.UserNameDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
+import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
@@ -43,6 +44,8 @@ class TrainerServiceImplTest {
     private final String userDtoPath = "user.dto.json";
     private final String userPath = "user.json";
     private final String userNameDtoPath = "username.dto.json";
+    private final String traineeWithIdPath = "trainee.with.id.json";
+    private final Trainee traineeWithId = TestUtils.readFromFile(traineeWithIdPath, Trainee.class);
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final UserCredentialDto expectedCredential = TestUtils.readFromFile(userCredentialDtoPath, UserCredentialDto.class);
     private final UserDto userDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
@@ -63,6 +66,8 @@ class TrainerServiceImplTest {
     private UserNameGenerator userNameGenerator;
     @Mock
     private TrainerRepository trainerRepository;
+    @Mock
+    private TraineeServiceImpl traineeService;
     @Mock
     private UserService userService;
     @Mock
@@ -195,24 +200,26 @@ class TrainerServiceImplTest {
     void getNotAssignedTrainers_ValidTraineeName_ReturnTrainersList() {
         //given
         Specification<Trainer> trainerSpecificationMock = mock(Specification.class);
-        when(trainerRepository.findAllNotAssignedTrainers(anyString())).thenReturn(expectedTrainers);
+        when(traineeService.findByUserName(anyString())).thenReturn(traineeWithId);
+        when(trainerRepository.findAllNotAssignedTrainers(anyInt())).thenReturn(expectedTrainers);
         when(trainerMapper.convertToTrainerDto(any(Trainer.class))).thenReturn(trainerDtoWithUserName);
         // when
         List<TrainerDto> actualTrainers = trainerService.getNotAssignedTrainers(VALID_TRAINEE);
         // then
         assertEquals(expectedTrainerDtoList, actualTrainers);
-        verify(trainerRepository).findAllNotAssignedTrainers(VALID_TRAINEE);
+        verify(trainerRepository).findAllNotAssignedTrainers(traineeWithId.getTraineeId());
     }
 
     @Test
     void getNotAssignedTrainers_NoTrainersFound_ReturnEmptyList() {
         //given
-        when(trainerRepository.findAllNotAssignedTrainers(anyString())).thenReturn(List.of());
+        when(traineeService.findByUserName(anyString())).thenReturn(traineeWithId);
+        when(trainerRepository.findAllNotAssignedTrainers(anyInt())).thenReturn(List.of());
         //when
         List<TrainerDto> actualTrainers = trainerService.getNotAssignedTrainers(VALID_TRAINEE);
         //then
         assertTrue(actualTrainers.isEmpty());
-        verify(trainerRepository).findAllNotAssignedTrainers(VALID_TRAINEE);
+        verify(trainerRepository).findAllNotAssignedTrainers(traineeWithId.getTraineeId());
     }
 
     @Test
