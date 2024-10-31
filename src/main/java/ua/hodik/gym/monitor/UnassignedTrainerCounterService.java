@@ -11,7 +11,7 @@ public class UnassignedTrainerCounterService {
 
     public UnassignedTrainerCounterService(MeterRegistry meterRegistry) {
         customMetricCounter = Counter.builder("custom_metric_api_get_trainer")
-                .description("a number of requests to /gym/{traineeUsername} endpoint")
+                .description("a number of requests to /gym/unassigned-trainers/{traineeUsername} endpoint")
                 .register(meterRegistry);
     }
 
