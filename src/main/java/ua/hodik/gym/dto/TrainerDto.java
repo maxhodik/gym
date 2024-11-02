@@ -25,6 +25,4 @@ public class TrainerDto {
     private boolean isActive;
     @ValidTrainingTypeEnum(enumClass = TrainingType.class)
     private String specialization;
-
-
 }

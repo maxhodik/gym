@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.TrainerDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.model.Trainer;
+import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.model.User;
 
 @Component
@@ -21,7 +22,16 @@ public class TrainerMapper {
 
 
     public Trainer convertToTrainer(TrainerDto trainerDto) {
-        return modelMapper.map(trainerDto, Trainer.class);
+
+        return Trainer.builder()
+                .user(User.builder()
+                        .firstName(trainerDto.getFirstName())
+                        .lastName(trainerDto.getLastName())
+                        .userName(trainerDto.getUserName())
+                        .isActive(trainerDto.isActive())
+                        .build())
+                .specialization(TrainingType.valueOf(trainerDto.getSpecialization()))
+                .build();
     }
 
 

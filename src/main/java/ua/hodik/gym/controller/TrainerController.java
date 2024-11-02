@@ -46,6 +46,7 @@ public class TrainerController {
                             schema = @Schema(implementation = ValidationErrorResponse.class))})})
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TrainerDto trainerDto) {
+        //todo TrainerRegistrationDto
         UserCredentialDto credentialDto = trainerService.createTrainerProfile(trainerDto);
         return ResponseEntity.status(201).body(credentialDto);
     }

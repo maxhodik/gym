@@ -2,10 +2,7 @@ package ua.hodik.gym.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +15,9 @@ import java.util.List;
 @Entity
 @Table(name = "Trainee")
 @NamedEntityGraph(name = "Trainee.withUser", attributeNodes = @NamedAttributeNode("user"))
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Trainee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

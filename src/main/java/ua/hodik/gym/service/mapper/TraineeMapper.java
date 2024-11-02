@@ -20,7 +20,16 @@ public class TraineeMapper {
     }
 
     public Trainee convertToTrainee(TraineeDto traineeDto) {
-        return modelMapper.map(traineeDto, Trainee.class);
+        return Trainee.builder()
+                .user(User.builder()
+                        .firstName(traineeDto.getFirstName())
+                        .lastName(traineeDto.getLastName())
+                        .userName(traineeDto.getUserName())
+                        .isActive(traineeDto.isActive())
+                        .build())
+                .address(traineeDto.getAddress())
+                .dayOfBirth(traineeDto.getDayOfBirth())
+                .build();
     }
 
     public TraineeDto convertToTraineeDto(Trainee trainee) {
