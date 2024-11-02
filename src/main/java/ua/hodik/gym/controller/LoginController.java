@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserCredentialDto;
@@ -24,9 +25,11 @@ import ua.hodik.gym.util.CredentialChecker;
 public class LoginController {
     public static final String TRANSACTION_ID = "transactionId";
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    public LoginController(UserService userService, CredentialChecker credentialChecker) {
+    public LoginController(UserService userService, CredentialChecker credentialChecker, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Operation(summary = "Login user by its credentials")
@@ -41,7 +44,7 @@ public class LoginController {
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid UserCredentialDto credentials) {
         String username = credentials.getUserName();
-        String password = credentials.getPassword();
+        String password = passwordEncoder.encode(credentials.getPassword());
         User user = userService.findByUserName(username);
         if (user.getUserName().equals(username) && user.getPassword().equals(password)) {
             log.info("User {} login successful", username);
@@ -64,6 +67,7 @@ public class LoginController {
     @PutMapping("/{id:\\d+}")
     public ResponseEntity<String> changeLogin(@PathVariable int id,
                                               @RequestBody @Valid PasswordDto newPassword) {
+        //todo make it with properly user
         userService.changePassword(id, newPassword);
         log.debug("[LoginController] Changing password. TransactionId {}", MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok("Password changed successfully");
