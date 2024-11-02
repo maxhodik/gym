@@ -34,14 +34,14 @@ class LoginControllerTest {
     @Mock
     private UserService userService;
     @InjectMocks
-    private LoginController loginController;
+    private AuthController authController;
 
     @Test
     void login_ValidCredentials_ResponseOk() {
         //given
         when(userService.findByUserName(anyString())).thenReturn(user);
         //when
-        ResponseEntity<String> response = loginController.login(userCredentialDto);
+        ResponseEntity<String> response = authController.login(userCredentialDto);
         //then
         verify(userService).findByUserName(USER_NAME);
         assertEquals("Login successful", response.getBody());
@@ -53,7 +53,7 @@ class LoginControllerTest {
         //given
         when(userService.findByUserName(anyString())).thenReturn(user);
         //when
-        ResponseEntity<String> response = loginController.login(invalidUserCredentialDto);
+        ResponseEntity<String> response = authController.login(invalidUserCredentialDto);
         //then
         verify(userService).findByUserName(invalidUserCredentialDto.getUserName());
         assertEquals("Invalid credentials", response.getBody());
@@ -63,7 +63,7 @@ class LoginControllerTest {
     @Test
     void changeLogin_ValidPassword_ResponseOK() {
         //when
-        ResponseEntity<String> response = loginController.changeLogin(ID, NEW_PASSWORD_DTO);
+        ResponseEntity<String> response = authController.changeLogin(ID, NEW_PASSWORD_DTO);
         //then
         verify(userService).changePassword(ID, NEW_PASSWORD_DTO);
         assertEquals("Password changed successfully", response.getBody());

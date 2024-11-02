@@ -22,12 +22,12 @@ import ua.hodik.gym.util.CredentialChecker;
 @Log4j2
 @RestController
 @RequestMapping("/auth")
-public class LoginController {
+public class AuthController {
     public static final String TRANSACTION_ID = "transactionId";
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    public LoginController(UserService userService, CredentialChecker credentialChecker, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, CredentialChecker credentialChecker, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -44,10 +44,11 @@ public class LoginController {
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid UserCredentialDto credentials) {
         String username = credentials.getUserName();
-        String password = passwordEncoder.encode(credentials.getPassword());
+        String password = credentials.getPassword();
         User user = userService.findByUserName(username);
-        if (user.getUserName().equals(username) && user.getPassword().equals(password)) {
+        if (user.getUserName().equals(username) && passwordEncoder.matches(user.getPassword(), password)) {
             log.info("User {} login successful", username);
+            //todo return JWT token
             return ResponseEntity.ok("Login successful");
         } else {
             log.error("Invalid credentials. User {} unauthorized. TransactionId {}", username, MDC.get(TRANSACTION_ID));
@@ -69,7 +70,7 @@ public class LoginController {
                                               @RequestBody @Valid PasswordDto newPassword) {
         //todo make it with properly user
         userService.changePassword(id, newPassword);
-        log.debug("[LoginController] Changing password. TransactionId {}", MDC.get(TRANSACTION_ID));
+        log.debug("[AuthController] Changing password. TransactionId {}", MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok("Password changed successfully");
     }
 }
