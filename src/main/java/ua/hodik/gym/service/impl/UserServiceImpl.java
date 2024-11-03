@@ -3,9 +3,12 @@ package ua.hodik.gym.service.impl;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.PasswordDto;
+import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.User;
@@ -22,11 +25,13 @@ public class UserServiceImpl implements UserService {
     public static final String TRANSACTION_ID = "transactionId";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
@@ -45,12 +50,17 @@ public class UserServiceImpl implements UserService {
         log.debug("[LoginService] User's password updated. Id= {}. TransactionId {}", id, MDC.get(TRANSACTION_ID));
     }
 
+    public User authenticate(UserCredentialDto userCredentialDto) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userCredentialDto.getUserName(), userCredentialDto.getPassword()));
+        return findByUserName(userCredentialDto.getUserName());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public User findByUserName(String userName) {
         User foundedUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User  %s not found", userName)));
-        log.debug("[LoginService] Found usr by userName {}. TransactionId {}", userName, MDC.get(TRANSACTION_ID));
+        log.debug("[UserService] Found user by userName {}. TransactionId {}", userName, MDC.get(TRANSACTION_ID));
         return foundedUser;
     }
 

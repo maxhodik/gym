@@ -2,6 +2,7 @@ package ua.hodik.gym.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.PasswordDto;
+import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.model.User;
 
@@ -14,6 +15,8 @@ public interface UserService {
     void changePassword(int id, PasswordDto newPassword);
 
     User findByUserName(String userName);
+
+    User authenticate(UserCredentialDto userCredentialDto);
 
     UserDto findUserDtoByUserName(String userName);
 

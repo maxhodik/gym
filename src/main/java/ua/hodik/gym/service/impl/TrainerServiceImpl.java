@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TrainerDto;
@@ -13,12 +14,10 @@ import ua.hodik.gym.model.Trainer;
 import ua.hodik.gym.model.TrainingType;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.TrainerRepository;
-import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.service.TraineeService;
 import ua.hodik.gym.service.TrainerService;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.service.mapper.TrainerMapper;
-import ua.hodik.gym.util.CredentialChecker;
 import ua.hodik.gym.util.PasswordGenerator;
 import ua.hodik.gym.util.UserNameGenerator;
 
@@ -32,26 +31,24 @@ public class TrainerServiceImpl implements TrainerService {
     private final UserNameGenerator userNameGenerator;
     private final PasswordGenerator passwordGenerator;
     private final TrainerRepository trainerRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final TraineeService traineeService;
     private final TrainerMapper trainerMapper;
-    private final CredentialChecker credentialChecker;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Autowired
     public TrainerServiceImpl(UserNameGenerator userNameGenerator, PasswordGenerator passwordGenerator,
-                              TrainerRepository trainerRepository, UserRepository userRepository, UserService userService,
+                              TrainerRepository trainerRepository, UserService userService,
                               @Lazy TraineeService traineeService, TrainerMapper trainerMapper,
-                              CredentialChecker credentialChecker) {
+                              PasswordEncoder passwordEncoder) {
         this.userNameGenerator = userNameGenerator;
         this.passwordGenerator = passwordGenerator;
         this.trainerRepository = trainerRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
         this.traineeService = traineeService;
         this.trainerMapper = trainerMapper;
-        this.credentialChecker = credentialChecker;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -59,11 +56,12 @@ public class TrainerServiceImpl implements TrainerService {
     public UserCredentialDto createTrainerProfile(TrainerDto trainerDto) {
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
-        setGeneratedPassword(trainer);
+        String password = passwordGenerator.generatePassword();
+        trainer.getUser().setPassword(passwordEncoder.encode(password));
         trainer.getUser().setActive(true);
         trainer = trainerRepository.save(trainer);
         User user = trainer.getUser();
-        UserCredentialDto credentialDto = new UserCredentialDto(user.getUserName(), user.getPassword());
+        UserCredentialDto credentialDto = new UserCredentialDto(user.getUserName(), password);
         log.debug("[TrainerService] Registration trainer  username {}, TransactionId {}", credentialDto.getUserName(), MDC.get(TRANSACTION_ID));
         return credentialDto;
     }

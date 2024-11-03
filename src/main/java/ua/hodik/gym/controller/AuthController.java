@@ -10,14 +10,18 @@ import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.ValidationErrorResponse;
-import ua.hodik.gym.model.User;
+import ua.hodik.gym.jwt.JwtService;
 import ua.hodik.gym.service.UserService;
 import ua.hodik.gym.util.CredentialChecker;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Log4j2
 @RestController
@@ -26,10 +30,12 @@ public class AuthController {
     public static final String TRANSACTION_ID = "transactionId";
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthController(UserService userService, CredentialChecker credentialChecker, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, CredentialChecker credentialChecker, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Operation(summary = "Login user by its credentials")
@@ -42,15 +48,22 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Not found",
                     content = @Content)})
     @GetMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid UserCredentialDto credentials) {
+    public ResponseEntity<?> login(@RequestBody @Valid UserCredentialDto credentials) {
         String username = credentials.getUserName();
-        String password = credentials.getPassword();
-        User user = userService.findByUserName(username);
-        if (user.getUserName().equals(username) && passwordEncoder.matches(user.getPassword(), password)) {
+        try {
+            userService.authenticate(credentials);
+
+            String accessToken = jwtService.createToken(username, false);
+            String refreshToken = jwtService.createToken(username, true);
+
+            Map<Object, Object> response = new HashMap<>();
+            response.put("username", username);
+            response.put("access_token", accessToken);
+            response.put("refresh_token", refreshToken);
+
             log.info("User {} login successful", username);
-            //todo return JWT token
-            return ResponseEntity.ok("Login successful");
-        } else {
+            return ResponseEntity.ok(response);
+        } catch (AuthenticationException e) {
             log.error("Invalid credentials. User {} unauthorized. TransactionId {}", username, MDC.get(TRANSACTION_ID));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
