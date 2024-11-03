@@ -12,6 +12,7 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
@@ -20,6 +21,7 @@ import ua.hodik.gym.dto.ValidationErrorResponse;
 import ua.hodik.gym.jwt.AuthService;
 import ua.hodik.gym.jwt.JwtService;
 import ua.hodik.gym.model.User;
+import ua.hodik.gym.service.LoginAttemptService;
 import ua.hodik.gym.service.UserService;
 
 import java.util.HashMap;
@@ -34,12 +36,14 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthService authService;
+    private final LoginAttemptService loginAttemptService;
 
-    public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, AuthService authService) {
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService, AuthService authService, LoginAttemptService loginAttemptService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authService = authService;
+        this.loginAttemptService = loginAttemptService;
     }
 
     @Operation(summary = "Login user by its credentials")
@@ -56,7 +60,10 @@ public class AuthController {
         String username = credentials.getUserName();
         try {
             userService.authenticate(credentials);
-
+            if (loginAttemptService.isBlocked(username)) {
+                log.debug("[AuthController] User {} is temporarily blocked", username);
+                return ResponseEntity.status(HttpStatus.LOCKED).body("User is temporarily blocked. Try again later.");
+            }
             String accessToken = jwtService.createToken(username, false);
             String refreshToken = jwtService.createToken(username, true);
 
@@ -64,16 +71,18 @@ public class AuthController {
             response.put("username", username);
             response.put("access_token", accessToken);
             response.put("refresh_token", refreshToken);
+            loginAttemptService.loginSucceeded(username);
 
             log.info("User {} login successful", username);
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
+            loginAttemptService.loginFailed(username);
             log.error("Invalid credentials. User {} unauthorized. TransactionId {}", username, MDC.get(TRANSACTION_ID));
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
 
-    @Operation(summary = "Change password for authenticated  user")
+    @Operation(summary = "Change password for the authenticated  user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The password changed",
                     content = @Content),
@@ -92,6 +101,15 @@ public class AuthController {
         return ResponseEntity.ok("Password changed successfully");
     }
 
+    @Operation(summary = "Refresh JWT token for the authenticated  user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returns both new access and refresh tokens",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid parameter",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content)})
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
         String refreshToken = jwtService.resolveToken(request);
@@ -104,5 +122,11 @@ public class AuthController {
         response.put("access_token", accessToken);
         response.put("refresh_token", refreshToken);
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout() {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok().body("User logout");
     }
 }

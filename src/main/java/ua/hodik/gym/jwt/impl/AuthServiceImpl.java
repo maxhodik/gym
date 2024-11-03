@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String getUserEmail() {
+    public String getUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return getUserDetails(authentication).getUsername();

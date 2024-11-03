@@ -49,8 +49,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                //todo
-                .logout(logout -> logout.logoutUrl("/logout").deleteCookies("JSESSIONID"))
                 .build();
     }
 
