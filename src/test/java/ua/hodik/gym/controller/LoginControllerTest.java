@@ -63,7 +63,7 @@ class LoginControllerTest {
     @Test
     void changeLogin_ValidPassword_ResponseOK() {
         //when
-        ResponseEntity<String> response = authController.changeLogin(ID, NEW_PASSWORD_DTO);
+        ResponseEntity<String> response = authController.changePassword(ID, NEW_PASSWORD_DTO);
         //then
         verify(userService).changePassword(ID, NEW_PASSWORD_DTO);
         assertEquals("Password changed successfully", response.getBody());

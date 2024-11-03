@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import ua.hodik.gym.dto.ValidationErrorResponse;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.InvalidCredentialException;
+import ua.hodik.gym.jwt.JwtAuthenticationException;
 import ua.hodik.gym.service.ValidationService;
 
 import java.util.List;
@@ -72,6 +73,16 @@ public class ExceptionHandlingController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     private ResponseEntity<String> onHttpMessageNotReadableException(Exception e) {
         HttpStatus request = HttpStatus.BAD_REQUEST;
+        log.error("{}, {}, Response status: {}, TransactionId: {}",
+                e.getMessage(), e,
+                request, MDC.get(TRANSACTION_ID));
+        return new ResponseEntity<>(e.getMessage(), request);
+    }
+
+    @ExceptionHandler(JwtAuthenticationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    private ResponseEntity<String> onJwtAuthenticationException(JwtAuthenticationException e) {
+        HttpStatus request = HttpStatus.FORBIDDEN;
         log.error("{}, {}, Response status: {}, TransactionId: {}",
                 e.getMessage(), e,
                 request, MDC.get(TRANSACTION_ID));

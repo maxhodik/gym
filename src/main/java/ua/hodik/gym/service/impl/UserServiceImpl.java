@@ -5,6 +5,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.PasswordDto;
@@ -26,12 +27,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AuthenticationManager authenticationManager) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public void changePassword(int id, PasswordDto newPassword) {
         User userForUpdate = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User  with id = %s not found", id)));
-        userForUpdate.setPassword(newPassword.getPassword());
+        userForUpdate.setPassword(passwordEncoder.encode(newPassword.getPassword()));
         log.debug("[LoginService] User's password updated. Id= {}. TransactionId {}", id, MDC.get(TRANSACTION_ID));
     }
 
