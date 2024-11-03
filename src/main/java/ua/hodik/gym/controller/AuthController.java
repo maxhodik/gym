@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.MDC;
@@ -18,6 +19,7 @@ import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.ValidationErrorResponse;
 import ua.hodik.gym.jwt.AuthService;
 import ua.hodik.gym.jwt.JwtService;
+import ua.hodik.gym.model.User;
 import ua.hodik.gym.service.UserService;
 
 import java.util.HashMap;
@@ -88,5 +90,19 @@ public class AuthController {
         userService.changePassword(id, newPassword);
         log.debug("[AuthController] Changing password. TransactionId {}", MDC.get(TRANSACTION_ID));
         return ResponseEntity.ok("Password changed successfully");
+    }
+
+    @GetMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+        String refreshToken = jwtService.resolveToken(request);
+        String userName = jwtService.getUserName(refreshToken);
+        User user = userService.findByUserName(userName);
+
+        String accessToken = jwtService.createToken(user.getUserName(), false);
+        Map<Object, Object> response = new HashMap<>();
+        response.put("username", user.getUserName());
+        response.put("access_token", accessToken);
+        response.put("refresh_token", refreshToken);
+        return ResponseEntity.ok().body(response);
     }
 }

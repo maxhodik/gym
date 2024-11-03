@@ -52,11 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         try {
             tryAuthenticateByToken(token);
         } catch (ExpiredJwtException ex) {
-
             String requestURL = request.getRequestURL().toString();
             if (requestURL.contains("refreshToken")) {
                 String refreshToken = jwtService.resolveToken(request);
