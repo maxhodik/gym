@@ -1,8 +1,7 @@
 package ua.hodik.gym.jwt.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,11 +16,12 @@ import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.security.UserDetailsImpl;
 
 @Service
+@Log4j2
 public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
-    Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+
 
     public AuthServiceImpl(JwtService jwtService,
                            UserDetailsService userDetailsService, UserRepository userRepository) {
@@ -50,19 +50,19 @@ public class AuthServiceImpl implements AuthService {
 
     private User getUser(Authentication authentication) {
         if (authentication == null) {
-            logger.info("[AUTH] Authentication is null");
+            log.info("[AUTH] Authentication is null");
             throw new AuthenticationServiceException("Authentication is null");
         }
 
         UserDetailsImpl userDetails = getUserDetails(authentication);
         String username = userDetails.getUsername();
         if (!authentication.isAuthenticated()) {
-            logger.info("[AUTH] User {} is not authenticated", username);
+            log.info("[AUTH] User {} is not authenticated", username);
             throw new AuthenticationServiceException("User is not authenticated");
         }
         User user = userDetails.getUser();
         if (user == null) {
-            logger.info("[AUTH] Incorrect security user {}", userDetails.getUsername());
+            log.info("[AUTH] Incorrect security user {}", userDetails.getUsername());
         }
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User %s snot found", username)));
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
     private UserDetailsImpl getUserDetails(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if (userDetails == null) {
-            logger.info("[AUTH] User principals {} is not found", authentication.getName());
+            log.info("[AUTH] User principals {} is not found", authentication.getName());
             throw new AuthenticationServiceException("Principal is not found");
         }
         return userDetails;

@@ -12,7 +12,6 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
@@ -125,8 +124,11 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<?> logout() {
-        SecurityContextHolder.clearContext();
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String token = jwtService.resolveToken(request);
+        jwtService.saveToBlacklist(token);
+        log.debug("[Logout] token for user {} saved in blackList", jwtService.getUserName(token));
         return ResponseEntity.ok().body("User logout");
     }
 }
+

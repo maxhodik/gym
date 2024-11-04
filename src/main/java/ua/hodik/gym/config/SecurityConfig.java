@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ua.hodik.gym.filter.JwtAuthenticationFilter;
+import ua.hodik.gym.filter.TokenBlacklistAuthenticationFilter;
 
 import java.util.List;
 
@@ -29,13 +30,16 @@ public class SecurityConfig {
     private final UserDetailsService userDetails;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final TokenBlacklistAuthenticationFilter blacklistAuthenticationFilter;
 
 
     @Autowired
-    public SecurityConfig(UserDetailsService userDetails, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(UserDetailsService userDetails, JwtAuthenticationFilter jwtAuthenticationFilter, TokenBlacklistAuthenticationFilter blacklistAuthenticationFilter) {
         this.userDetails = userDetails;
 
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+
+        this.blacklistAuthenticationFilter = blacklistAuthenticationFilter;
     }
 
     @Bean
@@ -48,6 +52,7 @@ public class SecurityConfig {
                                 "/swagger-ui", "/v3/api-docs", "/h2-console").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(blacklistAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

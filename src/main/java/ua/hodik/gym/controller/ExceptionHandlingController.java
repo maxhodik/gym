@@ -80,9 +80,9 @@ public class ExceptionHandlingController {
     }
 
     @ExceptionHandler(JwtAuthenticationException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     private ResponseEntity<String> onJwtAuthenticationException(JwtAuthenticationException e) {
-        HttpStatus request = HttpStatus.FORBIDDEN;
+        HttpStatus request = HttpStatus.UNAUTHORIZED;
         log.error("{}, {}, Response status: {}, TransactionId: {}",
                 e.getMessage(), e,
                 request, MDC.get(TRANSACTION_ID));

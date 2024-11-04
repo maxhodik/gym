@@ -4,8 +4,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import ua.hodik.gym.model.TokensBlackList;
+import ua.hodik.gym.repository.TokenBlackListRepository;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
@@ -13,11 +15,14 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Service
+@Log4j2
 public class JwtService {
     private final JwtConfig jwtConfig;
+    private final TokenBlackListRepository blackListRepository;
 
-    public JwtService(JwtConfig jwtConfig) {
+    public JwtService(JwtConfig jwtConfig, TokenBlackListRepository blackListRepository) {
         this.jwtConfig = jwtConfig;
+        this.blackListRepository = blackListRepository;
     }
 
     public String extractUsername(String token) {
@@ -52,10 +57,6 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-    }
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
@@ -88,7 +89,7 @@ public class JwtService {
         if (authHeader != null && authHeader.contains(jwtConfig.getTokenPrefix())) {
             return authHeader.substring(7);
         }
-        //todo add log Inconsist authHeader
+        log.debug("[JWT Service] Authorization header does not contain the expected token prefix ");
         return null;
     }
 
@@ -96,9 +97,18 @@ public class JwtService {
     public String getUserName(String token) {
         Claims claims = extractAllClaims(token);
         return claims.getSubject();
-
     }
 
+    public void saveToBlacklist(String token) {
+        TokensBlackList tokensBlackLIst = TokensBlackList.builder()
+                .body(token)
+                .expiration(extractExpiration(token))
+                .build();
+        blackListRepository.save(tokensBlackLIst);
+    }
 
+    public void removeExpiredToken() {
+        blackListRepository.deleteByExpirationBefore(new Date());
+    }
 }
 
