@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**", "/auth/login", "/trainers/registration", "trainees/registration",
-                                "/swagger-ui", "/v3/api-docs", "/h2-console").permitAll()
+                                "/swagger-ui/**", "/v3/api-docs/**", "/h2-console").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(blacklistAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
