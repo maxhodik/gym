@@ -1,6 +1,7 @@
 package ua.hodik.gym.service.impl;
 
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ua.hodik.gym.service.LoginAttemptService;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Data
 public class LoginAttemptServiceImpl implements LoginAttemptService {
     @Value("${max_failed_attempts}")
     private int maxAttempts;

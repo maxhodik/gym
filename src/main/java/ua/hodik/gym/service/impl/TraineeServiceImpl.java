@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.hodik.gym.dto.TraineeDto;
-import ua.hodik.gym.dto.TrainerDto;
-import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserNameDto;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
@@ -63,7 +60,7 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
-    public UserCredentialDto createTraineeProfile(TraineeDto traineeDto) {
+    public UserCredentialDto createTraineeProfile(TraineeRegistrationDto traineeDto) {
         Trainee trainee = traineeMapper.convertToTrainee(traineeDto);
         setGeneratedUserName(trainee);
         String password = passwordGenerator.generatePassword();

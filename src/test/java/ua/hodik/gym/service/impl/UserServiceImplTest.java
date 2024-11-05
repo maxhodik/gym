@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
@@ -39,6 +40,8 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -79,6 +82,7 @@ class UserServiceImplTest {
     void changePassword_Valid_ChangePassword() {
         //given
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
+        when(passwordEncoder.encode(anyString())).thenReturn(NEW_PASSWORD.getPassword());
         //when
         userService.changePassword(ID, NEW_PASSWORD);
         //then

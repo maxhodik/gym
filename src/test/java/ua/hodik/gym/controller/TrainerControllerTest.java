@@ -44,7 +44,7 @@ class TrainerControllerTest {
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
-    private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
+    private final TrainerRegistrationDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerRegistrationDto.class);
     private final UserNameDto userNameDto = TestUtils.readFromFile(userNameDtoPath, UserNameDto.class);
     private final TrainingDto trainingDto = TestUtils.readFromFile(trainingDtoPath, TrainingDto.class);
     private final List<TrainingDto> trainingDtoList = List.of(trainingDto);
@@ -66,7 +66,7 @@ class TrainerControllerTest {
     @Test
     void registration_ValidTrainerDto_ReturnUserCredentialDtoResponseOK() {
         //given
-        when(trainerService.createTrainerProfile(any(TrainerDto.class))).thenReturn(expectedCredential);
+        when(trainerService.createTrainerProfile(any(TrainerRegistrationDto.class))).thenReturn(expectedCredential);
         //when
         ResponseEntity<UserCredentialDto> response = trainerController.registration(trainerDtoWithoutUserName);
         //then

@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.TrainerRegistrationDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainer;
@@ -53,7 +54,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-    public UserCredentialDto createTrainerProfile(TrainerDto trainerDto) {
+    public UserCredentialDto createTrainerProfile(TrainerRegistrationDto trainerDto) {
         Trainer trainer = trainerMapper.convertToTrainer(trainerDto);
         setGeneratedUserName(trainer);
         String password = passwordGenerator.generatePassword();

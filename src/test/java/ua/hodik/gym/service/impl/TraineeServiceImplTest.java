@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
@@ -43,7 +44,7 @@ class TraineeServiceImplTest {
     private final UserDto userDto = TestUtils.readFromFile(userDtoPath, UserDto.class);
     private final User expectedUser = TestUtils.readFromFile(userPath, User.class);
     private final Trainee traineeWithoutUserName = TestUtils.readFromFile(traineePath, Trainee.class);
-    private final TraineeDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
+    private final TraineeRegistrationDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeRegistrationDto.class);
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
     private final Trainee expectedTrainee = TestUtils.readFromFile(expectedTraineePath, Trainee.class);
@@ -74,6 +75,8 @@ class TraineeServiceImplTest {
     private TraineeMapper traineeMapper;
     @Mock
     private TrainerMapper trainerMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
@@ -81,9 +84,10 @@ class TraineeServiceImplTest {
     @Test
     void create_ReturnUserCredentialDto() {
         //given
-        when(traineeMapper.convertToTrainee(any(TraineeDto.class))).thenReturn(traineeWithoutUserName);
+        when(traineeMapper.convertToTrainee(any(TraineeRegistrationDto.class))).thenReturn(traineeWithoutUserName);
         when(userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME)).thenReturn(FIRST_NAME + "." + LAST_NAME);
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
+        when(passwordEncoder.encode(anyString())).thenReturn(PASSWORD);
         when(traineeRepository.save(traineeWithoutUserName)).thenReturn(expectedTrainee);
         //when
         UserCredentialDto credentialDto = traineeService.createTraineeProfile(traineeDtoWithoutUserName);

@@ -32,7 +32,7 @@ class TraineeControllerTest {
     private final String trainerDtoPathWithUserName = "trainer.dto.with.user.name.json";
     private final String filterFormDtoPath = "filter.form.dto.json";
     private final String trainingDtoPath = "training.dto.json";
-    private final TraineeDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeDto.class);
+    private final TraineeRegistrationDto traineeDtoWithoutUserName = TestUtils.readFromFile(traineeDtoPath, TraineeRegistrationDto.class);
     private final FilterFormDto filterFormDto = TestUtils.readFromFile(filterFormDtoPath, FilterFormDto.class);
 
     private final TraineeDto traineeDtoWithUserName = TestUtils.readFromFile(traineeDtoWithUserNamePath, TraineeDto.class);
@@ -56,7 +56,7 @@ class TraineeControllerTest {
     @Test
     void registration_ValidTraineeDto_ReturnUserCredentialDtoResponseOK() {
         //given
-        when(traineeService.createTraineeProfile(any(TraineeDto.class))).thenReturn(expectedUserCredentialDto);
+        when(traineeService.createTraineeProfile(any(TraineeRegistrationDto.class))).thenReturn(expectedUserCredentialDto);
         //when
         ResponseEntity<UserCredentialDto> registration = traineeController.registration(traineeDtoWithoutUserName);
         //then

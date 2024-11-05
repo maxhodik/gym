@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.hodik.gym.dto.TraineeDto;
+import ua.hodik.gym.dto.TraineeRegistrationDto;
 import ua.hodik.gym.dto.UserDto;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.User;
@@ -19,12 +20,11 @@ public class TraineeMapper {
         this.trainerMapper = trainerMapper;
     }
 
-    public Trainee convertToTrainee(TraineeDto traineeDto) {
+    public Trainee convertToTrainee(TraineeRegistrationDto traineeDto) {
         return Trainee.builder()
                 .user(User.builder()
                         .firstName(traineeDto.getFirstName())
                         .lastName(traineeDto.getLastName())
-                        .userName(traineeDto.getUserName())
                         .isActive(traineeDto.isActive())
                         .build())
                 .address(traineeDto.getAddress())

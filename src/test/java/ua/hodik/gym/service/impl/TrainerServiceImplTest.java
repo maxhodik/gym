@@ -6,10 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
-import ua.hodik.gym.dto.TrainerDto;
-import ua.hodik.gym.dto.UserCredentialDto;
-import ua.hodik.gym.dto.UserDto;
-import ua.hodik.gym.dto.UserNameDto;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import ua.hodik.gym.dto.*;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.model.Trainee;
 import ua.hodik.gym.model.Trainer;
@@ -54,7 +52,7 @@ class TrainerServiceImplTest {
     private final Trainer trainerAnotherUserName = TestUtils.readFromFile(trainerAnotherName, Trainer.class);
     private final Trainer expectedTrainer = TestUtils.readFromFile(expectedTrainerPath, Trainer.class);
     private final TrainerDto trainerDtoWithUserName = TestUtils.readFromFile(trainerDtoPathWithUserName, TrainerDto.class);
-    private final TrainerDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerDto.class);
+    private final TrainerRegistrationDto trainerDtoWithoutUserName = TestUtils.readFromFile(trainerDtoPathWithoutUserName, TrainerRegistrationDto.class);
     private final UserNameDto userNameDto = TestUtils.readFromFile(userNameDtoPath, UserNameDto.class);
     private static final String USER_NAME = "Sam.Jonson";
     private final List<Trainer> expectedTrainers = List.of(expectedTrainer, expectedTrainer);
@@ -72,6 +70,8 @@ class TrainerServiceImplTest {
     private UserService userService;
     @Mock
     private TrainerMapper trainerMapper;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
     private TrainerServiceImpl trainerService;
 
@@ -79,9 +79,10 @@ class TrainerServiceImplTest {
     @Test
     void create_TrainerValid_CreateTrainer() {
         //given
-        when(trainerMapper.convertToTrainer(any(TrainerDto.class))).thenReturn(trainerWithoutUserName);
+        when(trainerMapper.convertToTrainer(any(TrainerRegistrationDto.class))).thenReturn(trainerWithoutUserName);
         when(userNameGenerator.generateUserName(FIRST_NAME, LAST_NAME)).thenReturn(FIRST_NAME + "." + LAST_NAME);
         when(passwordGenerator.generatePassword()).thenReturn(PASSWORD);
+        when(passwordEncoder.encode(anyString())).thenReturn(PASSWORD);
         when(trainerRepository.save(trainerWithoutUserName)).thenReturn(expectedTrainer);
         //when
         UserCredentialDto credential = trainerService.createTrainerProfile(trainerDtoWithoutUserName);

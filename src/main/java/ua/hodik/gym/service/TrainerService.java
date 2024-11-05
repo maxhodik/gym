@@ -2,6 +2,7 @@ package ua.hodik.gym.service;
 
 import jakarta.validation.Valid;
 import ua.hodik.gym.dto.TrainerDto;
+import ua.hodik.gym.dto.TrainerRegistrationDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.model.Trainer;
 
@@ -16,7 +17,7 @@ public interface TrainerService {
 
     List<Trainer> getAllTrainers();
 
-    UserCredentialDto createTrainerProfile(TrainerDto trainerDto);
+    UserCredentialDto createTrainerProfile(TrainerRegistrationDto trainerDto);
 
 
     TrainerDto update(int id, @Valid TrainerDto trainerDto);

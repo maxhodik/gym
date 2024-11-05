@@ -123,6 +123,15 @@ public class AuthController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "Logout user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User logout",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid parameter",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content)})
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         String token = jwtService.resolveToken(request);

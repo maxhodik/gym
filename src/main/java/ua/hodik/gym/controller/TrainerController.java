@@ -45,11 +45,12 @@ public class TrainerController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))})})
     @PostMapping("/registration")
-    public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TrainerDto trainerDto) {
+    public ResponseEntity<UserCredentialDto> registration(@RequestBody @Valid TrainerRegistrationDto trainerDto) {
         //todo TrainerRegistrationDto
         UserCredentialDto credentialDto = trainerService.createTrainerProfile(trainerDto);
         return ResponseEntity.status(201).body(credentialDto);
     }
+
     @Operation(summary = "Update a trainer active status by its username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update the trainer",
