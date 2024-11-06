@@ -21,6 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ua.hodik.gym.filter.JwtAuthenticationFilter;
 import ua.hodik.gym.filter.TokenBlacklistAuthenticationFilter;
+import ua.hodik.gym.security.DelegatedAuthenticationEntryPoint;
 
 import java.util.List;
 
@@ -31,20 +32,24 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final TokenBlacklistAuthenticationFilter blacklistAuthenticationFilter;
-
+    private final DelegatedAuthenticationEntryPoint authenticationEntryPoint;
+//    private final UserAuthenticationFailureHandler failureHandler;
 
     @Autowired
-    public SecurityConfig(UserDetailsService userDetails, JwtAuthenticationFilter jwtAuthenticationFilter, TokenBlacklistAuthenticationFilter blacklistAuthenticationFilter) {
+    public SecurityConfig(UserDetailsService userDetails, JwtAuthenticationFilter jwtAuthenticationFilter,
+                          TokenBlacklistAuthenticationFilter blacklistAuthenticationFilter, DelegatedAuthenticationEntryPoint authenticationEntryPoint) {
         this.userDetails = userDetails;
 
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 
         this.blacklistAuthenticationFilter = blacklistAuthenticationFilter;
+
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -52,9 +57,10 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/v3/api-docs/**", "/h2-console").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
+                .exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPoint))
                 .addFilterBefore(blacklistAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
     @Bean

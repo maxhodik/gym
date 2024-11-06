@@ -57,12 +57,12 @@ public class AuthController {
     @GetMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserCredentialDto credentials) {
         String username = credentials.getUserName();
+        if (loginAttemptService.isBlocked(username)) {
+            log.debug("[AuthController] User {} is temporarily blocked", username);
+            return ResponseEntity.status(HttpStatus.LOCKED).body("User is temporarily blocked. Try again later.");
+        }
         try {
             userService.authenticate(credentials);
-            if (loginAttemptService.isBlocked(username)) {
-                log.debug("[AuthController] User {} is temporarily blocked", username);
-                return ResponseEntity.status(HttpStatus.LOCKED).body("User is temporarily blocked. Try again later.");
-            }
             String accessToken = jwtService.createToken(username, false);
             String refreshToken = jwtService.createToken(username, true);
 

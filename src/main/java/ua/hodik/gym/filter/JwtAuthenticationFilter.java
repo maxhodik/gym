@@ -77,9 +77,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void throwJwtAuthExceptionWithMessage(String s, HttpServletResponse servletResponse) throws IOException {
-        SecurityContextHolder.clearContext();
-        servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        throw new JwtAuthenticationException(s);
-    }
+        private void throwJwtAuthExceptionWithMessage(String s, HttpServletResponse servletResponse) throws IOException {
+            SecurityContextHolder.clearContext();
+            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            throw new JwtAuthenticationException(s);
+        }
+
 }

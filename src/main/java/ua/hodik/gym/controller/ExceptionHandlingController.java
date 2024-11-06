@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import ua.hodik.gym.dto.ValidationErrorResponse;
 import ua.hodik.gym.exception.EntityNotFoundException;
 import ua.hodik.gym.exception.InvalidCredentialException;
-import ua.hodik.gym.jwt.JwtAuthenticationException;
 import ua.hodik.gym.service.ValidationService;
 
 import java.util.List;
@@ -79,9 +79,9 @@ public class ExceptionHandlingController {
         return new ResponseEntity<>(e.getMessage(), request);
     }
 
-    @ExceptionHandler(JwtAuthenticationException.class)
+    @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    private ResponseEntity<String> onJwtAuthenticationException(JwtAuthenticationException e) {
+    private ResponseEntity<String> onJwtAuthenticationException(AuthenticationException e) {
         HttpStatus request = HttpStatus.UNAUTHORIZED;
         log.error("{}, {}, Response status: {}, TransactionId: {}",
                 e.getMessage(), e,
