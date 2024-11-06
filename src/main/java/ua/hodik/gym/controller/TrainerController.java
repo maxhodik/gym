@@ -59,6 +59,8 @@ public class TrainerController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainer not found",
                     content = @Content)})
     @PatchMapping("/{username}")
@@ -75,6 +77,8 @@ public class TrainerController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainer not found",
                     content = @Content)})
     @GetMapping("/{userNameDto}")
@@ -89,6 +93,8 @@ public class TrainerController {
             @ApiResponse(responseCode = "200", description = "Updated the trainer",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = TraineeDto.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainer not found",
                     content = @Content)})
     @PutMapping("/{id:\\d+}")
@@ -105,6 +111,8 @@ public class TrainerController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content)})
     @GetMapping("/unassigned-trainers/{traineeUsername}")
@@ -124,6 +132,8 @@ public class TrainerController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content)})
     @GetMapping("/training-list/{usernameDto}")

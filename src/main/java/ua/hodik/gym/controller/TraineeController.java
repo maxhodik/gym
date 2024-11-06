@@ -32,12 +32,11 @@ public class TraineeController {
             @ApiResponse(responseCode = "200", description = "Registration the trainee",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserCredentialDto.class))}),
-            @ApiResponse(responseCode = "400", description = "Invalid username or password",
+            @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))})})
     @PostMapping("/registration")
     public ResponseEntity<UserCredentialDto> registration(@Valid @RequestBody TraineeRegistrationDto traineeDto) {
-        //todo TraineeRegistrationDto
         UserCredentialDto userCredentialDto = traineeService.createTraineeProfile(traineeDto);
         return ResponseEntity.status(201).body(userCredentialDto);
     }
@@ -51,6 +50,8 @@ public class TraineeController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainee not found",
                     content = @Content)})
     @GetMapping("/{userName}")
@@ -64,6 +65,8 @@ public class TraineeController {
             @ApiResponse(responseCode = "200", description = "Updated the trainee",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = TraineeDto.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainee not found",
                     content = @Content)})
     @PutMapping("/{id:\\d+}")
@@ -76,6 +79,8 @@ public class TraineeController {
     @Operation(summary = "Delete a trainee by its username")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Delete the trainee",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainee not found",
                     content = @Content)})
@@ -92,6 +97,8 @@ public class TraineeController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Trainee not found",
                     content = @Content)})
     @PatchMapping("/{usernameDto}")
@@ -111,6 +118,8 @@ public class TraineeController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content)})
     @PutMapping("/update-trainers/{id:\\d+}")
@@ -127,6 +136,8 @@ public class TraineeController {
             @ApiResponse(responseCode = "400", description = "Invalid username",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content)})
     @GetMapping("/training-list/{usernameDto}")

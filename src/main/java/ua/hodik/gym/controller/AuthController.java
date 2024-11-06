@@ -48,10 +48,13 @@ public class AuthController {
     @Operation(summary = "Login user by its credentials")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User login",
-                    content = @Content),
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema)),
             @ApiResponse(responseCode = "400", description = "Invalid parameter",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "403", description = "Too many login attempts",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "Not found",
                     content = @Content)})
     @GetMapping("/login")
@@ -59,7 +62,7 @@ public class AuthController {
         String username = credentials.getUserName();
         if (loginAttemptService.isBlocked(username)) {
             log.debug("[AuthController] User {} is temporarily blocked", username);
-            return ResponseEntity.status(HttpStatus.LOCKED).body("User is temporarily blocked. Try again later.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User is temporarily blocked. Try again later.");
         }
         try {
             userService.authenticate(credentials);
@@ -88,6 +91,8 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid parameter",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)})
     @PutMapping
@@ -107,6 +112,8 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid parameter",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)})
     @GetMapping("/refreshToken")
@@ -130,6 +137,8 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Invalid parameter",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorResponse.class))}),
+            @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content)})
     @GetMapping("/logout")
