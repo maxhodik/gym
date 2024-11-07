@@ -15,6 +15,7 @@ import ua.hodik.gym.dto.ValidationErrorResponse;
 import ua.hodik.gym.service.TrainingService;
 
 import java.util.List;
+
 @Log4j2
 @RestController
 @RequestMapping("/trainings")
@@ -25,6 +26,7 @@ public class TrainingController {
     public TrainingController(TrainingService trainingService) {
         this.trainingService = trainingService;
     }
+
     @Operation(summary = "Add a new training")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added a training",
@@ -41,11 +43,14 @@ public class TrainingController {
         trainingService.createTraining(trainingDto);
         return ResponseEntity.ok("Training added successfully");
     }
+
     @Operation(summary = "Get a training type")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Got a training type",
                     content = @Content),
             @ApiResponse(responseCode = "401", description = "User unauthorized",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content)})
     @GetMapping
     public ResponseEntity<List<TrainingTypeDto>> getTrainingType() {
