@@ -54,15 +54,15 @@ public class AuthServiceImpl implements AuthService {
             throw new AuthenticationServiceException("Authentication is null");
         }
         UserDetailsImpl userDetails = getUserDetails(authentication);
-        String username = userDetails.getUsername();
-        if (!authentication.isAuthenticated()) {
-            log.info("[AUTH] User {} is not authenticated", username);
-            throw new AuthenticationServiceException("User is not authenticated");
-        }
         User user = userDetails.getUser();
         if (user == null) {
             log.info("[AUTH] Incorrect security user {}", userDetails.getUsername());
             throw new AuthenticationServiceException("User is null");
+        }
+        String username = userDetails.getUsername();
+        if (!authentication.isAuthenticated()) {
+            log.info("[AUTH] User {} is not authenticated", username);
+            throw new AuthenticationServiceException("User is not authenticated");
         }
         return userRepository.findByUserName(username)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User %s not found", username)));
