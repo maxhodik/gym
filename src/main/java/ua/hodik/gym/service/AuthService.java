@@ -1,4 +1,4 @@
-package ua.hodik.gym.jwt;
+package ua.hodik.gym.service;
 
 import org.springframework.security.core.Authentication;
 import ua.hodik.gym.model.User;

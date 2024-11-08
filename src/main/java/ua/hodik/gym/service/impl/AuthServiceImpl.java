@@ -1,4 +1,4 @@
-package ua.hodik.gym.jwt.impl;
+package ua.hodik.gym.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.log4j.Log4j2;
@@ -9,11 +9,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import ua.hodik.gym.jwt.AuthService;
 import ua.hodik.gym.jwt.JwtService;
 import ua.hodik.gym.model.User;
 import ua.hodik.gym.repository.UserRepository;
 import ua.hodik.gym.security.UserDetailsImpl;
+import ua.hodik.gym.service.AuthService;
 
 @Service
 @Log4j2
@@ -53,7 +53,6 @@ public class AuthServiceImpl implements AuthService {
             log.info("[AUTH] Authentication is null");
             throw new AuthenticationServiceException("Authentication is null");
         }
-
         UserDetailsImpl userDetails = getUserDetails(authentication);
         String username = userDetails.getUsername();
         if (!authentication.isAuthenticated()) {
@@ -63,9 +62,10 @@ public class AuthServiceImpl implements AuthService {
         User user = userDetails.getUser();
         if (user == null) {
             log.info("[AUTH] Incorrect security user {}", userDetails.getUsername());
+            throw new AuthenticationServiceException("User is null");
         }
         return userRepository.findByUserName(username)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User %s snot found", username)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User %s not found", username)));
     }
 
     private UserDetailsImpl getUserDetails(Authentication authentication) {

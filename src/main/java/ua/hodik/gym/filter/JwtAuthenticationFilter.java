@@ -12,9 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ua.hodik.gym.jwt.AuthService;
 import ua.hodik.gym.jwt.JwtAuthenticationException;
 import ua.hodik.gym.jwt.JwtService;
+import ua.hodik.gym.service.AuthService;
 
 import java.io.IOException;
 

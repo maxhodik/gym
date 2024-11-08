@@ -33,7 +33,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final TokenBlacklistAuthenticationFilter blacklistAuthenticationFilter;
     private final DelegatedAuthenticationEntryPoint authenticationEntryPoint;
-//    private final UserAuthenticationFailureHandler failureHandler;
 
     @Autowired
     public SecurityConfig(UserDetailsService userDetails, JwtAuthenticationFilter jwtAuthenticationFilter,

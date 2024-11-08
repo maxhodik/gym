@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import ua.hodik.gym.dto.PasswordDto;
 import ua.hodik.gym.dto.UserCredentialDto;
 import ua.hodik.gym.dto.ValidationErrorResponse;
-import ua.hodik.gym.jwt.AuthService;
 import ua.hodik.gym.jwt.JwtService;
 import ua.hodik.gym.model.User;
+import ua.hodik.gym.service.AuthService;
 import ua.hodik.gym.service.LoginAttemptService;
 import ua.hodik.gym.service.UserService;
 
